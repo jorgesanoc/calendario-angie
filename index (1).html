@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ciclo & Bienestar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-20 md:pb-8">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // CONFIGURACIÓN DE SEGURIDAD (Cámbialo cuando quieras)
+    const ACCESS_PIN = "0414";
+
+    const INITIAL_EVENTS = [
+      { id: '1', date: '2026-08-03', type: 'period_start', title: 'Inicio de Periodo (Agosto)', details: 'Duración estimada 5 días (3 - 7 Ago). Cólicos leves.' },
+      { id: '2', date: '2026-08-31', type: 'period_start', title: 'Inicio de Periodo (Septiembre)', details: 'Duración estimada 5 días (31 Ago - 4 Sep).' },
+      { id: '3', date: '2026-10-12', type: 'period_start', title: 'Inicio de Periodo (Octubre)', details: 'Duración 5 días (12 - 16 Oct). Cólicos fuertes el 14 Oct.' },
+      { id: '4', date: '2026-10-21', type: 'intimacy_unprotected', title: 'Relación (Sin protección / Sin eyaculación)', details: 'Registrado en bitácora.' },
+      { id: '5', date: '2026-10-22', type: 'pill', title: 'Pastilla de Emergencia', details: 'Toma nocturna (Levonorgestrel).' },
+      { id: '6', date: '2026-10-24', type: 'intimacy_unprotected', title: 'Relación (Sin protección)', details: 'Madrugada.' },
+      { id: '7', date: '2026-10-26', type: 'medical', title: 'Ultrasonido Transvaginal', details: 'Endometrio inactivo (1.7-1.9 mm) y ovarios en reposo. Sin riesgo.' },
+      { id: '8', date: '2026-10-31', type: 'period_start', title: 'Inicio de Periodo Confirmatorio', details: 'Duración 5 días (31 Oct - 4 Nov). Reinicio de ciclo confirmado.' },
+      { id: '9', date: '2026-11-07', type: 'intimacy_protected', title: 'Relaciones con Condón (3x)', details: 'Protección de barrera usada en todo momento.' },
+      { id: '10', date: '2026-11-08', type: 'medical', title: 'Síntomas físicos / Chequeo', details: 'Mareos y náuseas por ayuno prolongado y ajuste hormonal.' }
+    ];
+
+    const PERIOD_RANGES = [
+      { start: '2026-08-03', end: '2026-08-07' },
+      { start: '2026-08-31', end: '2026-09-04' },
+      { start: '2026-10-12', end: '2026-10-16' },
+      { start: '2026-10-31', end: '2026-11-04' }
+    ];
+
+    const FERTILE_RANGES = [
+      { start: '2026-08-12', end: '2026-08-18', ovulation: '2026-08-16' },
+      { start: '2026-09-09', end: '2026-09-15', ovulation: '2026-09-13' },
+      { start: '2026-10-21', end: '2026-10-27', ovulation: '2026-10-25' },
+      { start: '2026-11-09', end: '2026-11-15', ovulation: '2026-11-13' },
+      { start: '2026-12-07', end: '2026-12-13', ovulation: '2026-12-11' }
+    ];
+
+    function formatDateES(dateStr) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+      return `${d} de ${months[m - 1]} ${y}`;
+    }
+
+    function addDays(dateStr, days) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      dt.setDate(dt.getDate() + days);
+      const yy = dt.getFullYear();
+      const mm = String(dt.getMonth() + 1).padStart(2, '0');
+      const dd = String(dt.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
+    }
+
+    function diffDays(startStr, endStr) {
+      const [y1, m1, d1] = startStr.split('-').map(Number);
+      const [y2, m2, d2] = endStr.split('-').map(Number);
+      const dt1 = new Date(y1, m1 - 1, d1);
+      const dt2 = new Date(y2, m2 - 1, d2);
+      return Math.round((dt2 - dt1) / (1000 * 60 * 60 * 24));
+    }
+
+    function App() {
+      // Estado de bloqueo por PIN
+      const [isUnlocked, setIsUnlocked] = useState(() => {
+        try {
+          return sessionStorage.getItem('ciclo_unlocked_v2') === 'true';
+        } catch { return false; }
+      });
+      const [pinInput, setPinInput] = useState('');
+      const [pinError, setPinError] = useState(false);
+
+      // Configuración de Nube (Sincronización entre ambos dispositivos)
+      const [cloudUrl, setCloudUrl] = useState(() => {
+        try {
+          return localStorage.getItem('ciclo_cloud_url_v2') || '';
+        } catch { return ''; }
+      });
+      const [syncModalOpen, setSyncModalOpen] = useState(false);
+      const [tempCloudUrl, setTempCloudUrl] = useState(cloudUrl);
+      const [syncStatus, setSyncStatus] = useState('local'); // 'local' | 'syncing' | 'synced' | 'error'
+
+      const [activeTab, setActiveTab] = useState('today');
+      const [referenceDate, setReferenceDate] = useState('2026-11-12');
+      const [currentMonth, setCurrentMonth] = useState({ year: 2026, month: 10 });
+      const [selectedDay, setSelectedDay] = useState('2026-11-12');
+      const [events, setEvents] = useState(() => {
+        try {
+          const saved = localStorage.getItem('ciclo_bienestar_events_v2');
+          return saved ? JSON.parse(saved) : INITIAL_EVENTS;
+        } catch {
+          return INITIAL_EVENTS;
+        }
+      });
+
+      const [modalOpen, setModalOpen] = useState(false);
+      const [newEventType, setNewEventType] = useState('intimacy_protected');
+      const [newEventDate, setNewEventDate] = useState('2026-11-12');
+      const [newEventTitle, setNewEventTitle] = useState('');
+      const [newEventDetails, setNewEventDetails] = useState('');
+
+      // Cargar desde la nube al iniciar o cada 8 segundos si hay URL configurada
+      useEffect(() => {
+        if (!cloudUrl || !isUnlocked) return;
+        const cleanUrl = cloudUrl.trim().replace(/\/+$/, '');
+        const endpoint = `${cleanUrl}/ciclo_data.json`;
+
+        const fetchRemote = async () => {
+          try {
+            const res = await fetch(endpoint);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && Array.isArray(data.events)) {
+                setEvents(data.events);
+                localStorage.setItem('ciclo_bienestar_events_v2', JSON.stringify(data.events));
+                setSyncStatus('synced');
+              } else {
+                // Primera vez: subir datos iniciales a la nube
+                await fetch(endpoint, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ events, updatedAt: Date.now() })
+                });
+                setSyncStatus('synced');
+              }
+            }
+          } catch (e) {
+            setSyncStatus('error');
+          }
+        };
+
+        fetchRemote();
+        const interval = setInterval(fetchRemote, 8000);
+        return () => clearInterval(interval);
+      }, [cloudUrl, isUnlocked]);
+
+      const persistEvents = async (updatedEvents) => {
+        setEvents(updatedEvents);
+        try {
+          localStorage.setItem('ciclo_bienestar_events_v2', JSON.stringify(updatedEvents));
+        } catch (e) {}
+
+        if (cloudUrl) {
+          setSyncStatus('syncing');
+          try {
+            const cleanUrl = cloudUrl.trim().replace(/\/+$/, '');
+            await fetch(`${cleanUrl}/ciclo_data.json`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ events: updatedEvents, updatedAt: Date.now() })
+            });
+            setSyncStatus('synced');
+          } catch (e) {
+            setSyncStatus('error');
+          }
+        }
+      };
+
+      const handleUnlock = (e) => {
+        e.preventDefault();
+        if (pinInput.trim() === ACCESS_PIN) {
+          setIsUnlocked(true);
+          setPinError(false);
+          try { sessionStorage.setItem('ciclo_unlocked_v2', 'true'); } catch {}
+        } else {
+          setPinError(true);
+          setPinInput('');
+        }
+      };
+
+      const handleLock = () => {
+        setIsUnlocked(false);
+        setPinInput('');
+        try { sessionStorage.removeItem('ciclo_unlocked_v2'); } catch {}
+      };
+
+      const handleSaveCloudConfig = (e) => {
+        e.preventDefault();
+        const cleaned = tempCloudUrl.trim();
+        setCloudUrl(cleaned);
+        try { localStorage.setItem('ciclo_cloud_url_v2', cleaned); } catch {}
+        setSyncModalOpen(false);
+      };
+
+      const periodStarts = useMemo(() => {
+        const starts = events
+          .filter(e => e.type === 'period_start')
+          .map(e => e.date)
+          .sort();
+        return starts.length ? starts : ['2026-10-31'];
+      }, [events]);
+
+      const activePeriodStart = useMemo(() => {
+        const valid = periodStarts.filter(d => d <= referenceDate);
+        return valid.length ? valid[valid.length - 1] : periodStarts[0];
+      }, [periodStarts, referenceDate]);
+
+      const cycleDay = Math.max(1, diffDays(activePeriodStart, referenceDate) + 1);
+      const nextPeriodEst = addDays(activePeriodStart, 28);
+      const daysUntilNext = diffDays(referenceDate, nextPeriodEst);
+      const fertileStart = addDays(activePeriodStart, 9);
+      const fertileEnd = addDays(activePeriodStart, 15);
+      const ovulationDay = addDays(activePeriodStart, 13);
+
+      const getPhaseInfo = (day) => {
+        if (day <= 5) {
+          return {
+            name: 'Fase Menstrual',
+            fertility: 'Muy Baja',
+            desc: 'Días de sangrado menstrual. Priorizar descanso e hidratación.',
+            ringColor: '#FF4B72',
+            badgeBg: 'bg-rose-100 text-rose-700'
+          };
+        }
+        if (day >= 10 && day <= 16) {
+          const isPeak = day >= 12 && day <= 14;
+          return {
+            name: isPeak ? 'Pico de Ovulación' : 'Ventana Fértil',
+            fertility: isPeak ? 'Muy Alta' : 'Alta',
+            desc: 'Días centrales de máxima fertilidad en el ciclo. Esencial usar protección de barrera.',
+            ringColor: '#F59E0B',
+            badgeBg: 'bg-amber-100 text-amber-800'
+          };
+        }
+        if (day < 10) {
+          return {
+            name: 'Fase Folicular',
+            fertility: 'Baja',
+            desc: 'Periodo post-menstrual previo a la ventana fértil.',
+            ringColor: '#00D4B2',
+            badgeBg: 'bg-teal-100 text-teal-800'
+          };
+        }
+        return {
+          name: 'Fase Lútea',
+          fertility: 'Baja',
+          desc: 'Etapa posterior a la ovulación hasta el inicio del siguiente periodo.',
+          ringColor: '#6366F1',
+          badgeBg: 'bg-indigo-100 text-indigo-800'
+        };
+      };
+
+      const phase = getPhaseInfo(cycleDay);
+
+      const openAddModal = (type, dateOverride) => {
+        const targetDate = dateOverride || referenceDate;
+        setNewEventType(type);
+        setNewEventDate(targetDate);
+        const defaultTitles = {
+          period_start: 'Inicio de Periodo',
+          intimacy_protected: 'Relación con Condón',
+          intimacy_unprotected: 'Relación sin Protección',
+          pill: 'Pastilla de Emergencia',
+          medical: 'Síntoma / Nota Médica'
+        };
+        setNewEventTitle(defaultTitles[type] || '');
+        setNewEventDetails('');
+        setModalOpen(true);
+      };
+
+      const handleSaveEvent = (e) => {
+        e.preventDefault();
+        if (!newEventTitle.trim()) return;
+        const created = {
+          id: String(Date.now()),
+          date: newEventDate,
+          type: newEventType,
+          title: newEventTitle.trim(),
+          details: newEventDetails.trim() || 'Registrado manualmente.'
+        };
+        const updated = [...events, created].sort((a, b) => b.date.localeCompare(a.date));
+        persistEvents(updated);
+        setSelectedDay(newEventDate);
+        setModalOpen(false);
+      };
+
+      const handleDeleteEvent = (id) => {
+        const updated = events.filter(ev => ev.id !== id);
+        persistEvents(updated);
+      };
+
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const daysInMonth = new Date(currentMonth.year, currentMonth.month + 1, 0).getDate();
+      const firstWeekday = new Date(currentMonth.year, currentMonth.month, 1).getDay();
+
+      const prevMonth = () => {
+        setCurrentMonth(prev => prev.month === 0 ? { year: prev.year - 1, month: 11 } : { year: prev.year, month: prev.month - 1 });
+      };
+      const nextMonth = () => {
+        setCurrentMonth(prev => prev.month === 11 ? { year: prev.year + 1, month: 0 } : { year: prev.year, month: prev.month + 1 });
+      };
+
+      const getDayStatus = (dateStr) => {
+        const dynamicPeriods = periodStarts.map(s => ({ start: s, end: addDays(s, 4) }));
+        const allPeriods = [...PERIOD_RANGES, ...dynamicPeriods];
+        const isPeriod = allPeriods.some(r => dateStr >= r.start && dateStr <= r.end);
+
+        const dynamicFertile = periodStarts.map(s => ({
+          start: addDays(s, 9),
+          end: addDays(s, 15),
+          ovulation: addDays(s, 13)
+        }));
+        const allFertile = [...FERTILE_RANGES, ...dynamicFertile];
+        const fertileMatch = allFertile.find(r => dateStr >= r.start && dateStr <= r.end);
+        const isOvulation = allFertile.some(r => r.ovulation === dateStr);
+
+        const dayEvents = events.filter(e => e.date === dateStr);
+        return { isPeriod, isFertile: Boolean(fertileMatch), isOvulation, dayEvents };
+      };
+
+      const selectedDayInfo = getDayStatus(selectedDay);
+      const sortedEvents = [...events].sort((a, b) => b.date.localeCompare(a.date));
+
+      const getEventBadge = (type) => {
+        switch (type) {
+          case 'period_start': return { icon: '🩸', label: 'Periodo', color: 'bg-rose-100 text-rose-700 border-rose-200' };
+          case 'intimacy_protected': return { icon: '🛡️❤️', label: 'Con protección', color: 'bg-purple-100 text-purple-700 border-purple-200' };
+          case 'intimacy_unprotected': return { icon: '❤️', label: 'Sin protección', color: 'bg-pink-100 text-pink-700 border-pink-200' };
+          case 'pill': return { icon: '💊', label: 'Emergencia', color: 'bg-amber-100 text-amber-800 border-amber-200' };
+          default: return { icon: '🩺', label: 'Nota / Estudio', color: 'bg-sky-100 text-sky-700 border-sky-200' };
+        }
+      };
+
+      // PANTALLA DE BLOQUEO CON CÓDIGO DE ACCESO
+      if (!isUnlocked) {
+        return (
+          <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-rose-50 via-white to-fuchsia-50">
+            <div className="bg-white rounded-3xl shadow-xl border border-rose-100 max-w-sm w-full p-7 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-500 to-fuchsia-500 flex items-center justify-center text-white text-3xl mx-auto mb-4 shadow-md">
+                🔒
+              </div>
+              <h1 className="text-xl font-extrabold text-slate-900">Espacio Privado</h1>
+              <p className="text-xs text-slate-500 mt-1 mb-6">
+                Ingresa el código de seguridad para ver y editar el calendario de Ciclo & Bienestar.
+              </p>
+
+              <form onSubmit={handleUnlock} className="space-y-4">
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  value={pinInput}
+                  onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
+                  placeholder="••••"
+                  maxLength={8}
+                  autoFocus
+                  className="w-full text-center text-2xl tracking-[0.5em] font-bold border-2 border-slate-200 rounded-2xl py-3 px-4 focus:outline-none focus:border-rose-500 transition"
+                />
+                {pinError && (
+                  <p className="text-xs font-bold text-rose-600">Código incorrecto. Intenta de nuevo.</p>
+                )}
+                <button
+                  type="submit"
+                  className="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition"
+                >
+                  Desbloquear Calendario
+                </button>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="max-w-3xl mx-auto px-4 pt-4">
+          {/* Header */}
+          <header className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-500 to-fuchsia-500 flex items-center justify-center text-white text-xl shadow-sm">
+                  💗
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-slate-900 leading-tight">Ciclo & Bienestar</h1>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className={`inline-block w-2 h-2 rounded-full ${cloudUrl && syncStatus === 'synced' ? 'bg-emerald-500' : cloudUrl && syncStatus === 'error' ? 'bg-rose-500' : 'bg-amber-400'}`}></span>
+                    <span className="text-[11px] font-medium text-slate-500">
+                      {cloudUrl
+                        ? (syncStatus === 'synced' ? 'Sincronizado en tiempo real' : syncStatus === 'syncing' ? 'Sincronizando...' : 'Error de red')
+                        : 'Modo Local (Conecta la nube para sincronizar)'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setTempCloudUrl(cloudUrl); setSyncModalOpen(true); }}
+                  className="text-xs font-bold px-3 py-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 transition flex items-center gap-1"
+                >
+                  <span>☁️</span> Sincronizar
+                </button>
+                <button
+                  onClick={handleLock}
+                  title="Bloquear aplicación"
+                  className="text-xs font-bold px-2.5 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition"
+                >
+                  🔒
+                </button>
+              </div>
+            </div>
+
+            {/* Navegación Desktop / Tablet */}
+            <nav className="hidden md:flex bg-slate-100 p-1 rounded-xl gap-1">
+              <button
+                onClick={() => setActiveTab('today')}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${activeTab === 'today' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                Hoy / Resumen
+              </button>
+              <button
+                onClick={() => setActiveTab('calendar')}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${activeTab === 'calendar' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                Calendario Mensual
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${activeTab === 'history' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                Historial y Ciclos
+              </button>
+            </nav>
+          </header>
+
+          {/* PESTAÑA 1: HOY / RESUMEN */}
+          {activeTab === 'today' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <span>📅</span>
+                  <span className="text-slate-600">Viendo estado del ciclo al día:</span>
+                  <span className="font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">{formatDateES(referenceDate)}</span>
+                </div>
+                <input
+                  type="date"
+                  value={referenceDate}
+                  onChange={(e) => e.target.value && setReferenceDate(e.target.value)}
+                  className="text-sm border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 focus:outline-none focus:ring-2 focus:ring-rose-400"
+                />
+              </div>
+
+              <div className="bg-gradient-to-b from-rose-50/60 to-white rounded-3xl shadow-sm border border-rose-100/80 p-6 text-center">
+                <div
+                  className="w-48 h-48 mx-auto rounded-full flex flex-col items-center justify-center bg-white shadow-inner mb-4 relative"
+                  style={{ border: `12px solid ${phase.ringColor}` }}
+                >
+                  <span className="text-[11px] font-bold tracking-widest text-slate-400 uppercase">Ciclo Actual</span>
+                  <span className="text-4xl font-extrabold text-slate-900 my-1">Día {cycleDay}</span>
+                  <span className={`text-xs font-bold px-3 py-0.5 rounded-full ${phase.badgeBg}`}>
+                    {phase.name}
+                  </span>
+                  <span className="text-xs text-slate-500 mt-1.5">
+                    Fertilidad hoy: <strong className="text-slate-800">{phase.fertility}</strong>
+                  </span>
+                </div>
+
+                <p className="text-sm text-slate-600 max-w-md mx-auto mb-6">
+                  {phase.desc}
+                </p>
+
+                <div className="grid grid-cols-3 gap-2.5 max-w-lg mx-auto">
+                  <button
+                    onClick={() => openAddModal('period_start', referenceDate)}
+                    className="bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-2 rounded-xl text-sm shadow-sm transition flex items-center justify-center gap-1.5"
+                  >
+                    <span>🩸</span> Periodo
+                  </button>
+                  <button
+                    onClick={() => openAddModal('intimacy_protected', referenceDate)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-2 rounded-xl text-sm shadow-sm transition flex items-center justify-center gap-1.5"
+                  >
+                    <span>❤️</span> Intimidad
+                  </button>
+                  <button
+                    onClick={() => openAddModal('medical', referenceDate)}
+                    className="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-2 rounded-xl text-sm shadow-sm transition flex items-center justify-center gap-1.5"
+                  >
+                    <span>🩺</span> Nota
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-slate-500">Último Periodo Confirmado</p>
+                    <p className="text-lg font-bold text-slate-900 mt-1">
+                      {formatDateES(activePeriodStart)}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">Duración estándar: 5 días • Ciclo reiniciado</p>
+                  </div>
+                  <span className="w-9 h-9 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center">🩸</span>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-slate-500">Ventana Fértil Estimada</p>
+                    <p className="text-lg font-bold text-teal-600 mt-1">
+                      {formatDateES(fertileStart).replace(' 2026', '')} al {formatDateES(fertileEnd).replace(' 2026', '')}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Días 10–16 del ciclo • Ovulación est.: <strong>{formatDateES(ovulationDay).replace(' 2026', '')}</strong>
+                    </p>
+                  </div>
+                  <span className="w-9 h-9 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center">✨</span>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500">Próximo Periodo Estimado (Ciclo 28 días)</p>
+                  <p className="text-base font-bold text-slate-900 mt-0.5">{formatDateES(nextPeriodEst)}</p>
+                </div>
+                <span className="text-xs font-bold bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full">
+                  {daysUntilNext > 0 ? `Faltan ${daysUntilNext} días` : daysUntilNext === 0 ? 'Hoy estimado' : `Hace ${Math.abs(daysUntilNext)} días`}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* PESTAÑA 2: CALENDARIO MENSUAL */}
+          {activeTab === 'calendar' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <button onClick={prevMonth} className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-bold">◀</button>
+                  <h2 className="text-base font-bold text-slate-900">
+                    {monthNames[currentMonth.month]} {currentMonth.year}
+                  </h2>
+                  <button onClick={nextMonth} className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-bold">▶</button>
+                </div>
+
+                <div className="flex flex-wrap gap-3 text-xs text-slate-600 mb-3 pb-3 border-b border-slate-100">
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Periodo</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-teal-400 inline-block"></span> Días fértiles</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> Ovulación</span>
+                  <span className="flex items-center gap-1">❤️ Intimidad</span>
+                  <span className="flex items-center gap-1">🩺 Estudio/Nota</span>
+                </div>
+
+                <div className="grid grid-cols-7 text-center text-xs font-bold text-slate-400 mb-2">
+                  <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1.5">
+                  {Array.from({ length: firstWeekday }).map((_, i) => (
+                    <div key={`empty-${i}`} className="h-12"></div>
+                  ))}
+                  {Array.from({ length: daysInMonth }).map((_, idx) => {
+                    const dayNum = idx + 1;
+                    const mm = String(currentMonth.month + 1).padStart(2, '0');
+                    const dd = String(dayNum).padStart(2, '0');
+                    const dateStr = `${currentMonth.year}-${mm}-${dd}`;
+                    const status = getDayStatus(dateStr);
+                    const isSelected = selectedDay === dateStr;
+
+                    let bgClass = 'bg-slate-50 hover:bg-slate-100 text-slate-800';
+                    if (status.isPeriod) bgClass = 'bg-rose-500 text-white font-bold';
+                    else if (status.isOvulation) bgClass = 'bg-amber-400 text-slate-900 font-bold';
+                    else if (status.isFertile) bgClass = 'bg-teal-100 text-teal-900 font-semibold';
+
+                    return (
+                      <button
+                        key={dateStr}
+                        onClick={() => setSelectedDay(dateStr)}
+                        className={`h-12 rounded-xl flex flex-col items-center justify-center relative transition ${bgClass} ${isSelected ? 'ring-2 ring-slate-900 ring-offset-1' : ''}`}
+                      >
+                        <span className="text-sm leading-none">{dayNum}</span>
+                        {status.dayEvents.length > 0 && (
+                          <div className="flex gap-0.5 mt-1 text-[10px] leading-none">
+                            {status.dayEvents.slice(0, 2).map(ev => (
+                              <span key={ev.id}>
+                                {ev.type === 'period_start' ? '🩸' : ev.type.startsWith('intimacy') ? '❤️' : ev.type === 'pill' ? '💊' : '🩺'}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Detalle del día</p>
+                  <h3 className="text-base font-bold text-slate-900 mt-0.5 mb-3">{formatDateES(selectedDay)}</h3>
+
+                  <div className="space-y-2 mb-4">
+                    {selectedDayInfo.isPeriod && (
+                      <div className="text-xs bg-rose-50 text-rose-700 px-3 py-2 rounded-lg font-medium">🩸 Día de periodo menstrual</div>
+                    )}
+                    {selectedDayInfo.isOvulation && (
+                      <div className="text-xs bg-amber-50 text-amber-800 px-3 py-2 rounded-lg font-medium">✨ Día estimado de ovulación (Máxima fertilidad)</div>
+                    )}
+                    {!selectedDayInfo.isOvulation && selectedDayInfo.isFertile && (
+                      <div className="text-xs bg-teal-50 text-teal-800 px-3 py-2 rounded-lg font-medium">🌱 Dentro de ventana fértil estimada</div>
+                    )}
+                  </div>
+
+                  {selectedDayInfo.dayEvents.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic py-4 text-center">No hay eventos registrados en este día.</p>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {selectedDayInfo.dayEvents.map(ev => {
+                        const badge = getEventBadge(ev.type);
+                        return (
+                          <div key={ev.id} className="p-3 rounded-xl border border-slate-100 bg-slate-50/70">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${badge.color}`}>
+                                {badge.icon} {badge.label}
+                              </span>
+                              <button onClick={() => handleDeleteEvent(ev.id)} className="text-xs text-slate-400 hover:text-rose-600">✕</button>
+                            </div>
+                            <p className="text-sm font-bold text-slate-800 mt-1.5">{ev.title}</p>
+                            <p className="text-xs text-slate-600 mt-0.5">{ev.details}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
+                  <button
+                    onClick={() => openAddModal('intimacy_protected', selectedDay)}
+                    className="w-full py-2 px-3 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition"
+                  >
+                    + Registrar Relación este día
+                  </button>
+                  <button
+                    onClick={() => openAddModal('period_start', selectedDay)}
+                    className="w-full py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition"
+                  >
+                    🩸 Marcar Inicio de Periodo
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PESTAÑA 3: HISTORIAL Y CICLOS */}
+          {activeTab === 'history' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                <h2 className="text-base font-bold text-slate-900 mb-3">Resumen de Ciclos Menstruales</h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-500">
+                        <th className="py-2 pr-3">Mes</th>
+                        <th className="py-2 px-3">Inicio – Fin</th>
+                        <th className="py-2 px-3">Duración Ciclo</th>
+                        <th className="py-2 pl-3">Ventana Fértil</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      <tr>
+                        <td className="py-2.5 pr-3 font-bold">Agosto 2026</td>
+                        <td className="py-2.5 px-3">3 Ago – 7 Ago</td>
+                        <td className="py-2.5 px-3">28 días</td>
+                        <td className="py-2.5 pl-3 text-teal-700 font-medium">12 Ago – 18 Ago</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2.5 pr-3 font-bold">Septiembre 2026</td>
+                        <td className="py-2.5 px-3">31 Ago – 4 Sep</td>
+                        <td className="py-2.5 px-3">42 días (desfase)</td>
+                        <td className="py-2.5 pl-3 text-teal-700 font-medium">9 Sep – 15 Sep</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2.5 pr-3 font-bold">Octubre 2026</td>
+                        <td className="py-2.5 px-3">12 Oct – 16 Oct</td>
+                        <td className="py-2.5 px-3">19 días (Postday)</td>
+                        <td className="py-2.5 pl-3 text-teal-700 font-medium">21 Oct – 27 Oct</td>
+                      </tr>
+                      <tr className="bg-rose-50/40">
+                        <td className="py-2.5 pr-3 font-bold text-rose-700">Noviembre 2026</td>
+                        <td className="py-2.5 px-3 font-semibold">31 Oct – 4 Nov</td>
+                        <td className="py-2.5 px-3">En curso (28 est.)</td>
+                        <td className="py-2.5 pl-3 text-teal-700 font-bold">9 Nov – 15 Nov</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-base font-bold text-slate-900">Bitácora de Registros</h2>
+                  <button
+                    onClick={() => openAddModal('medical', referenceDate)}
+                    className="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800"
+                  >
+                    + Nuevo Registro
+                  </button>
+                </div>
+
+                <div className="space-y-2.5">
+                  {sortedEvents.map(ev => {
+                    const badge = getEventBadge(ev.type);
+                    return (
+                      <div key={ev.id} className="p-3.5 rounded-xl border border-slate-100 flex items-start justify-between gap-3 hover:bg-slate-50 transition">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-bold text-slate-500">{formatDateES(ev.date)}</span>
+                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${badge.color}`}>
+                              {badge.icon} {badge.label}
+                            </span>
+                          </div>
+                          <p className="text-sm font-bold text-slate-900 mt-1">{ev.title}</p>
+                          <p className="text-xs text-slate-600 mt-0.5">{ev.details}</p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteEvent(ev.id)}
+                          title="Eliminar registro"
+                          className="text-slate-400 hover:text-rose-600 text-xs p-1"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Barra Inferior Móvil */}
+          <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 grid grid-cols-3 py-2 px-2 z-40">
+            <button
+              onClick={() => setActiveTab('today')}
+              className={`flex flex-col items-center py-1 text-xs font-semibold ${activeTab === 'today' ? 'text-rose-600' : 'text-slate-500'}`}
+            >
+              <span className="text-base mb-0.5">💗</span>
+              Hoy
+            </button>
+            <button
+              onClick={() => setActiveTab('calendar')}
+              className={`flex flex-col items-center py-1 text-xs font-semibold ${activeTab === 'calendar' ? 'text-rose-600' : 'text-slate-500'}`}
+            >
+              <span className="text-base mb-0.5">📅</span>
+              Calendario
+            </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`flex flex-col items-center py-1 text-xs font-semibold ${activeTab === 'history' ? 'text-rose-600' : 'text-slate-500'}`}
+            >
+              <span className="text-base mb-0.5">📋</span>
+              Historial
+            </button>
+          </nav>
+
+          {/* Modal para agregar nuevo evento */}
+          {modalOpen && (
+            <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-base font-bold text-slate-900">Nuevo Registro</h3>
+                  <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+                </div>
+
+                <form onSubmit={handleSaveEvent} className="space-y-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Tipo de evento</label>
+                    <select
+                      value={newEventType}
+                      onChange={(e) => setNewEventType(e.target.value)}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
+                    >
+                      <option value="period_start">🩸 Inicio de Periodo</option>
+                      <option value="intimacy_protected">🛡️❤️ Relación con Condón</option>
+                      <option value="intimacy_unprotected">❤️ Relación sin Protección</option>
+                      <option value="pill">💊 Pastilla de Emergencia</option>
+                      <option value="medical">🩺 Síntoma / Estudio Médico</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Fecha</label>
+                    <input
+                      type="date"
+                      value={newEventDate}
+                      onChange={(e) => setNewEventDate(e.target.value)}
+                      required
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Título</label>
+                    <input
+                      type="text"
+                      value={newEventTitle}
+                      onChange={(e) => setNewEventTitle(e.target.value)}
+                      required
+                      placeholder="Ej. Relación con condón"
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Detalles / Notas (opcional)</label>
+                    <textarea
+                      rows="2"
+                      value={newEventDetails}
+                      onChange={(e) => setNewEventDetails(e.target.value)}
+                      placeholder="Ej. Todo normal, sin síntomas..."
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
+                    ></textarea>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setModalOpen(false)}
+                      className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-bold hover:bg-slate-200"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-2.5 rounded-xl bg-rose-500 text-white text-sm font-bold hover:bg-rose-600"
+                    >
+                      Guardar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Modal de Sincronización en la Nube */}
+          {syncModalOpen && (
+            <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-bold text-slate-900">Sincronización en Tiempo Real</h3>
+                  <button onClick={() => setSyncModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+                </div>
+                <p className="text-xs text-slate-600 mb-3 leading-relaxed">
+                  Para que lo que anote Angie en su celular se actualice automáticamente en el tuyo, pega aquí la URL de tu base de datos gratuita de Firebase Realtime Database (ej. <span className="font-mono text-[11px] bg-slate-100 px-1 rounded">https://tu-proyecto.firebaseio.com</span>).
+                </p>
+                <form onSubmit={handleSaveCloudConfig} className="space-y-3">
+                  <input
+                    type="url"
+                    value={tempCloudUrl}
+                    onChange={(e) => setTempCloudUrl(e.target.value)}
+                    placeholder="https://tu-proyecto-default-rtdb.firebaseio.com"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-rose-400"
+                  />
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setSyncModalOpen(false)}
+                      className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold"
+                    >
+                      Cerrar
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold"
+                    >
+                      Guardar Conexión
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
