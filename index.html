@@ -21,18 +21,18 @@
   <script>
     const ONESIGNAL_APP_ID = "6a299942-4303-4be7-8da8-db7720cb3756";
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      try {
-        await OneSignal.init({
-          appId: ONESIGNAL_APP_ID,
-          serviceWorkerPath: "calendario-angie/OneSignalSDKWorker.js",
-          serviceWorkerParam: { scope: "/calendario-angie/" },
-          allowLocalhostAsSecureOrigin: true
-        });
-      } catch (err) {
-        console.error("Error OneSignal init:", err);
-      }
+   OneSignalDeferred.push(async function(OneSignal) {
+  try {
+    await OneSignal.init({
+      appId: ONESIGNAL_APP_ID,
+      serviceWorkerPath: "/calendario-angie/OneSignalSDKWorker.js",
+      serviceWorkerParam: { scope: "/calendario-angie/" },
+      allowLocalhostAsSecureOrigin: true
     });
+  } catch (err) {
+    console.error("Error OneSignal init:", err);
+  }
+});
   </script>
   <style>
     body {
