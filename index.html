@@ -1459,11 +1459,17 @@
       luteal: ["Si hoy sientes cansancio o cambios de ánimo, sé paciente contigo.", "La paz empieza cuando no te exiges perfección.", "Siempre tienes un lugar seguro conmigo."]
     };
 
-    const INITIAL_EVENTS = [
-      { id: '1', date: '2026-08-03', type: 'period_start', title: 'Inicio de Periodo (Agosto)', details: 'Duración estimada 5 días.', tags: ['cramps_mild'], alteredCycle: false, flow: 'medium' },
-      { id: '2', date: '2026-08-31', type: 'period_start', title: 'Inicio de Periodo (Septiembre)', details: 'Duración estimada 5 días.', tags: [], alteredCycle: false, flow: 'medium' },
-      { id: '3', date: '2026-10-12', type: 'period_start', title: 'Inicio de Periodo (Octubre)', details: 'Duración 5 días.', tags: ['cramps_strong'], alteredCycle: false, flow: 'heavy' },
-      { id: '8', date: '2026-10-31', type: 'period_start', title: 'Inicio de Periodo Confirmatorio', details: 'Reinicio de ciclo confirmado.', tags: ['altered_cycle'], alteredCycle: true, flow: 'medium' }
+   const INITIAL_EVENTS = [
+      { id: '1', date: '2026-08-03', type: 'period_start', title: 'Inicio de Periodo (Agosto)', details: 'Duración estimada 5 días (3 - 7 Ago).', tags: ['cramps_mild'], alteredCycle: false, flow: 'medium' },
+      { id: '2', date: '2026-08-31', type: 'period_start', title: 'Inicio de Periodo (Septiembre)', details: 'Duración estimada 5 días (31 Ago - 4 Sep).', tags: [], alteredCycle: false, flow: 'medium' },
+      { id: '3', date: '2026-10-12', type: 'period_start', title: 'Inicio de Periodo (Octubre)', details: 'Duración 5 días (12 - 16 Oct). Cólicos fuertes el 14 Oct.', tags: ['cramps_strong'], alteredCycle: false, flow: 'heavy' },
+      { id: '4', date: '2026-10-21', type: 'intimacy_unprotected', title: 'Relación (Sin protección / Sin eyaculación)', details: 'Registrado en bitácora.', tags: [] },
+      { id: '5', date: '2026-10-22', type: 'pill', pillKind: 'levonorgestrel', title: 'Pastilla de Emergencia', details: 'Toma nocturna (Levonorgestrel).', tags: ['altered_cycle'] },
+      { id: '6', date: '2026-10-24', type: 'intimacy_unprotected', title: 'Relación (Sin protección)', details: 'Madrugada.', tags: [] },
+      { id: '7', date: '2026-10-26', type: 'medical', title: 'Ultrasonido Transvaginal', details: 'Endometrio inactivo (1.7-1.9 mm) y ovarios en reposo. Sin riesgo.', tags: [] },
+      { id: '8', date: '2026-10-31', type: 'period_start', title: 'Inicio de Periodo Confirmatorio', details: 'Duración 5 días (31 Oct - 4 Nov). Reinicio de ciclo confirmado.', tags: ['altered_cycle'], alteredCycle: true, flow: 'medium' },
+      { id: '9', date: '2026-11-07', type: 'intimacy_protected', title: 'Relaciones con Condón (3x)', details: 'Protección de barrera usada en todo momento.', tags: ['good_mood'] },
+      { id: '10', date: '2026-11-08', type: 'medical', title: 'Síntomas físicos / Chequeo', details: 'Mareos y náuseas por ayuno prolongado y ajuste hormonal.', tags: ['nausea', 'fatigue'] }
     ];
 
     function App() {
@@ -1842,48 +1848,93 @@
         }
       };
 
-      const cycleAnalytics = useMemo(() => {
+const cycleAnalytics = useMemo(() => {
         const periodStarts = events.filter(e => e.type === 'period_start').sort((a, b) => a.date.localeCompare(b.date));
         const periodDaySet = new Set(events.filter(e => e.type === 'period_day' || e.type === 'period_start').map(e => e.date));
         const starts = periodStarts.length ? periodStarts.map(e => e.date) : [todayStr];
         const historyRows = [];
         const rawNaturalLengths = [];
+        const observedLutealLengths = [];
 
         for (let i = 0; i < periodStarts.length; i++) {
           const curr = periodStarts[i];
           const next = periodStarts[i + 1];
           const length = next ? diffDays(curr.date, next.date) : null;
-          const isAltered = Boolean(next?.alteredCycle || (length !== null && (length < 21 || length > 45)));
+          const hasPillBetween = next ? events.some(ev => ev.type === 'pill' && ev.date >= curr.date && ev.date < next.date) : false;
+
+          let bleedDays = 1;
+          while (periodDaySet.has(addDays(curr.date, bleedDays)) && bleedDays < 12) bleedDays++;
+          const estimatedBleedDays = bleedDays > 1 ? bleedDays : 5;
+
+          const isAltered = Boolean(hasPillBetween || next?.alteredCycle || (length !== null && (length < 21 || length > 45)));
           if (length !== null && !isAltered) rawNaturalLengths.push(length);
-          historyRows.push({ id: curr.id, start: curr.date, end: addDays(curr.date, 4), bleedDays: 5, length, isAltered });
+
+          if (next) {
+            const lhEvent = events.find(ev => (ev.tags || []).includes('test_ov_pos') && ev.date >= curr.date && ev.date < next.date);
+            if (lhEvent) {
+              const luteal = diffDays(addDays(lhEvent.date, 1), next.date);
+              if (luteal >= 10 && luteal <= 17) observedLutealLengths.push(luteal);
+            }
+          }
+
+          historyRows.push({
+            id: curr.id, start: curr.date, end: addDays(curr.date, estimatedBleedDays - 1),
+            bleedDays: estimatedBleedDays, length, isAltered
+          });
+        }
+
+        let cleanLengths = [...rawNaturalLengths];
+        if (cleanLengths.length >= 4) {
+          const mean0 = cleanLengths.reduce((a, b) => a + b, 0) / cleanLengths.length;
+          const sd0 = Math.sqrt(cleanLengths.reduce((a, b) => a + Math.pow(b - mean0, 2), 0) / cleanLengths.length) || 1;
+          const filtered = cleanLengths.filter(x => Math.abs(x - mean0) <= 2 * sd0);
+          if (filtered.length >= 2) cleanLengths = filtered;
         }
 
         let ewmaCycle = 28;
-        if (rawNaturalLengths.length > 0) {
-          ewmaCycle = rawNaturalLengths[0];
-          for (let i = 1; i < rawNaturalLengths.length; i++) ewmaCycle = 0.35 * rawNaturalLengths[i] + 0.65 * ewmaCycle;
+        if (cleanLengths.length > 0) {
+          ewmaCycle = cleanLengths[0];
+          for (let i = 1; i < cleanLengths.length; i++) ewmaCycle = 0.35 * cleanLengths[i] + 0.65 * ewmaCycle;
         }
         const predictedCycleLength = Math.round(ewmaCycle);
-        const stdDev = rawNaturalLengths.length >= 2
-          ? Number(Math.sqrt(rawNaturalLengths.reduce((a, b) => a + Math.pow(b - ewmaCycle, 2), 0) / rawNaturalLengths.length).toFixed(1))
+        const stdDev = cleanLengths.length >= 2
+          ? Number(Math.sqrt(cleanLengths.reduce((a, b) => a + Math.pow(b - ewmaCycle, 2), 0) / cleanLengths.length).toFixed(1))
           : 2.0;
         const marginDays = Math.max(1, Math.min(5, Math.round(stdDev)));
-        const lutealLength = 14;
-        const peakOvulationOffset = Math.max(10, predictedCycleLength - lutealLength);
+        const lutealLength = observedLutealLengths.length > 0
+          ? Math.round(observedLutealLengths.reduce((a, b) => a + b, 0) / observedLutealLengths.length)
+          : 14;
 
+        const peakOvulationOffset = Math.max(10, predictedCycleLength - lutealLength);
         const tempLogs = events
           .filter(ev => typeof ev.bbt === 'number' && !Number.isNaN(ev.bbt))
           .map(ev => ({ date: ev.date, temp: ev.bbt, noisy: (ev.tags || []).includes('poor_sleep') }))
           .sort((a, b) => a.date.localeCompare(b.date));
 
+        const cleanTemps = tempLogs.filter(x => !x.noisy);
+        let coverline = null;
+        let thermalConfirmedDate = null;
+        if (cleanTemps.length >= 9) {
+          for (let i = 6; i <= cleanTemps.length - 3; i++) {
+            const highest6 = Math.max(...cleanTemps.slice(i - 6, i).map(x => x.temp));
+            if (cleanTemps[i].temp > highest6 && cleanTemps[i + 1].temp > highest6 && cleanTemps[i + 2].temp >= highest6 + 0.2) {
+              coverline = Number(highest6.toFixed(2));
+              thermalConfirmedDate = cleanTemps[i + 2].date;
+            }
+          }
+        }
+        if (coverline === null && cleanTemps.length > 0) {
+          coverline = Number((cleanTemps.reduce((a, c) => a + c.temp, 0) / cleanTemps.length).toFixed(2));
+        }
+
         return {
           starts, periodDaySet, historyRows: historyRows.reverse(),
           baseCycleLength: predictedCycleLength, stdDev, marginDays, lutealLength,
-          safeFertileStartOffset: Math.max(5, peakOvulationOffset - 5),
+          safeFertileStartOffset: Math.max(5, peakOvulationOffset - (4 + Math.min(3, marginDays))),
           peakStartOffset: Math.max(7, peakOvulationOffset - 2),
           peakOvulationOffset, peakEndOffset: peakOvulationOffset + 1,
-          safeFertileEndOffset: Math.min(predictedCycleLength - 3, peakOvulationOffset + 3),
-          tempLogs, coverline: null
+          safeFertileEndOffset: Math.min(predictedCycleLength - 3, peakOvulationOffset + (2 + Math.min(3, marginDays))),
+          tempLogs, coverline, thermalConfirmedDate
         };
       }, [events, todayStr]);
 
@@ -1891,6 +1942,43 @@
         const valid = cycleAnalytics.starts.filter(d => d <= referenceDate);
         return valid.length ? valid[valid.length - 1] : cycleAnalytics.starts[0];
       }, [cycleAnalytics.starts, referenceDate]);
+
+      const activePillInCycle = useMemo(() => events.find(ev => ev.type === 'pill' && ev.date >= activePeriodStart && ev.date <= referenceDate), [events, activePeriodStart, referenceDate]);
+      const activeLhInCycle = useMemo(() => events.find(ev => (ev.tags || []).includes('test_ov_pos') && ev.date >= activePeriodStart && ev.date <= referenceDate), [events, activePeriodStart, referenceDate]);
+
+      const cycleDay = Math.max(1, diffDays(activePeriodStart, referenceDate) + 1);
+      const nextPeriodEst = activeLhInCycle
+        ? addDays(activeLhInCycle.date, cycleAnalytics.lutealLength + 1)
+        : addDays(activePeriodStart, cycleAnalytics.baseCycleLength);
+      const daysUntilNext = diffDays(referenceDate, nextPeriodEst);
+      const nextPeriodMin = addDays(nextPeriodEst, -cycleAnalytics.marginDays);
+      const nextPeriodMax = addDays(nextPeriodEst, cycleAnalytics.marginDays);
+
+      const fertilityScore = useMemo(() => {
+        if (cycleDay <= 4) return { pct: 3, label: 'Mínima', reason: 'Fase menstrual' };
+        if (activePillInCycle) return { pct: 65, label: 'Impredecible (Ajuste)', reason: 'Anticoncepción de emergencia activa' };
+
+        const ovDay = cycleAnalytics.peakOvulationOffset + 1;
+        const sigma = Math.max(2.2, cycleAnalytics.stdDev);
+        const dist = cycleDay - ovDay;
+        let prob = Math.exp(-(dist * dist) / (2 * sigma * sigma)) * 82;
+
+        const dayEvs = events.filter(e => e.date === referenceDate);
+        const hasEggwhite = dayEvs.some(e => (e.tags || []).includes('discharge_eggwhite'));
+        const hasLhPos = dayEvs.some(e => (e.tags || []).includes('test_ov_pos')) || (activeLhInCycle && diffDays(activeLhInCycle.date, referenceDate) <= 1);
+
+        let reason = 'Cálculo estadístico EWMA';
+        if (hasEggwhite) { prob = Math.max(prob, 86); reason = 'Flujo fértil (clara de huevo)'; }
+        if (hasLhPos) { prob = 96; reason = 'Test de ovulación LH (+)'; }
+        if (cycleAnalytics.thermalConfirmedDate && referenceDate >= cycleAnalytics.thermalConfirmedDate && cycleAnalytics.thermalConfirmedDate >= activePeriodStart) {
+          prob = 4;
+          reason = 'Ovulación confirmada por BBT (3 sobre 6)';
+        }
+
+        const pct = Math.max(2, Math.min(99, Math.round(prob)));
+        const label = pct >= 70 ? 'Muy Alta' : pct >= 35 ? 'Moderada / Alta' : pct >= 15 ? 'Baja' : 'Mínima';
+        return { pct, label, reason };
+      }, [cycleDay, cycleAnalytics, events, referenceDate, activePillInCycle, activeLhInCycle, activePeriodStart]);
 
       const cycleDay = Math.max(1, diffDays(activePeriodStart, referenceDate) + 1);
       const nextPeriodEst = addDays(activePeriodStart, cycleAnalytics.baseCycleLength);
@@ -2445,10 +2533,20 @@
                   </div>
                   <button onClick={handleEnablePush} className="px-4 py-2 rounded-full bg-[#E94B77] text-white text-xs font-bold">Activar</button>
                 </div>
-                <button
-                  onClick={() => { setSettingsDrawerOpen(false); setIsUnlocked(false); setPinInput(''); try { sessionStorage.removeItem('ciclo_unlocked_v7'); } catch {} }}
-                  className="w-full py-3 rounded-full bg-[#2D2229] text-white text-xs font-bold"
+               <button
+                  onClick={() => {
+                    const map = new Map(events.map(e => [e.id, e]));
+                    INITIAL_EVENTS.forEach(e => { if (!map.has(e.id)) map.set(e.id, e); });
+                    const merged = Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
+                    persistCloud(merged, settings);
+                    setSettingsDrawerOpen(false);
+                    setRewardToast('¡Registros base restaurados en la nube!');
+                    setTimeout(() => setRewardToast(''), 3000);
+                  }}
+                  className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold"
                 >
+                  Restaurar registros base (Ago–Nov)
+                </button>
                   Bloquear sesión
                 </button>
               </div>
