@@ -1459,7 +1459,7 @@
       luteal: ["Si hoy sientes cansancio o cambios de ánimo, sé paciente contigo.", "La paz empieza cuando no te exiges perfección.", "Siempre tienes un lugar seguro conmigo."]
     };
 
-   const INITIAL_EVENTS = [
+    const INITIAL_EVENTS = [
       { id: '1', date: '2026-08-03', type: 'period_start', title: 'Inicio de Periodo (Agosto)', details: 'Duración estimada 5 días (3 - 7 Ago).', tags: ['cramps_mild'], alteredCycle: false, flow: 'medium' },
       { id: '2', date: '2026-08-31', type: 'period_start', title: 'Inicio de Periodo (Septiembre)', details: 'Duración estimada 5 días (31 Ago - 4 Sep).', tags: [], alteredCycle: false, flow: 'medium' },
       { id: '3', date: '2026-10-12', type: 'period_start', title: 'Inicio de Periodo (Octubre)', details: 'Duración 5 días (12 - 16 Oct). Cólicos fuertes el 14 Oct.', tags: ['cramps_strong'], alteredCycle: false, flow: 'heavy' },
@@ -1848,7 +1848,7 @@
         }
       };
 
-const cycleAnalytics = useMemo(() => {
+      const cycleAnalytics = useMemo(() => {
         const periodStarts = events.filter(e => e.type === 'period_start').sort((a, b) => a.date.localeCompare(b.date));
         const periodDaySet = new Set(events.filter(e => e.type === 'period_day' || e.type === 'period_start').map(e => e.date));
         const starts = periodStarts.length ? periodStarts.map(e => e.date) : [todayStr];
@@ -1979,21 +1979,6 @@ const cycleAnalytics = useMemo(() => {
         const label = pct >= 70 ? 'Muy Alta' : pct >= 35 ? 'Moderada / Alta' : pct >= 15 ? 'Baja' : 'Mínima';
         return { pct, label, reason };
       }, [cycleDay, cycleAnalytics, events, referenceDate, activePillInCycle, activeLhInCycle, activePeriodStart]);
-
-      const cycleDay = Math.max(1, diffDays(activePeriodStart, referenceDate) + 1);
-      const nextPeriodEst = addDays(activePeriodStart, cycleAnalytics.baseCycleLength);
-      const daysUntilNext = diffDays(referenceDate, nextPeriodEst);
-      const nextPeriodMin = addDays(nextPeriodEst, -cycleAnalytics.marginDays);
-      const nextPeriodMax = addDays(nextPeriodEst, cycleAnalytics.marginDays);
-
-      const fertilityScore = useMemo(() => {
-        if (cycleDay <= 4) return { pct: 3, label: 'Mínima', reason: 'Fase menstrual' };
-        const ovDay = cycleAnalytics.peakOvulationOffset + 1;
-        const dist = cycleDay - ovDay;
-        const prob = Math.exp(-(dist * dist) / (2 * 2.5 * 2.5)) * 82;
-        const pct = Math.max(2, Math.min(99, Math.round(prob)));
-        return { pct, label: pct >= 70 ? 'Muy Alta' : pct >= 35 ? 'Moderada' : 'Baja', reason: 'Cálculo EWMA' };
-      }, [cycleDay, cycleAnalytics]);
 
       const projectedPeriodStarts = useMemo(() => {
         const lastReal = cycleAnalytics.starts[cycleAnalytics.starts.length - 1];
@@ -2333,7 +2318,7 @@ const cycleAnalytics = useMemo(() => {
                       <button onClick={() => setCurrentMonth(p => p.month === 11 ? { year: p.year + 1, month: 0 } : { year: p.year, month: p.month + 1 })} className="w-9 h-9 rounded-full liquid-pill text-[#E94B77] flex items-center justify-center"><Icon name="chevRight" className="w-4 h-4" /></button>
                     </div>
                     <div className="grid grid-cols-7 text-center text-[11px] font-bold text-[#9C8290] mb-2">
-<div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
+                      <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
                     </div>
                     <div className="grid grid-cols-7 gap-1.5">
                       {Array.from({ length: firstWeekday }).map((_, i) => <div key={`e-${i}`} className="h-11"></div>)}
@@ -2533,7 +2518,7 @@ const cycleAnalytics = useMemo(() => {
                   </div>
                   <button onClick={handleEnablePush} className="px-4 py-2 rounded-full bg-[#E94B77] text-white text-xs font-bold">Activar</button>
                 </div>
-               <button
+                <button
                   onClick={() => {
                     const map = new Map(events.map(e => [e.id, e]));
                     INITIAL_EVENTS.forEach(e => { if (!map.has(e.id)) map.set(e.id, e); });
@@ -2547,6 +2532,14 @@ const cycleAnalytics = useMemo(() => {
                 >
                   Restaurar registros base (Ago–Nov)
                 </button>
+                <button
+                  onClick={() => {
+                    setIsUnlocked(false);
+                    setSettingsDrawerOpen(false);
+                    try { sessionStorage.removeItem('ciclo_unlocked_v7'); } catch {}
+                  }}
+                  className="w-full py-3 rounded-full liquid-pill text-[#6B5460] text-xs font-bold"
+                >
                   Bloquear sesión
                 </button>
               </div>
