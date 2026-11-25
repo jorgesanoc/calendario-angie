@@ -100,7 +100,7 @@
     // 1. CONSTANTES DE CONFIGURACIÓN Y EVIDENCIA CLÍNICA EMBEBIDA
     // =========================================================================
     const APP_VERSION = "9.0.0";
-    const ACCESS_PIN = "2510";
+    const ACCESS_PIN = "0411";
     const DEFAULT_CLOUD_URL = "";
     const SOS_WEBHOOK_URL = "";
     const TAB_ORDER = ['today', 'calendar', 'lumi', 'games', 'history'];
@@ -203,7 +203,7 @@
       if (m === 11 || m === 0 || m === 1) return 'winter';
       if (m >= 2 && m <= 4) return 'spring';
       if (m >= 5 && m <= 7) return 'summer';
-      return 'autumn';
+      return 'winter';
     }
 
     const SEASON_SPLASHES = {
