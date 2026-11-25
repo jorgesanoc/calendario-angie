@@ -241,7 +241,7 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
 
-    const APP_VERSION = "4.0.0";
+    const APP_VERSION = "4.0.1";
     const CHANGELOG = {
       version: APP_VERSION,
       title: "Edición Navidad 2.5D & 100 Decoraciones",
@@ -249,7 +249,7 @@
       items: [
         { icon: "🎄", title: "Temporada automática (5 intros)", desc: "Fondo invernal con nieve suave y 5 pantallas de bienvenida navideñas rotativas." },
         { icon: "🧥", title: "Cuarto 2.5D + Animaciones", desc: "Lumi mastica al comer, se anima al ponerse chamarra/gorro y el globo de texto desaparece solo." },
-        { icon: "🎮", title: "3 Juegos nuevos + 100 objetos", desc: "Gana puntos reales y desbloquea 100 variaciones de paredes, tapetes, ventanas y luces." }
+        { icon: "❤️", title: "Indicadores en Calendario", desc: "Visualiza corazones, pastillas, chequeos y temperaturas directo en cada día del mes." }
       ]
     };
 
@@ -632,7 +632,7 @@
       );
     };
 
-    // CUARTO 2.5D DE LUMI (CON 100 DECORACIONES Y FIX DE TEXTO FLOTANTE)
+    // CUARTO 2.5D DE LUMI
     const LumiRoomTab = ({ phaseKey, viewMode, settings, onFeed, onPetCare, onToggleSleep, onBuyOrToggleAcc, onEquipRoomItem }) => {
       const [subPanel, setSubPanel] = useState('food');
       const [decorCat, setDecorCat] = useState('wall');
@@ -736,7 +736,6 @@
             </div>
           </div>
 
-          {/* ESCENARIO 2.5D CON PAREDES LATERALES Y PISO EN PERSPECTIVA */}
           <div
             className="room-25d rounded-[34px] relative overflow-hidden border border-white/90 shadow-xl transition-all duration-700"
             style={{
@@ -744,11 +743,9 @@
               minHeight: '320px'
             }}
           >
-            {/* PAREDES LATERALES 2.5D PARA PROFUNDIDAD */}
             <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black/15 to-transparent pointer-events-none"></div>
             <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/15 to-transparent pointer-events-none"></div>
 
-            {/* PISO EN PERSPECTIVA 2.5D + ZOCLO */}
             <div
               className="absolute bottom-0 inset-x-0 h-28 border-t-4 border-white/80"
               style={{
@@ -760,26 +757,22 @@
               <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 36px, rgba(0,0,0,0.25) 36px, rgba(0,0,0,0.25) 38px)' }}></div>
             </div>
 
-            {/* VENTANA CON MARCO PROFUNDO */}
             <div className={`absolute top-5 left-6 w-24 h-28 rounded-2xl border-4 border-white shadow-lg overflow-hidden flex items-center justify-center ${pet.sleeping ? 'bg-[#121026]' : 'bg-gradient-to-b from-sky-200 to-sky-100'}`}>
               <span className="text-4xl drop-shadow-sm">{pet.sleeping ? '🌙' : activeWin.value}</span>
               <div className="absolute inset-x-0 top-1/2 h-1 bg-white/90"></div>
               <div className="absolute inset-y-0 left-1/2 w-1 bg-white/90"></div>
             </div>
 
-            {/* REPISA 2.5D CON SOMBRA */}
             <div className="absolute top-10 right-6 flex flex-col items-center">
               <div className="text-lg tracking-widest drop-shadow-sm">{activeShelf.value}</div>
               <div className="w-28 h-2.5 rounded-full bg-white shadow-md"></div>
               <div className="w-24 h-2 bg-black/10 blur-xs rounded-full -mt-0.5"></div>
             </div>
 
-            {/* DECORACIÓN DE PISO (ÁRBOL / CHIMENEA / BALOO) */}
             <div className="absolute bottom-16 right-7 text-4xl drop-shadow-md select-none">
               {activeDecor.value}
             </div>
 
-            {/* GLOBO DE TEXTO TEMPORAL (DESAPARECE SOLO A LOS 1.2s) */}
             <div className="relative z-10 flex flex-col items-center pt-5 px-4 min-h-[260px] justify-end pb-14">
               {roomSpeech && (
                 <div className="absolute top-4 liquid-pill px-4 py-1.5 rounded-2xl text-xs font-extrabold text-[#2D2229] text-center max-w-[250px] shadow-md animate-pop z-30">
@@ -802,7 +795,6 @@
                   equipped={equippedAcc}
                   sleeping={pet.sleeping}
                 />
-                {/* TAPETE 2.5D + SOMBRA DE CONTACTO */}
                 <div
                   className="w-48 h-8 rounded-full border-2 border-white/85 -mt-4 shadow-md flex items-center justify-center"
                   style={{ background: activeRug.value }}
@@ -829,7 +821,6 @@
             </div>
           </div>
 
-          {/* PANEL INFERIOR: COCINA / ROPA / 100 DECORACIONES */}
           <div className="liquid-glass rounded-[28px] p-4 space-y-3">
             <div className="grid grid-cols-3 gap-1.5 p-1 rounded-full bg-white/55 border border-white/80">
               {[
@@ -961,7 +952,7 @@
       );
     };
 
-    // MINI-JUEGO 1: ATRAPA REGALOS (ARCADE 18 SEGUNDOS)
+    // MINI-JUEGO 1: ATRAPA REGALOS
     const CatchGiftGameModal = ({ onClose, onWin }) => {
       const [timeLeft, setTimeLeft] = useState(18);
       const [score, setScore] = useState(0);
@@ -1129,7 +1120,7 @@
       );
     };
 
-    // MINI-JUEGO 3: SECUENCIA LUMI (SIMON DICE)
+    // MINI-JUEGO 3: SECUENCIA LUMI
     const SimonGameModal = ({ onClose, onWin }) => {
       const pads = [
         { id: 0, color: 'bg-rose-400', active: 'bg-rose-200 scale-105', emoji: '❤️' },
@@ -1141,7 +1132,7 @@
       const [userIdx, setUserIdx] = useState(0);
       const [lit, setLit] = useState(null);
       const [playingSeq, setPlayingSeq] = useState(true);
-      const [status, setStatus] = useState('playing'); // playing | won | lost
+      const [status, setStatus] = useState('playing');
 
       const playSequence = (list) => {
         setPlayingSeq(true);
@@ -1405,20 +1396,24 @@
       return Math.round((parseLocalDate(endStr) - parseLocalDate(startStr)) / (1000 * 60 * 60 * 24));
     }
 
-    const APP_GOALS = [
-      { id: 'prevent', label: 'Evitar embarazo / Precaución', desc: 'Prioriza márgenes de seguridad amplios y recordatorios de protección.' },
-      { id: 'track', label: 'Monitoreo de salud y síntomas', desc: 'Enfocado en patrones del ciclo, temperatura basal, flujo y bienestar.' },
-      { id: 'conceive', label: 'Buscar embarazo', desc: 'Resalta ventana fértil, pico de ovulación y confirmación térmica.' }
-    ];
+    // ICONOS PARA CADA TIPO DE EVENTO EN CALENDARIO Y BITÁCORA
+    function getEventBadge(ev) {
+      if (!ev) return '📝';
+      if (ev.type === 'intimacy_protected') return '❤️';
+      if (ev.type === 'intimacy_unprotected') return '🧡';
+      if (ev.type === 'pill') return '💊';
+      if (ev.type === 'period_start' || ev.type === 'period_day') return '🩸';
+      if (ev.type === 'medical') return '🩺';
+      if (typeof ev.bbt === 'number') return '🌡️';
+      return '📝';
+    }
 
-    const BIRTH_CONTROL_METHODS = [
-      { id: 'condom', label: 'Condón (Barrera)', note: 'No altera el ciclo natural. Protege contra embarazo e ITS.' },
-      { id: 'pills', label: 'Pastillas diarias', note: 'Regulan el sangrado. La constancia diaria en el horario es clave.' },
-      { id: 'iud_copper', label: 'DIU de Cobre', note: 'Sin hormonas. Los primeros meses puede aumentar un poco el flujo.' },
-      { id: 'iud_hormonal', label: 'DIU Hormonal', note: 'Suele reducir el sangrado con los meses.' },
-      { id: 'implant', label: 'Implante Subdérmico', note: 'Es común que el ciclo se vuelva irregular o se pause.' },
-      { id: 'patch_ring', label: 'Parche / Anillo', note: 'Método hormonal combinado. Respetar días exactos de cambio.' },
-      { id: 'none', label: 'Ninguno / Por definir', note: 'El calendario NO es un método anticonceptivo. Usa barrera siempre.' }
+    const EVENT_TYPE_OPTIONS = [
+      { id: 'intimacy_protected', icon: '❤️', label: 'Relación (Con condón)', defaultTitle: 'Relación con Condón' },
+      { id: 'intimacy_unprotected', icon: '🧡', label: 'Relación (Sin protección)', defaultTitle: 'Relación sin Protección' },
+      { id: 'pill', icon: '💊', label: 'Pastilla / Emergencia', defaultTitle: 'Toma de Pastilla' },
+      { id: 'period_start', icon: '🩸', label: 'Inicio de Periodo', defaultTitle: 'Inicio de Periodo' },
+      { id: 'medical', icon: '🩺', label: 'Chequeo / Síntomas / BBT', defaultTitle: 'Registro Diario' }
     ];
 
     const FLOW_LEVELS = [
@@ -1426,30 +1421,6 @@
       { id: 'light', label: 'Ligero', dot: 'bg-rose-300', active: 'bg-rose-200 text-rose-900 border-rose-400' },
       { id: 'medium', label: 'Medio', dot: 'bg-[#E94B77]', active: 'bg-[#E94B77] text-white border-[#E94B77]' },
       { id: 'heavy', label: 'Abundante', dot: 'bg-[#B82552]', active: 'bg-[#B82552] text-white border-[#B82552]' }
-    ];
-
-    const SYMPTOM_TAGS = [
-      { id: 'cramps_mild', label: 'Cólicos leves', icon: '🩸', cat: 'Físico' },
-      { id: 'cramps_strong', label: 'Cólicos fuertes', icon: '⚡', cat: 'Físico' },
-      { id: 'headache', label: 'Dolor de cabeza', icon: '🤕', cat: 'Físico' },
-      { id: 'bloating', label: 'Inflamación', icon: '🎈', cat: 'Físico' },
-      { id: 'nausea', label: 'Náuseas / Mareo', icon: '🤢', cat: 'Físico' },
-      { id: 'breast_tender', label: 'Sensibilidad senos', icon: '💗', cat: 'Físico' },
-      { id: 'fatigue', label: 'Cansancio', icon: '😴', cat: 'Ánimo' },
-      { id: 'sensitive', label: 'Sensible', icon: '🥺', cat: 'Ánimo' },
-      { id: 'good_mood', label: 'Buen ánimo', icon: '✨', cat: 'Ánimo' },
-      { id: 'cravings', label: 'Antojos', icon: '🍫', cat: 'Ánimo' },
-      { id: 'discharge_dry', label: 'Flujo seco', icon: '☁️', cat: 'Flujo' },
-      { id: 'discharge_sticky', label: 'Flujo pegajoso', icon: '⚪', cat: 'Flujo' },
-      { id: 'discharge_creamy', label: 'Flujo cremoso', icon: '🥛', cat: 'Flujo' },
-      { id: 'discharge_eggwhite', label: 'Clara de huevo', icon: '🥚', cat: 'Flujo' },
-      { id: 'test_preg_neg', label: 'Prueba (-)', icon: '➖', cat: 'Pruebas' },
-      { id: 'test_preg_pos', label: 'Prueba (+)', icon: '➕', cat: 'Pruebas' },
-      { id: 'test_ov_pos', label: 'Test LH (+)', icon: '🎯', cat: 'Pruebas' },
-      { id: 'high_stress', label: 'Estrés alto', icon: '🤯', cat: 'Hábitos' },
-      { id: 'poor_sleep', label: 'Ruido BBT (desvelo)', icon: '🌙', cat: 'Hábitos' },
-      { id: 'exercise', label: 'Ejercicio', icon: '🏃‍♀️', cat: 'Hábitos' },
-      { id: 'altered_cycle', label: 'Ciclo alterado', icon: '⚠️', cat: 'Hábitos' }
     ];
 
     const MESSAGE_LIBRARY = {
@@ -1590,15 +1561,13 @@
       const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
 
       const [modalOpen, setModalOpen] = useState(false);
-      const [newEventType, setNewEventType] = useState('medical');
+      const [newEventType, setNewEventType] = useState('intimacy_protected');
       const [newEventDate, setNewEventDate] = useState(todayStr);
       const [newEventTitle, setNewEventTitle] = useState('');
       const [newEventDetails, setNewEventDetails] = useState('');
       const [newEventTags, setNewEventTags] = useState([]);
-      const [newEventAltered, setNewEventAltered] = useState(false);
       const [newEventFlow, setNewEventFlow] = useState('medium');
       const [newEventTemp, setNewEventTemp] = useState('');
-      const [newEventPillKind, setNewEventPillKind] = useState('ulipristal');
       const [safeDaysModalOpen, setSafeDaysModalOpen] = useState(false);
 
       useEffect(() => {
@@ -1716,7 +1685,6 @@
         }
       };
 
-      // RECOMPENSA DE JUEGOS: PUNTOS + DESBLOQUEO DE DECORACIÓN ALEATORIA DE LAS 100
       const handleGameWin = (pts, grantDecor = false) => {
         const unlockedRoom = Array.isArray(settings.unlockedRoom) ? settings.unlockedRoom : ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'];
         let nextUnlocked = [...unlockedRoom];
@@ -1766,7 +1734,6 @@
         setPushStatusMsg(ok ? `${opt.emoji} ¡Notificación enviada al cel de Angie!` : `Verifica que Angie tenga la campanita activa.`);
       };
 
-      // ACCIONES LUMI SIN FARMEO INFINITO DE PUNTOS
       const handleFeedLumi = (food) => {
         const pet = settings.lumiPet || { hunger: 80, energy: 85, happiness: 90, sleeping: false };
         const pts = settings.lumiPoints || 0;
@@ -2050,23 +2017,30 @@
       }, [settings.customCouponTitle, settings.customCouponSub]);
 
       const openAddModal = (type, dateOverride) => {
-        setNewEventType(type);
+        const found = EVENT_TYPE_OPTIONS.find(o => o.id === type) || EVENT_TYPE_OPTIONS[0];
+        setNewEventType(found.id);
         setNewEventDate(dateOverride || referenceDate);
-        setNewEventTitle(type === 'period_start' ? 'Inicio de Periodo' : 'Registro Diario');
+        setNewEventTitle(found.defaultTitle);
         setNewEventDetails('');
         setNewEventTags([]);
         setNewEventTemp('');
         setModalOpen(true);
       };
 
+      const handleSelectModalType = (opt) => {
+        setNewEventType(opt.id);
+        setNewEventTitle(opt.defaultTitle);
+      };
+
       const handleSaveEvent = (e) => {
         e.preventDefault();
-        if (!newEventTitle.trim()) return;
+        const fallbackTitle = EVENT_TYPE_OPTIONS.find(o => o.id === newEventType)?.defaultTitle || 'Registro Diario';
+        const finalTitle = newEventTitle.trim() || fallbackTitle;
         const parsedTemp = newEventTemp !== '' ? parseFloat(String(newEventTemp).replace(',', '.')) : undefined;
         const validTemp = parsedTemp !== undefined && !Number.isNaN(parsedTemp) && parsedTemp >= 34 && parsedTemp <= 41 ? parsedTemp : undefined;
         const created = {
           id: String(Date.now()), date: newEventDate, type: newEventType,
-          title: newEventTitle.trim(), details: newEventDetails.trim() || 'Registrado en bitácora.',
+          title: finalTitle, details: newEventDetails.trim() || 'Registrado en bitácora.',
           tags: newEventTags, flow: newEventType === 'period_start' ? newEventFlow : undefined, bbt: validTemp
         };
         persistCloud([...events, created].sort((a, b) => b.date.localeCompare(a.date)), { ...settings, lumiPoints: (settings.lumiPoints || 0) + 5 });
@@ -2321,7 +2295,7 @@
                       <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
                     </div>
                     <div className="grid grid-cols-7 gap-1.5">
-                      {Array.from({ length: firstWeekday }).map((_, i) => <div key={`e-${i}`} className="h-11"></div>)}
+                      {Array.from({ length: firstWeekday }).map((_, i) => <div key={`e-${i}`} className="h-12"></div>)}
                       {Array.from({ length: daysInMonth }).map((_, idx) => {
                         const dayNum = idx + 1;
                         const dateStr = `${currentMonth.year}-${String(currentMonth.month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
@@ -2331,34 +2305,69 @@
                         else if (st.isProjectedPeriod) cls = 'bg-[#FFE4EC]/85 text-[#C73660] border border-dashed border-[#E94B77] font-bold';
                         else if (!discreetMode && st.isPeak) cls = 'bg-amber-400 text-[#2D2229] font-extrabold';
                         else if (!discreetMode && st.isFertile) cls = 'bg-amber-100/85 text-amber-900 font-semibold';
+
+                        // Filtramos los eventos extra (relaciones, pastillas, médico, temperatura) para mostrar sus iconos
+                        const extraBadges = !discreetMode
+                          ? Array.from(new Set(
+                              st.dayEvents
+                                .filter(e => e.type !== 'period_start' && e.type !== 'period_day')
+                                .map(e => getEventBadge(e))
+                            ))
+                          : [];
+
                         return (
                           <button
                             key={dateStr}
                             onClick={() => setSelectedDay(dateStr)}
-                            className={`h-11 rounded-2xl flex items-center justify-center text-xs ${cls} ${selectedDay === dateStr ? 'ring-2 ring-[#2D2229]' : ''}`}
+                            className={`h-12 rounded-2xl flex flex-col items-center justify-center leading-none transition active:scale-95 ${cls} ${selectedDay === dateStr ? 'ring-2 ring-[#2D2229]' : ''}`}
                           >
-                            {dayNum}
+                            <span className="text-xs">{dayNum}</span>
+                            {extraBadges.length > 0 && (
+                              <span className="text-[10px] leading-none mt-0.5 tracking-tighter">
+                                {extraBadges.slice(0, 2).join('')}
+                              </span>
+                            )}
                           </button>
                         );
                       })}
                     </div>
+
+                    {/* LEYENDA DE ICONOS */}
+                    {!discreetMode && (
+                      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 mt-4 pt-3 border-t border-white/60 text-[10px] font-bold text-[#6B5460]">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#E94B77]"></span>Periodo</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span>Fértil</span>
+                        <span>❤️ Con condón</span>
+                        <span>🧡 Sin prot.</span>
+                        <span>💊 Pastilla</span>
+                        <span>🩺 Chequeo</span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="liquid-glass rounded-[26px] p-4 space-y-2">
+                  <div className="liquid-glass rounded-[26px] p-4 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-extrabold text-[#2D2229]">{formatDateES(selectedDay)}</h3>
-                      <button onClick={() => openAddModal('medical', selectedDay)} className="text-xs font-extrabold text-[#E94B77]">+ Agregar</button>
+                      <button onClick={() => openAddModal('intimacy_protected', selectedDay)} className="liquid-pill px-3 py-1 rounded-full text-xs font-extrabold text-[#E94B77]">+ Agregar</button>
                     </div>
                     {selectedDayInfo.dayEvents.length === 0 ? (
                       <p className="text-xs text-[#8C7380]">Sin registros este día.</p>
                     ) : (
                       selectedDayInfo.dayEvents.map(ev => (
-                        <div key={ev.id} className="p-3 rounded-2xl bg-white/65 flex justify-between">
-                          <div>
-                            <p className="text-xs font-extrabold">{ev.title}</p>
-                            <p className="text-[11px] text-[#6B5460]">{ev.details}</p>
+                        <div key={ev.id} className="p-3 rounded-2xl bg-white/70 border border-white flex items-start justify-between gap-2">
+                          <div className="flex items-start gap-2.5">
+                            <span className="text-base leading-none mt-0.5">{discreetMode ? '📝' : getEventBadge(ev)}</span>
+                            <div>
+                              <p className="text-xs font-extrabold text-[#2D2229]">{ev.title}</p>
+                              <p className="text-[11px] text-[#6B5460] mt-0.5">{ev.details}</p>
+                              {typeof ev.bbt === 'number' && (
+                                <span className="inline-block mt-1 text-[10px] font-bold text-[#5B4BDB] bg-indigo-50 px-2 py-0.5 rounded-full">
+                                  🌡️ {ev.bbt}°C
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <button onClick={() => persistCloud(events.filter(x => x.id !== ev.id))} className="text-xs text-[#9C8290]">✕</button>
+                          <button onClick={() => persistCloud(events.filter(x => x.id !== ev.id))} className="text-xs text-[#9C8290] px-1">✕</button>
                         </div>
                       ))
                     )}
@@ -2579,18 +2588,61 @@
 
           {modalOpen && (
             <div className="fixed inset-0 bg-black/45 backdrop-blur-md flex items-end sm:items-center justify-center sm:p-4 z-50">
-              <div className="liquid-glass rounded-t-[34px] sm:rounded-[34px] max-w-md w-full p-6 shadow-2xl max-h-[88vh] overflow-y-auto">
-                <div className="flex justify-between mb-4">
-                  <h3 className="text-base font-extrabold">Nuevo registro</h3>
-                  <button onClick={() => setModalOpen(false)}>✕</button>
+              <div className="liquid-glass rounded-t-[34px] sm:rounded-[34px] max-w-md w-full p-6 shadow-2xl animate-sheet max-h-[88vh] overflow-y-auto">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-extrabold text-[#2D2229]">Nuevo registro</h3>
+                  <button onClick={() => setModalOpen(false)} className="w-8 h-8 rounded-full liquid-pill text-xs font-bold">✕</button>
                 </div>
                 <form onSubmit={handleSaveEvent} className="space-y-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <input type="date" value={newEventDate} onChange={e => setNewEventDate(e.target.value)} required className="bg-white/80 rounded-2xl px-3 py-2 text-xs font-bold" />
-                    <input type="number" step="0.01" value={newEventTemp} onChange={e => setNewEventTemp(e.target.value)} placeholder="Temp °C" className="bg-white/80 rounded-2xl px-3 py-2 text-xs font-bold" />
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {EVENT_TYPE_OPTIONS.map(opt => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => handleSelectModalType(opt)}
+                        className={`p-2.5 rounded-2xl border text-left text-[11px] font-extrabold flex items-center gap-2 transition ${
+                          newEventType === opt.id
+                            ? 'bg-[#E94B77] text-white border-[#E94B77] shadow-sm'
+                            : 'bg-white/75 text-[#2D2229] border-white'
+                        }`}
+                      >
+                        <span className="text-sm">{opt.icon}</span>
+                        <span className="leading-tight">{opt.label}</span>
+                      </button>
+                    ))}
                   </div>
-                  <textarea rows="2" value={newEventDetails} onChange={e => setNewEventDetails(e.target.value)} placeholder="Notas..." className="w-full bg-white/80 rounded-2xl px-3 py-2 text-xs"></textarea>
-                  <button type="submit" className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold">Guardar</button>
+
+                  <input
+                    type="text"
+                    value={newEventTitle}
+                    onChange={e => setNewEventTitle(e.target.value)}
+                    placeholder="Título del registro"
+                    required
+                    className="w-full bg-white/85 rounded-2xl px-3.5 py-2.5 text-xs font-bold text-[#2D2229]"
+                  />
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <input type="date" value={newEventDate} onChange={e => setNewEventDate(e.target.value)} required className="bg-white/85 rounded-2xl px-3 py-2 text-xs font-bold" />
+                    <input type="number" step="0.01" value={newEventTemp} onChange={e => setNewEventTemp(e.target.value)} placeholder="Temp °C (opcional)" className="bg-white/85 rounded-2xl px-3 py-2 text-xs font-bold" />
+                  </div>
+
+                  {newEventType === 'period_start' && (
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {FLOW_LEVELS.map(fl => (
+                        <button
+                          key={fl.id}
+                          type="button"
+                          onClick={() => setNewEventFlow(fl.id)}
+                          className={`py-2 rounded-xl border text-[10px] font-bold ${newEventFlow === fl.id ? fl.active : 'bg-white/70 text-[#6B5460] border-white'}`}
+                        >
+                          {fl.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <textarea rows="2" value={newEventDetails} onChange={e => setNewEventDetails(e.target.value)} placeholder="Notas adicionales..." className="w-full bg-white/85 rounded-2xl px-3.5 py-2 text-xs"></textarea>
+                  <button type="submit" className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-extrabold shadow-md">Guardar registro</button>
                 </form>
               </div>
             </div>
