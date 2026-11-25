@@ -241,15 +241,15 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
 
-    const APP_VERSION = "4.0.3";
+    const APP_VERSION = "4.0.4";
     const CHANGELOG = {
       version: APP_VERSION,
-      title: "Edición Navidad 2.5D & Cupones Gestionables",
+      title: "Explicación Científica & Sincronización Total",
       date: "Noviembre 2026",
       items: [
-        { icon: "🎟️", title: "Eliminar cupones Rasca y Gana", desc: "Borra los cupones que ya raspaste o limpia todos los rascados con un toque." },
-        { icon: "🟢", title: "Días de Bajo Riesgo en Verde", desc: "Identifica visualmente en verde los días fuera de la ventana fértil en el calendario." },
-        { icon: "❤️", title: "Indicadores en Calendario", desc: "Visualiza corazones, pastillas, chequeos y temperaturas directo en cada día del mes." }
+        { icon: "🔬", title: "Justificación detallada de cada fase", desc: "Toca el índice fértil para ver paso a paso las fórmulas EWMA, desviación σ y ajuste por pastilla." },
+        { icon: "🔄", title: "Calendario y Pantalla Hoy sincronizados", desc: "Si hay pastilla de emergencia activa, el calendario marca el ajuste hormonal sin marcar falso bajo riesgo." },
+        { icon: "🎟️", title: "Cupones Rasca y Gana gestionables", desc: "Elimina los cupones que ya raspaste o limpia todos con un toque." }
       ]
     };
 
@@ -258,7 +258,6 @@
     const SOS_WEBHOOK_URL = "https://sos-angie.scutionspadehd.workers.dev/";
     const TAB_ORDER = ['today', 'calendar', 'lumi', 'games', 'history'];
 
-    // DETECCIÓN AUTOMÁTICA DE TEMPORADA
     function getCurrentSeason() {
       const m = new Date().getMonth() + 1;
       if (m === 11 || m === 12 || m === 1) return 'winter';
@@ -267,7 +266,6 @@
       return 'autumn';
     }
 
-    // 5 VARIANTES POR TEMPORADA (20 TOTALES)
     const SEASON_SPLASHES = {
       winter: [
         { id: 'w1', badge: 'Navidad Mágica', greeting: 'Hola, Angie', subtitle: 'Época de frío, apapachos y chocolate caliente', bg: 'radial-gradient(circle at 30% 20%, #991B1B 0%, #450A0A 60%, #1F0910 100%)', orb1: '#EF4444', orb2: '#F59E0B', titleGrad: 'from-[#FDE68A] via-[#FCA5A5] to-[#FFFFFF]', emojis: ['❄️', '🎄', '✨'], dark: true },
@@ -299,7 +297,6 @@
       ]
     };
 
-    // 100 VARIACIONES DE DECORACIÓN PARA EL CUARTO 2.5D (5 categorías x 20 ítems)
     const ROOM_CATALOG = (() => {
       const walls = [
         ['w_01', 'Rosa Navidad', 'linear-gradient(180deg, #FFE4EC 0%, #F5EEFF 100%)', 0],
@@ -440,7 +437,6 @@
       { id: 'cake', emoji: '🧁', label: 'Cupcake', hunger: 26, mood: 25, energy: 6, cost: 12, reaction: '¡Qué rico postre navideño! 🧁' }
     ];
 
-    // ROPA DE TEMPORADA (INVIERNO / NAVIDAD + CLÁSICOS)
     const LUMI_ACCESSORIES = [
       { id: 'santa_hat', emoji: '🎅', label: 'Gorro Santa', cost: 20, seasonal: true },
       { id: 'jacket', emoji: '🧥', label: 'Chamarra', cost: 30, seasonal: true },
@@ -499,7 +495,6 @@
       );
     };
 
-    // LUMI CON ANIMACIONES DE COMER (MASTICAR), VESTIRSE Y ROPA DE TEMPORADA
     const LumiMascot = ({ phaseKey, viewMode, animState = 'idle', onTap, size = "w-20 h-20", equipped = [], sleeping = false }) => {
       const styles = {
         menstrual: { body: '#FF8DA8', cheek: '#E94B77', aura: '#FFE4EC' },
@@ -526,8 +521,6 @@
         >
           <svg viewBox="0 0 120 120" className={size}>
             <circle cx="60" cy="62" r="46" fill={st.aura} opacity="0.88" />
-
-            {/* OREJERAS */}
             {eq.includes('earmuffs') && (
               <g>
                 <path d="M22 58 A38 38 0 0 1 98 58" fill="none" stroke="#E11D48" strokeWidth="4.5" strokeLinecap="round" />
@@ -535,20 +528,14 @@
                 <circle cx="100" cy="60" r="9" fill="#FFFFFF" stroke="#E11D48" strokeWidth="2.5" />
               </g>
             )}
-
-            {/* CUERPO */}
             <path d="M60 18 C84 18, 98 42, 98 66 C98 88, 82 102, 60 102 C38 102, 22 88, 22 66 C22 42, 36 18, 60 18 Z" fill={st.body} />
             <ellipse cx="45" cy="36" rx="10" ry="6" fill="#FFFFFF" opacity="0.38" transform="rotate(-22 45 36)" />
-
-            {/* SUÉTER NAVIDEÑO */}
             {eq.includes('sweater') && (
               <g>
                 <path d="M24 76 Q60 88 96 76 L92 95 Q60 106 28 95 Z" fill="#15803D" stroke="#166534" strokeWidth="1.5" />
                 <path d="M30 85 L40 81 L50 86 L60 81 L70 86 L80 81 L90 85" fill="none" stroke="#FEF08A" strokeWidth="2" strokeLinecap="round" />
               </g>
             )}
-
-            {/* CHAMARRA INVERNAL */}
             {eq.includes('jacket') && (
               <g>
                 <path d="M21 70 Q60 82 99 70 L95 96 Q60 108 25 96 Z" fill="#BE123C" stroke="#881337" strokeWidth="2" />
@@ -556,8 +543,6 @@
                 <path d="M23 70 Q60 82 97 70" fill="none" stroke="#FFFFFF" strokeWidth="4.5" strokeLinecap="round" />
               </g>
             )}
-
-            {/* BUFANDA */}
             {eq.includes('scarf') && (
               <g>
                 <path d="M28 76 Q60 87 92 76" fill="none" stroke="#DC2626" strokeWidth="8" strokeLinecap="round" />
@@ -565,8 +550,6 @@
                 <rect x="70" y="78" width="10" height="19" rx="4" fill="#DC2626" />
               </g>
             )}
-
-            {/* OJOS */}
             {(sleeping || (phaseKey === 'menstrual' && viewMode !== 'jorge' && animState === 'idle')) ? (
               <g stroke="#2D2229" strokeWidth="3" strokeLinecap="round" fill="none">
                 <path d="M40 60 Q45 65 50 60" />
@@ -580,19 +563,13 @@
                 <circle cx="76.5" cy="56.5" r="1.5" fill="#FFFFFF" />
               </g>
             )}
-
-            {/* CACHETES */}
             <ellipse cx="36" cy="67" rx={animState === 'eating' ? 7 : 5.5} ry="3.4" fill={st.cheek} opacity="0.5" />
             <ellipse cx="84" cy="67" rx={animState === 'eating' ? 7 : 5.5} ry="3.4" fill={st.cheek} opacity="0.5" />
-
-            {/* BOCA (MASTICANDO O SONRIENDO) */}
             {animState === 'eating' ? (
               <ellipse cx="60" cy="70" rx="6.5" ry="5.5" fill="#9F1239" stroke="#2D2229" strokeWidth="2" />
             ) : (
               <path d="M53 69 Q60 76 67 69" stroke="#2D2229" strokeWidth="2.8" strokeLinecap="round" fill="none" />
             )}
-
-            {/* GORRO DE SANTA */}
             {eq.includes('santa_hat') && (
               <g>
                 <path d="M32 30 Q58 0 88 28 Z" fill="#DC2626" stroke="#991B1B" strokeWidth="1.5" />
@@ -600,13 +577,9 @@
                 <circle cx="90" cy="27" r="6" fill="#FFFFFF" />
               </g>
             )}
-
-            {/* CORONA */}
             {eq.includes('crown') && (
               <path d="M42 22 L48 10 L60 18 L72 10 L78 22 Z" fill="#FBBF24" stroke="#D97706" strokeWidth="1.8" strokeLinejoin="round" />
             )}
-
-            {/* MOÑO */}
             {eq.includes('bow') && (
               <g transform="translate(76, 22) rotate(18)">
                 <path d="M0 0 L-12 -7 L-12 7 Z" fill="#FF4D8D" stroke="#FFFFFF" strokeWidth="1.2" />
@@ -614,8 +587,6 @@
                 <circle cx="0" cy="0" r="3.5" fill="#FFD166" />
               </g>
             )}
-
-            {/* LENTES */}
             {eq.includes('glasses') && (
               <g stroke="#2D2229" strokeWidth="2.4" fill="rgba(45,34,41,0.22)">
                 <rect x="33" y="51" width="20" height="13" rx="5" />
@@ -623,7 +594,6 @@
                 <line x1="53" y1="57" x2="67" y2="57" />
               </g>
             )}
-
             {sleeping && (
               <text x="86" y="34" fontSize="13" fontWeight="800" fill="#6366F1">zZ</text>
             )}
@@ -632,7 +602,6 @@
       );
     };
 
-    // CUARTO 2.5D DE LUMI
     const LumiRoomTab = ({ phaseKey, viewMode, settings, onFeed, onPetCare, onToggleSleep, onBuyOrToggleAcc, onEquipRoomItem }) => {
       const [subPanel, setSubPanel] = useState('food');
       const [decorCat, setDecorCat] = useState('wall');
@@ -952,7 +921,6 @@
       );
     };
 
-    // MINI-JUEGO 1: ATRAPA REGALOS
     const CatchGiftGameModal = ({ onClose, onWin }) => {
       const [timeLeft, setTimeLeft] = useState(18);
       const [score, setScore] = useState(0);
@@ -1040,7 +1008,6 @@
       );
     };
 
-    // MINI-JUEGO 2: MEMORAMA INVERNAL
     const MemoryGameModal = ({ onClose, onWin }) => {
       const baseIcons = ['🎄', '⛄', '🎁', '🍪', '🧣', '⭐'];
       const [cards, setCards] = useState(() =>
@@ -1120,7 +1087,6 @@
       );
     };
 
-    // MINI-JUEGO 3: SECUENCIA LUMI
     const SimonGameModal = ({ onClose, onWin }) => {
       const pads = [
         { id: 0, color: 'bg-rose-400', active: 'bg-rose-200 scale-105', emoji: '❤️' },
@@ -1412,7 +1378,6 @@
       return Math.round((parseLocalDate(endStr) - parseLocalDate(startStr)) / (1000 * 60 * 60 * 24));
     }
 
-    // ICONOS PARA CADA TIPO DE EVENTO EN CALENDARIO Y BITÁCORA
     function getEventBadge(ev) {
       if (!ev) return '📝';
       if (ev.type === 'intimacy_protected') return '❤️';
@@ -1914,6 +1879,7 @@
         return {
           starts, periodDaySet, historyRows: historyRows.reverse(),
           baseCycleLength: predictedCycleLength, stdDev, marginDays, lutealLength,
+          naturalCyclesUsed: cleanLengths,
           safeFertileStartOffset: Math.max(5, peakOvulationOffset - (4 + Math.min(3, marginDays))),
           peakStartOffset: Math.max(7, peakOvulationOffset - 2),
           peakOvulationOffset, peakEndOffset: peakOvulationOffset + 1,
@@ -1922,12 +1888,91 @@
         };
       }, [events, todayStr]);
 
+      // FUNCIÓN CENTRAL DE EVALUACIÓN DE FERTILIDAD POR FECHA (USADA EN HOY Y EN CALENDARIO PARA EVITAR INCONSISTENCIAS)
+      const evaluateFertilityForDate = (targetDate) => {
+        const validStarts = cycleAnalytics.starts.filter(d => d <= targetDate);
+        const cycleStart = validStarts.length ? validStarts[validStarts.length - 1] : cycleAnalytics.starts[0];
+        const cDay = Math.max(1, diffDays(cycleStart, targetDate) + 1);
+        const pillInCycle = events.find(ev => ev.type === 'pill' && ev.date >= cycleStart && ev.date <= targetDate);
+        const lhInCycle = events.find(ev => (ev.tags || []).includes('test_ov_pos') && ev.date >= cycleStart && ev.date <= targetDate);
+        const ovDay = cycleAnalytics.peakOvulationOffset + 1;
+        const sigma = Math.max(2.2, cycleAnalytics.stdDev);
+        const dist = cDay - ovDay;
+        const gaussianPct = Math.round(Math.exp(-(dist * dist) / (2 * sigma * sigma)) * 82);
+
+        const dayEvs = events.filter(e => e.date === targetDate);
+        const hasEggwhite = dayEvs.some(e => (e.tags || []).includes('discharge_eggwhite'));
+        const hasLhPos = dayEvs.some(e => (e.tags || []).includes('test_ov_pos')) || (lhInCycle && diffDays(lhInCycle.date, targetDate) <= 1);
+        const hasThermalConfirmed = Boolean(
+          cycleAnalytics.thermalConfirmedDate &&
+          targetDate >= cycleAnalytics.thermalConfirmedDate &&
+          cycleAnalytics.thermalConfirmedDate >= cycleStart
+        );
+
+        // Si hubo pastilla de emergencia en este ciclo (después de los primeros 4 días de sangrado)
+        if (pillInCycle && cDay > 4) {
+          const daysSincePill = diffDays(pillInCycle.date, targetDate);
+          return {
+            pct: 65,
+            label: 'Impredecible (Ajuste)',
+            isHormoneAltered: true,
+            pillDate: pillInCycle.date,
+            daysSincePill,
+            cycleStart,
+            cDay,
+            ovDay,
+            sigma,
+            gaussianPct,
+            reason: `Pastilla de emergencia tomada el ${formatDateES(pillInCycle.date, false)} (hace ${daysSincePill}d)`,
+            explanation: `El levonorgestrel retrasa o altera la ovulación de forma impredecible durante el resto del ciclo activo (iniciado el ${formatDateES(cycleStart, false)}). Por seguridad clínica, el algoritmo anula los "días verdes seguros" hasta el próximo sangrado menstrual confirmado.`
+          };
+        }
+
+        if (cDay <= 4) {
+          return {
+            pct: 3,
+            label: 'Mínima',
+            isHormoneAltered: false,
+            cycleStart,
+            cDay,
+            ovDay,
+            sigma,
+            gaussianPct,
+            reason: `Fase menstrual (Día ${cDay} del ciclo)`,
+            explanation: `Durante los primeros 4 días de sangrado activo el endometrio se está descamando y el reclutamiento folicular apenas comienza, por lo que la probabilidad de ovulación inmediata es mínima (3%).`
+          };
+        }
+
+        let prob = Math.exp(-(dist * dist) / (2 * sigma * sigma)) * 82;
+        let reason = `Curva EWMA (Día ${cDay} vs Ovulación est. Día ${ovDay})`;
+        let explanation = `Con base en tu ciclo promedio EWMA de ${cycleAnalytics.baseCycleLength} días menos ${cycleAnalytics.lutealLength} días de fase lútea, tu ovulación estimada cae en el Día ${ovDay} (±${cycleAnalytics.marginDays}d de margen). Hoy estás a ${Math.abs(dist)} ${Math.abs(dist) === 1 ? 'día' : 'días'} ${dist < 0 ? 'antes' : dist > 0 ? 'después' : 'exactos'} de ese pico.`;
+
+        if (hasEggwhite) {
+          prob = Math.max(prob, 86);
+          reason = 'Flujo fértil (clara de huevo) registrado';
+          explanation += ' Además, se registró moco cervical fértil, lo que eleva la ventana fértil activa.';
+        }
+        if (hasLhPos) {
+          prob = 96;
+          reason = 'Test de ovulación LH (+)';
+          explanation = 'El pico de hormona luteinizante (LH+) indica que la ovulación ocurrirá en las próximas 12 a 36 horas.';
+        }
+        if (hasThermalConfirmed) {
+          prob = 4;
+          reason = 'Ovulación confirmada por BBT (regla 3 sobre 6)';
+          explanation = `Tu temperatura basal se mantuvo elevada por 3 días consecutivos sobre la línea base (${cycleAnalytics.coverline}°C), confirmando que el óvulo ya fue liberado.`;
+        }
+
+        const pct = Math.max(2, Math.min(99, Math.round(prob)));
+        const label = pct >= 70 ? 'Muy Alta' : pct >= 35 ? 'Moderada / Alta' : pct >= 15 ? 'Baja' : 'Mínima';
+        return { pct, label, isHormoneAltered: false, cycleStart, cDay, ovDay, sigma, gaussianPct, reason, explanation };
+      };
+
       const activePeriodStart = useMemo(() => {
         const valid = cycleAnalytics.starts.filter(d => d <= referenceDate);
         return valid.length ? valid[valid.length - 1] : cycleAnalytics.starts[0];
       }, [cycleAnalytics.starts, referenceDate]);
 
-      const activePillInCycle = useMemo(() => events.find(ev => ev.type === 'pill' && ev.date >= activePeriodStart && ev.date <= referenceDate), [events, activePeriodStart, referenceDate]);
       const activeLhInCycle = useMemo(() => events.find(ev => (ev.tags || []).includes('test_ov_pos') && ev.date >= activePeriodStart && ev.date <= referenceDate), [events, activePeriodStart, referenceDate]);
 
       const cycleDay = Math.max(1, diffDays(activePeriodStart, referenceDate) + 1);
@@ -1938,31 +1983,10 @@
       const nextPeriodMin = addDays(nextPeriodEst, -cycleAnalytics.marginDays);
       const nextPeriodMax = addDays(nextPeriodEst, cycleAnalytics.marginDays);
 
-      const fertilityScore = useMemo(() => {
-        if (cycleDay <= 4) return { pct: 3, label: 'Mínima', reason: 'Fase menstrual' };
-        if (activePillInCycle) return { pct: 65, label: 'Impredecible (Ajuste)', reason: 'Anticoncepción de emergencia activa' };
-
-        const ovDay = cycleAnalytics.peakOvulationOffset + 1;
-        const sigma = Math.max(2.2, cycleAnalytics.stdDev);
-        const dist = cycleDay - ovDay;
-        let prob = Math.exp(-(dist * dist) / (2 * sigma * sigma)) * 82;
-
-        const dayEvs = events.filter(e => e.date === referenceDate);
-        const hasEggwhite = dayEvs.some(e => (e.tags || []).includes('discharge_eggwhite'));
-        const hasLhPos = dayEvs.some(e => (e.tags || []).includes('test_ov_pos')) || (activeLhInCycle && diffDays(activeLhInCycle.date, referenceDate) <= 1);
-
-        let reason = 'Cálculo estadístico EWMA';
-        if (hasEggwhite) { prob = Math.max(prob, 86); reason = 'Flujo fértil (clara de huevo)'; }
-        if (hasLhPos) { prob = 96; reason = 'Test de ovulación LH (+)'; }
-        if (cycleAnalytics.thermalConfirmedDate && referenceDate >= cycleAnalytics.thermalConfirmedDate && cycleAnalytics.thermalConfirmedDate >= activePeriodStart) {
-          prob = 4;
-          reason = 'Ovulación confirmada por BBT (3 sobre 6)';
-        }
-
-        const pct = Math.max(2, Math.min(99, Math.round(prob)));
-        const label = pct >= 70 ? 'Muy Alta' : pct >= 35 ? 'Moderada / Alta' : pct >= 15 ? 'Baja' : 'Mínima';
-        return { pct, label, reason };
-      }, [cycleDay, cycleAnalytics, events, referenceDate, activePillInCycle, activeLhInCycle, activePeriodStart]);
+      const fertilityScore = useMemo(
+        () => evaluateFertilityForDate(referenceDate),
+        [cycleAnalytics, events, referenceDate]
+      );
 
       const projectedPeriodStarts = useMemo(() => {
         const lastReal = cycleAnalytics.starts[cycleAnalytics.starts.length - 1];
@@ -2000,23 +2024,46 @@
 
       const phase = useMemo(() => {
         if (cycleDay <= 5) return { name: 'Fase Menstrual', dotColor: 'bg-[#E94B77]', glow: 'hero-glow', partnerTip: 'Energía baja y posible sensibilidad física. Ideal consentirla.' };
+        if (fertilityScore.isHormoneAltered) return { name: 'Ajuste Hormonal (Pastilla)', dotColor: 'bg-amber-500', glow: 'hero-glow-amber', partnerTip: 'Ciclo en ajuste por anticoncepción de emergencia. Usar barrera siempre.' };
         if (fertilityScore.pct >= 70) return { name: 'Pico Fértil', dotColor: 'bg-red-500', glow: 'hero-glow', partnerTip: 'Máxima fertilidad biológica. Precaución absoluta.' };
         if (fertilityScore.pct >= 35) return { name: 'Ventana Fértil', dotColor: 'bg-amber-500', glow: 'hero-glow-amber', partnerTip: 'Zona de precaución activa.' };
         if (cycleDay < cycleAnalytics.peakOvulationOffset + 1) return { name: 'Fase Folicular', dotColor: 'bg-emerald-500', glow: 'hero-glow-green', partnerTip: 'Energía en subida. Gran momento para planes activos.' };
         return { name: 'Fase Lútea', dotColor: 'bg-emerald-500', glow: 'hero-glow-green', partnerTip: 'Etapa premenstrual: planes relajados y apapacho.' };
-      }, [cycleDay, fertilityScore.pct, cycleAnalytics.peakOvulationOffset]);
+      }, [cycleDay, fertilityScore.pct, fertilityScore.isHormoneAltered, cycleAnalytics.peakOvulationOffset]);
 
+      // ESTADO DE CADA DÍA EN EL CALENDARIO (100% SINCRONIZADO CON evaluateFertilityForDate)
       const getDayStatus = (dateStr) => {
         const allStarts = [...cycleAnalytics.starts, ...projectedPeriodStarts];
         const explicitBleed = cycleAnalytics.periodDaySet.has(dateStr);
         const periodMatch = allStarts.find(s => dateStr >= s && dateStr <= addDays(s, 4));
         const isProjected = !explicitBleed && Boolean(periodMatch && projectedPeriodStarts.includes(periodMatch));
-        const isPeak = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.peakStartOffset) && dateStr <= addDays(s, cycleAnalytics.peakEndOffset));
-        const isFertile = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.safeFertileStartOffset) && dateStr <= addDays(s, cycleAnalytics.safeFertileEndOffset));
         const isPeriod = explicitBleed || Boolean(periodMatch);
+
         const firstTrackedStart = cycleAnalytics.starts[0];
-        const isSafe = !isPeriod && !isPeak && !isFertile && (!firstTrackedStart || dateStr >= firstTrackedStart);
-        return { isPeriod, isProjectedPeriod: isProjected, isPeak, isFertile, isSafe, dayEvents: events.filter(e => e.date === dateStr) };
+        const evalData = evaluateFertilityForDate(dateStr);
+
+        // Si el día está dentro del ciclo activo tras una pastilla de emergencia (y no es sangrado ni proyección futura de otro ciclo)
+        const isHormoneAltered = !isPeriod && !isProjected && evalData.isHormoneAltered;
+        const isPeak = !isPeriod && !isHormoneAltered && (
+          allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.peakStartOffset) && dateStr <= addDays(s, cycleAnalytics.peakEndOffset)) ||
+          evalData.pct >= 70
+        );
+        const isFertile = !isPeriod && !isHormoneAltered && !isPeak && (
+          allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.safeFertileStartOffset) && dateStr <= addDays(s, cycleAnalytics.safeFertileEndOffset)) ||
+          evalData.pct >= 35
+        );
+        const isSafe = !isPeriod && !isHormoneAltered && !isPeak && !isFertile && (!firstTrackedStart || dateStr >= firstTrackedStart);
+
+        return {
+          isPeriod,
+          isProjectedPeriod: isProjected,
+          isHormoneAltered,
+          isPeak,
+          isFertile,
+          isSafe,
+          evalData,
+          dayEvents: events.filter(e => e.date === dateStr)
+        };
       };
 
       const weekStrip = useMemo(() => {
@@ -2310,13 +2357,19 @@
                   </div>
 
                   {!discreetMode && (
-                    <button onClick={() => setSafeDaysModalOpen(true)} className="w-full liquid-glass rounded-[26px] p-4 text-left space-y-2">
+                    <button onClick={() => setSafeDaysModalOpen(true)} className="w-full liquid-glass rounded-[26px] p-4 text-left space-y-2 active:scale-[0.99] transition">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-extrabold text-[#2D2229]">Índice fértil de hoy: {fertilityScore.label}</span>
                         <span className="text-xs font-extrabold text-[#E94B77]">{fertilityScore.pct}%</span>
                       </div>
                       <div className="w-full h-2 rounded-full bg-white/70 overflow-hidden">
                         <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-[#E94B77]" style={{ width: `${fertilityScore.pct}%` }}></div>
+                      </div>
+                      <div className="flex items-center justify-between gap-2 pt-0.5">
+                        <span className="text-[11px] font-semibold text-[#6B5460] truncate">
+                          {fertilityScore.isHormoneAltered ? '💊 ' : '🔬 '}{fertilityScore.reason}
+                        </span>
+                        <span className="text-[10px] font-extrabold text-[#E94B77] shrink-0">Ver fórmula ›</span>
                       </div>
                     </button>
                   )}
@@ -2360,6 +2413,7 @@
                         let cls = 'bg-white/60 border border-white/75 text-[#2D2229]';
                         if (st.isPeriod && !st.isProjectedPeriod) cls = 'bg-[#E94B77] text-white font-extrabold';
                         else if (st.isProjectedPeriod) cls = 'bg-[#FFE4EC]/85 text-[#C73660] border border-dashed border-[#E94B77] font-bold';
+                        else if (!discreetMode && st.isHormoneAltered) cls = 'bg-amber-100/80 text-amber-900 border border-dashed border-amber-400 font-semibold';
                         else if (!discreetMode && st.isPeak) cls = 'bg-amber-400 text-[#2D2229] font-extrabold';
                         else if (!discreetMode && st.isFertile) cls = 'bg-amber-100/85 text-amber-900 font-semibold';
                         else if (!discreetMode && st.isSafe) cls = 'bg-emerald-100/85 text-emerald-900 border border-emerald-300/75 font-semibold';
@@ -2389,11 +2443,11 @@
                       })}
                     </div>
 
-                    {/* LEYENDA DE ICONOS Y COLORES */}
                     {!discreetMode && (
                       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 mt-4 pt-3 border-t border-white/60 text-[10px] font-bold text-[#6B5460]">
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#E94B77]"></span>Periodo</span>
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Fértil</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-100 border border-dashed border-amber-500"></span>Ajuste pastilla</span>
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Bajo riesgo</span>
                         <span>❤️ Condón</span>
                         <span>🧡 Sin prot.</span>
@@ -2408,6 +2462,36 @@
                       <h3 className="text-sm font-extrabold text-[#2D2229]">{formatDateES(selectedDay)}</h3>
                       <button onClick={() => openAddModal('intimacy_protected', selectedDay)} className="liquid-pill px-3 py-1 rounded-full text-xs font-extrabold text-[#E94B77]">+ Agregar</button>
                     </div>
+
+                    {!discreetMode && selectedDayInfo.evalData && (
+                      <div className={`p-3 rounded-2xl border text-[11px] space-y-1 ${
+                        selectedDayInfo.isPeriod
+                          ? 'bg-rose-50/85 border-rose-200 text-rose-950'
+                          : selectedDayInfo.isHormoneAltered
+                            ? 'bg-amber-50/90 border-amber-300 text-amber-950'
+                            : selectedDayInfo.isPeak || selectedDayInfo.isFertile
+                              ? 'bg-amber-50/85 border-amber-200 text-amber-950'
+                              : selectedDayInfo.isSafe
+                                ? 'bg-emerald-50/85 border-emerald-200 text-emerald-950'
+                                : 'bg-white/70 border-white text-[#2D2229]'
+                      }`}>
+                        <div className="flex items-center justify-between font-extrabold">
+                          <span>
+                            {selectedDayInfo.isPeriod
+                              ? `🩸 Día ${selectedDayInfo.evalData.cDay} • Periodo`
+                              : selectedDayInfo.isHormoneAltered
+                                ? `💊 Día ${selectedDayInfo.evalData.cDay} • Ajuste Hormonal (${selectedDayInfo.evalData.pct}%)`
+                                : selectedDayInfo.isPeak
+                                  ? `🔥 Día ${selectedDayInfo.evalData.cDay} • Pico Fértil (${selectedDayInfo.evalData.pct}%)`
+                                  : selectedDayInfo.isFertile
+                                    ? `⚠️ Día ${selectedDayInfo.evalData.cDay} • Ventana Fértil (${selectedDayInfo.evalData.pct}%)`
+                                    : `🟢 Día ${selectedDayInfo.evalData.cDay} • Bajo Riesgo (${selectedDayInfo.evalData.pct}%)`}
+                          </span>
+                        </div>
+                        <p className="leading-relaxed opacity-90">{selectedDayInfo.evalData.explanation}</p>
+                      </div>
+                    )}
+
                     {selectedDayInfo.dayEvents.length === 0 ? (
                       <p className="text-xs text-[#8C7380]">Sin registros este día.</p>
                     ) : (
@@ -2687,10 +2771,52 @@
 
           {safeDaysModalOpen && (
             <div className="fixed inset-0 bg-black/45 backdrop-blur-md flex items-center justify-center p-5 z-50">
-              <div className="liquid-glass rounded-[30px] max-w-sm w-full p-6 shadow-2xl space-y-3">
-                <h3 className="text-base font-extrabold">Índice fértil ({fertilityScore.pct}%)</h3>
-                <p className="text-xs text-[#6B5460]">Cálculo estadístico EWMA. No sustituye un método anticonceptivo.</p>
-                <button onClick={() => setSafeDaysModalOpen(false)} className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold">Entendido</button>
+              <div className="liquid-glass rounded-[30px] max-w-sm w-full p-6 shadow-2xl animate-sheet max-h-[85vh] overflow-y-auto space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#E94B77]">Desglose del Algoritmo</span>
+                  <button onClick={() => setSafeDaysModalOpen(false)} className="w-7 h-7 rounded-full liquid-pill text-xs font-bold">✕</button>
+                </div>
+
+                <div>
+                  <h3 className="text-base font-extrabold text-[#2D2229]">
+                    {phase.name} ({fertilityScore.pct}%)
+                  </h3>
+                  <p className="text-xs text-[#6B5460] mt-1 leading-relaxed">
+                    {fertilityScore.explanation}
+                  </p>
+                </div>
+
+                <div className="bg-white/75 rounded-2xl p-3.5 border border-white space-y-2 text-[11px]">
+                  <p className="font-extrabold text-[#2D2229]">Variables aplicadas hoy ({formatDateES(referenceDate, false)}):</p>
+                  <div className="flex justify-between text-[#6B5460]">
+                    <span>• Inicio del ciclo activo:</span>
+                    <span className="font-bold text-[#2D2229]">{formatDateES(fertilityScore.cycleStart, false)} (Día {fertilityScore.cDay})</span>
+                  </div>
+                  <div className="flex justify-between text-[#6B5460]">
+                    <span>• Duración base EWMA:</span>
+                    <span className="font-bold text-[#2D2229]">{cycleAnalytics.baseCycleLength} días (±{cycleAnalytics.marginDays}d)</span>
+                  </div>
+                  <div className="flex justify-between text-[#6B5460]">
+                    <span>• Fase lútea / Ovulación est.:</span>
+                    <span className="font-bold text-[#2D2229]">{cycleAnalytics.lutealLength}d → Día {fertilityScore.ovDay}</span>
+                  </div>
+                  <div className="flex justify-between text-[#6B5460]">
+                    <span>• Curva Gaussiana base (σ={fertilityScore.sigma}):</span>
+                    <span className="font-bold text-[#2D2229]">{fertilityScore.gaussianPct}%</span>
+                  </div>
+                  <div className="flex justify-between text-[#6B5460]">
+                    <span>• Pastilla emergencia en ciclo:</span>
+                    <span className={`font-bold ${fertilityScore.isHormoneAltered ? 'text-amber-600' : 'text-emerald-600'}`}>
+                      {fertilityScore.isHormoneAltered ? `Sí (${formatDateES(fertilityScore.pillDate, false)})` : 'No'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-3 text-[11px] text-amber-950 leading-relaxed">
+                  <strong>Nota importante:</strong> Si tomaste una pastilla de emergencia y después tuviste un sangrado por deprivación que registraste como "Inicio de periodo", el sistema inicia un nuevo conteo desde esa fecha, aunque las hormonas pueden seguir estabilizándose durante 1 a 2 ciclos.
+                </div>
+
+                <button onClick={() => setSafeDaysModalOpen(false)} className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-extrabold">Entendido</button>
               </div>
             </div>
           )}
