@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Ciclo & Bienestar</title>
+  <meta name="theme-color" content="#FF4B72" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Ciclo & Bienestar" />
+  <link id="pwa-manifest" rel="manifest" href="#" />
+  <link id="apple-touch-icon" rel="apple-touch-icon" href="#" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; padding: 0 !important; }
+      .print-card { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-welcome { animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-sheet { animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  </style>
+  <script>
+    (function() {
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF4B72"/><stop offset="100%" stop-color="#D946EF"/></linearGradient></defs><rect width="512" height="512" rx="115" fill="url(#g)"/><path d="M256 388s-124-76-124-168c0-44 34-78 76-78 26 0 40 14 48 26 8-12 22-26 48-26 42 0 76 34 76 78 0 92-124 168-124 168z" fill="#ffffff"/></svg>`;
+      const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgIcon);
+      document.getElementById('apple-touch-icon').setAttribute('href', iconUrl);
+
+      const manifest = {
+        name: "Ciclo & Bienestar",
+        short_name: "Ciclo",
+        description: "Control Compartido y Calendario Menstrual",
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#F8FAFC",
+        theme_color: "#FF4B72",
+        icons: [
+          { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+          { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+    })();
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-24 md:pb-10">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    const ACCESS_PIN = "0414";
+    const DEFAULT_CLOUD_URL = "https://control-81285-default-rtdb.firebaseio.com";
+
+    function getTodayLocal() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseLocalDate(dateStr) {
+      const [y, m, d] = (dateStr || getTodayLocal()).split('-').map(Number);
+      return new Date(y, (m || 1) - 1, d || 1);
+    }
+
+    function formatDateES(dateStr, includeYear = true) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+      return includeYear ? `${d} de ${months[m - 1]} ${y}` : `${d} de ${months[m - 1]}`;
+    }
+
+    function addDays(dateStr, days) {
+      const dt = parseLocalDate(dateStr);
+      dt.setDate(dt.getDate() + days);
+      const yy = dt.getFullYear();
+      const mm = String(dt.getMonth() + 1).padStart(2, '0');
+      const dd = String(dt.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
+    }
+
+    function diffDays(startStr, endStr) {
+      const dt1 = parseLocalDate(startStr);
+      const dt2 = parseLocalDate(endStr);
+      return Math.round((dt2 - dt1) / (1000 * 60 * 60 * 24));
+    }
+
+    const APP_GOALS = [
+      { id: 'prevent', label: 'Evitar embarazo / Precaución', icon: '🛡️', desc: 'Prioriza márgenes de seguridad amplios y recordatorios de protección.' },
+      { id: 'track', label: 'Monitoreo de salud y síntomas', icon: '🩺', desc: 'Enfocado en patrones del ciclo, temperatura basal, flujo y bienestar.' },
+      { id: 'conceive', label: 'Buscar embarazo', icon: '🌱', desc: 'Resalta ventana fértil, pico de ovulación y confirmación térmica.' }
+    ];
+
+    const BIRTH_CONTROL_METHODS = [
+      { id: 'condom', label: 'Condón (Barrera)', icon: '🛡️', hormonal: false, note: 'No altera el ciclo natural. Protege contra embarazo e ITS cuando se usa desde el inicio.' },
+      { id: 'pills', label: 'Pastillas diarias', icon: '💊', hormonal: true, note: 'Regulan el sangrado por deprivación. La constancia diaria en el horario es clave.' },
+      { id: 'iud_copper', label: 'DIU de Cobre', icon: '⚓', hormonal: false, note: 'Sin hormonas. Los primeros 3 a 6 meses puede aumentar un poco el flujo o los cólicos.' },
+      { id: 'iud_hormonal', label: 'DIU Hormonal', icon: '✨', hormonal: true, note: 'Suele reducir el sangrado con los meses; es normal tener manchados irregulares al inicio.' },
+      { id: 'implant', label: 'Implante Subdérmico', icon: '🩹', hormonal: true, note: 'Alta eficacia. Es muy común que el ciclo se vuelva irregular o que el periodo desaparezca temporalmente.' },
+      { id: 'patch_ring', label: 'Parche / Anillo', icon: '⭕', hormonal: true, note: 'Método hormonal combinado. Recuerda respetar los días exactos de cambio.' },
+      { id: 'none', label: 'Ninguno / Por definir', icon: '⚠️', hormonal: false, note: 'Recuerda: el calendario NO es un método anticonceptivo. Usa protección de barrera siempre.' }
+    ];
+
+    const FLOW_LEVELS = [
+      { id: 'spotting', label: 'Manchado', icon: '🔸', color: 'bg-rose-100 text-rose-700 border-rose-200' },
+      { id: 'light', label: 'Ligero', icon: '💧', color: 'bg-rose-200 text-rose-800 border-rose-300' },
+      { id: 'medium', label: 'Medio', icon: '🩸', color: 'bg-rose-500 text-white border-rose-600' },
+      { id: 'heavy', label: 'Abundante', icon: '🩸🩸', color: 'bg-red-600 text-white border-red-700' }
+    ];
+
+    const SYMPTOM_TAGS = [
+      { id: 'cramps_mild', label: 'Cólicos leves', icon: '🩸', cat: 'Físico' },
+      { id: 'cramps_strong', label: 'Cólicos fuertes', icon: '⚡', cat: 'Físico' },
+      { id: 'headache', label: 'Dolor de cabeza', icon: '🤕', cat: 'Físico' },
+      { id: 'bloating', label: 'Inflamación', icon: '🎈', cat: 'Físico' },
+      { id: 'nausea', label: 'Náuseas / Mareo', icon: '🤢', cat: 'Físico' },
+      { id: 'breast_tender', label: 'Sensibilidad senos', icon: '💗', cat: 'Físico' },
+      { id: 'fatigue', label: 'Cansancio / Sueño', icon: '😴', cat: 'Ánimo' },
+      { id: 'sensitive', label: 'Sensible / Emotiva', icon: '🥺', cat: 'Ánimo' },
+      { id: 'good_mood', label: 'Buen ánimo / Energía', icon: '✨', cat: 'Ánimo' },
+      { id: 'cravings', label: 'Antojos / Apetito', icon: '🍫', cat: 'Ánimo' },
+      { id: 'discharge_dry', label: 'Flujo seco', icon: '☁️', cat: 'Flujo' },
+      { id: 'discharge_sticky', label: 'Flujo pegajoso', icon: '⚪', cat: 'Flujo' },
+      { id: 'discharge_creamy', label: 'Flujo cremoso', icon: '🥛', cat: 'Flujo' },
+      { id: 'discharge_eggwhite', label: 'Clara de huevo (Fértil)', icon: '🥚', cat: 'Flujo' },
+      { id: 'test_preg_neg', label: 'Prueba embarazo (-)', icon: '➖', cat: 'Pruebas' },
+      { id: 'test_preg_pos', label: 'Prueba embarazo (+)', icon: '➕', cat: 'Pruebas' },
+      { id: 'test_ov_pos', label: 'Test ovulación (+)', icon: '🎯', cat: 'Pruebas' },
+      { id: 'high_stress', label: 'Estrés alto', icon: '🤯', cat: 'Hábitos' },
+      { id: 'poor_sleep', label: 'Dormí poco / Ruido BBT', icon: '🌙', cat: 'Hábitos' },
+      { id: 'exercise', label: 'Ejercicio', icon: '🏃‍♀️', cat: 'Hábitos' },
+      { id: 'altered_cycle', label: 'Ciclo alterado (Postday)', icon: '⚠️', cat: 'Hábitos' }
+    ];
+
+    const REACTIVE_INSIGHTS = {
+      cramps_strong: {
+        title: 'Alivio para cólicos fuertes',
+        icon: '🔥',
+        angie: 'Aplica calor local en el vientre (compresa o bolsa tibia), hidrátate bien y evita cafeína en exceso. Si el dolor interfiere con tus actividades, consúltalo con ginecología.',
+        jorge: 'Hoy trae cólicos fuertes: ofrécele algo calientito, evita planes que requieran caminar mucho y consiéntela sin presionarla.'
+      },
+      nausea: {
+        title: 'Tip rápido para náuseas o mareo',
+        icon: '🍋',
+        angie: 'Come porciones pequeñas y ligeras (evita ayunos largos), toma agua a sorbos cortos y descansa en un lugar ventilado.',
+        jorge: 'Reportó náuseas o mareo: ayúdala a que no pase muchas horas sin comer y ten agua fresca a la mano.'
+      },
+      high_stress: {
+        title: 'El estrés también mueve el ciclo',
+        icon: '🧠',
+        angie: 'El estrés sostenido puede retrasar la ovulación y hacer que el periodo tarde unos días más en bajar. Bajarle al ritmo hoy ayuda a tu cuerpo.',
+        jorge: 'Hoy registró estrés alto. El estrés puede retrasar el periodo de forma natural; prioricen un rato tranquilo.'
+      },
+      discharge_eggwhite: {
+        title: 'Señal biológica de fertilidad alta',
+        icon: '🥚',
+        angie: 'El flujo elástico tipo clara de huevo suele aparecer alrededor de la ovulación. Es una señal de fertilidad alta.',
+        jorge: 'Registró flujo fértil (clara de huevo): indica fertilidad alta cerca de la ovulación. Mantengan precaución.'
+      },
+      fatigue: {
+        title: 'Batería baja hoy',
+        icon: '😴',
+        angie: 'Es común sentir menos energía por fluctuaciones hormonales. Descansar un poco más hoy es necesario.',
+        jorge: 'Hoy anda con poca pila. Ideal un plan tranquilo en casa en lugar de salidas agotadoras.'
+      },
+      sensitive: {
+        title: 'Día emocionalmente sensible',
+        icon: '🥺',
+        angie: 'Las hormonas pueden intensificar las emociones. Sé paciente contigo misma y pide espacio o apapacho según necesites.',
+        jorge: 'Hoy se siente más sensible. Escucha con calma, valida cómo se siente y dale paciencia y cariño.'
+      }
+    };
+
+    const QUICK_FAQS = [
+      {
+        q: '¿Por qué se puede retrasar un periodo además de embarazo?',
+        a: 'Estrés intenso, falta de sueño, cambios bruscos de rutina o alimentación, viajes, cuadros virales o haber tomado una pastilla de emergencia. Un desfase de varios días puede ocurrir incluso en ciclos habituales.'
+      },
+      {
+        q: '¿Cómo afecta la pastilla de emergencia (Femelle One / Postday)?',
+        a: 'Actúa retrasando la ovulación. Por ello es frecuente que el siguiente periodo se adelante o retrase, o que haya manchados intermedios. Mientras no baje el periodo normal, conviene mantener protección de barrera.'
+      },
+      {
+        q: '¿Cómo funciona la temperatura basal (BBT) y por qué filtra el ruido?',
+        a: 'Tras ovular, la progesterona eleva ligeramente la temperatura basal (unas décimas de °C) en la fase lútea. Si dormiste mal, despertaste a otra hora o hubo desvelo/alcohol, ese dato es ruido y conviene marcarlo.'
+      },
+      {
+        q: '¿Esta app sirve como método anticonceptivo?',
+        a: 'No. Ninguna app de calendario es un método anticonceptivo ni protege contra infecciones de transmisión sexual. La ovulación puede adelantarse o retrasarse sin aviso.'
+      }
+    ];
+
+    const MESSAGE_LIBRARY = {
+      menstrual: [
+        { main: "Hoy tu cuerpo está haciendo un trabajo enorme por dentro; permítete bajar el ritmo sin culpa.", moral: "Moraleja: descansar también es parte del camino; hasta el mar necesita marea baja." },
+        { main: "En estos días de periodo, descansar no es perder el tiempo, es recargar tu fuerza.", moral: "Recuerda: cuidar de ti no es egoísmo, es la base para que todo lo demás funcione." },
+        { main: "Si hoy sientes el cuerpo pesado o sensible, recuerda que mereces todo el apapacho del mundo.", moral: "Nota bonita: date el crédito por todas las veces que seguiste adelante sin que nadie lo viera." },
+        { main: "Escucha lo que tu cuerpo te pide hoy: calidez, calma y cero presiones innecesarias.", moral: "Pensamiento de hoy: la serenidad es saber que todo tiene su momento y su ritmo natural." }
+      ],
+      folicular: [
+        { main: "Tu energía empieza a subir de nuevo: aprovecha esta claridad para hacer lo que más disfrutas.", moral: "Moraleja de hoy: las flores no compiten entre ellas, simplemente florecen a su propio tiempo." },
+        { main: "Estás entrando en una etapa llena de frescura y buenas ideas; confía en tu intuición.", moral: "Nota mental: lo que hoy parece un paso pequeño, mañana será la razón por la que llegaste lejos." },
+        { main: "Qué bonito verte recuperar tu vitalidad día con día; hoy tienes todo para brillar.", moral: "Detalle del día: tu sonrisa cambia el ambiente de cualquier lugar en el que estás." }
+      ],
+      ovulatory: [
+        { main: "Estás en tu punto más alto de energía y vitalidad; hoy irradias una luz increíble.", moral: "Recordatorio: estamos haciendo equipo en cada etapa, cuidándonos y sumando tranquilidad." },
+        { main: "Aprovecha esta chispa de energía para disfrutar el día, reírte mucho y sentirte plena.", moral: "Pensamiento: lo mejor de cada día es saber que cuentas con apoyo incondicional." },
+        { main: "Hoy tienes la energía perfecta para comerte el mundo sin perder tu esencia tan linda.", moral: "Detalle para ti: gracias por confiar, por compartir y por ser tan auténtica siempre." }
+      ],
+      luteal: [
+        { main: "Si hoy sientes cambios de ánimo o un poco de cansancio, sé paciente contigo misma; es parte del ciclo.", moral: "Moraleja: la paz interior empieza el día en que decides no exigirte perfección." },
+        { main: "En esta etapa tu cuerpo empieza a pedir más calma y menos ruido; hazle caso sin remordimientos.", moral: "Moraleja: trata tu mente como un jardín; riega solo los pensamientos que te den paz." },
+        { main: "Recuerda que siempre tienes un lugar seguro conmigo, en tus días buenos y en los más sensibles.", moral: "Recordatorio diario: tu bienestar físico y emocional siempre será la prioridad número uno." }
+      ]
+    };
+
+    const INITIAL_EVENTS = [
+      { id: '1', date: '2026-08-03', type: 'period_start', title: 'Inicio de Periodo (Agosto)', details: 'Duración estimada 5 días (3 - 7 Ago).', tags: ['cramps_mild'], alteredCycle: false, flow: 'medium' },
+      { id: '2', date: '2026-08-31', type: 'period_start', title: 'Inicio de Periodo (Septiembre)', details: 'Duración estimada 5 días (31 Ago - 4 Sep).', tags: [], alteredCycle: false, flow: 'medium' },
+      { id: '3', date: '2026-10-12', type: 'period_start', title: 'Inicio de Periodo (Octubre)', details: 'Duración 5 días (12 - 16 Oct). Cólicos fuertes el 14 Oct.', tags: ['cramps_strong'], alteredCycle: false, flow: 'heavy' },
+      { id: '4', date: '2026-10-21', type: 'intimacy_unprotected', title: 'Relación (Sin protección / Sin eyaculación)', details: 'Registrado en bitácora.', tags: [] },
+      { id: '5', date: '2026-10-22', type: 'pill', title: 'Pastilla de Emergencia', details: 'Toma nocturna (Levonorgestrel).', tags: ['altered_cycle'] },
+      { id: '6', date: '2026-10-24', type: 'intimacy_unprotected', title: 'Relación (Sin protección)', details: 'Madrugada.', tags: [] },
+      { id: '7', date: '2026-10-26', type: 'medical', title: 'Ultrasonido Transvaginal', details: 'Endometrio inactivo (1.7-1.9 mm) y ovarios en reposo. Sin riesgo.', tags: [] },
+      { id: '8', date: '2026-10-31', type: 'period_start', title: 'Inicio de Periodo Confirmatorio', details: 'Duración 5 días (31 Oct - 4 Nov). Reinicio de ciclo confirmado.', tags: ['altered_cycle'], alteredCycle: true, flow: 'medium' },
+      { id: '9', date: '2026-11-07', type: 'intimacy_protected', title: 'Relaciones con Condón (3x)', details: 'Protección de barrera usada en todo momento.', tags: ['good_mood'] },
+      { id: '10', date: '2026-11-08', type: 'medical', title: 'Síntomas físicos / Chequeo', details: 'Mareos y náuseas por ayuno prolongado y ajuste hormonal.', tags: ['nausea', 'fatigue'] }
+    ];
+
+    function pickNextDailyMessage(phaseKey) {
+      const pool = MESSAGE_LIBRARY[phaseKey] || MESSAGE_LIBRARY.folicular;
+      const idx = Math.floor(Math.random() * pool.length);
+      return { ...pool[idx], number: idx + 1, total: pool.length };
+    }
+
+    function App() {
+      const todayStr = getTodayLocal();
+      const todayDateObj = parseLocalDate(todayStr);
+
+      const [isUnlocked, setIsUnlocked] = useState(() => {
+        try { return sessionStorage.getItem('ciclo_unlocked_v7') === 'true'; } catch { return false; }
+      });
+      const [pinInput, setPinInput] = useState('');
+      const [pinError, setPinError] = useState(false);
+
+      const [viewMode, setViewMode] = useState(() => {
+        try { return localStorage.getItem('ciclo_view_mode_v1') || 'angie'; } catch { return 'angie'; }
+      });
+
+      const [discreetMode, setDiscreetMode] = useState(false);
+
+      const toggleViewMode = (mode) => {
+        setViewMode(mode);
+        try { localStorage.setItem('ciclo_view_mode_v1', mode); } catch {}
+      };
+
+      const [cloudUrl] = useState(DEFAULT_CLOUD_URL);
+      const [syncStatus, setSyncStatus] = useState('syncing');
+
+      const [activeTab, setActiveTab] = useState('today');
+      const [referenceDate, setReferenceDate] = useState(todayStr);
+      const [currentMonth, setCurrentMonth] = useState({
+        year: todayDateObj.getFullYear(),
+        month: todayDateObj.getMonth()
+      });
+      const [selectedDay, setSelectedDay] = useState(todayStr);
+
+      const [events, setEvents] = useState(() => {
+        try {
+          const saved = localStorage.getItem('ciclo_bienestar_events_v7');
+          const parsed = saved ? JSON.parse(saved) : INITIAL_EVENTS;
+          return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_EVENTS;
+        } catch {
+          return INITIAL_EVENTS;
+        }
+      });
+
+      const [settings, setSettings] = useState(() => {
+        try {
+          const saved = localStorage.getItem('ciclo_bienestar_settings_v1');
+          const parsed = saved ? JSON.parse(saved) : {};
+          return { birthControlMethod: 'condom', goal: 'prevent', ...parsed };
+        } catch {
+          return { birthControlMethod: 'condom', goal: 'prevent' };
+        }
+      });
+
+      const [modalOpen, setModalOpen] = useState(false);
+      const [newEventType, setNewEventType] = useState('intimacy_protected');
+      const [newEventDate, setNewEventDate] = useState(todayStr);
+      const [newEventTitle, setNewEventTitle] = useState('');
+      const [newEventDetails, setNewEventDetails] = useState('');
+      const [newEventTags, setNewEventTags] = useState([]);
+      const [newEventAltered, setNewEventAltered] = useState(false);
+      const [newEventFlow, setNewEventFlow] = useState('medium');
+      const [newEventTemp, setNewEventTemp] = useState('');
+
+      const [safeDaysModalOpen, setSafeDaysModalOpen] = useState(false);
+      const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+      const [faqOpenIdx, setFaqOpenIdx] = useState(null);
+      const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
+      const [currentDailyMsg, setCurrentDailyMsg] = useState(null);
+      const [deferredPrompt, setDeferredPrompt] = useState(null);
+      const [showPwaGuide, setShowPwaGuide] = useState(false);
+
+      useEffect(() => {
+        const handler = (e) => { e.preventDefault(); setDeferredPrompt(e); };
+        window.addEventListener('beforeinstallprompt', handler);
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+      }, []);
+
+      const handleInstallClick = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          setDeferredPrompt(null);
+        } else {
+          setShowPwaGuide(true);
+        }
+      };
+
+      useEffect(() => {
+        if (!cloudUrl || !isUnlocked) return;
+        const cleanUrl = cloudUrl.trim().replace(/\/+$/, '');
+        const endpoint = `${cleanUrl}/ciclo_data.json`;
+
+        const fetchRemote = async () => {
+          try {
+            const res = await fetch(endpoint);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && Array.isArray(data.events) && data.events.length > 0) {
+                setEvents(data.events);
+                localStorage.setItem('ciclo_bienestar_events_v7', JSON.stringify(data.events));
+                if (data.settings) {
+                  const mergedSettings = { birthControlMethod: 'condom', goal: 'prevent', ...data.settings };
+                  setSettings(mergedSettings);
+                  localStorage.setItem('ciclo_bienestar_settings_v1', JSON.stringify(mergedSettings));
+                }
+                setSyncStatus('synced');
+              } else {
+                await fetch(endpoint, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ events, settings, updatedAt: Date.now() })
+                });
+                setSyncStatus('synced');
+              }
+            }
+          } catch {
+            setSyncStatus('error');
+          }
+        };
+
+        fetchRemote();
+        const interval = setInterval(fetchRemote, 6000);
+        return () => clearInterval(interval);
+      }, [cloudUrl, isUnlocked]);
+
+      const persistCloud = async (updatedEvents, updatedSettings = settings) => {
+        setEvents(updatedEvents);
+        setSettings(updatedSettings);
+        try {
+          localStorage.setItem('ciclo_bienestar_events_v7', JSON.stringify(updatedEvents));
+          localStorage.setItem('ciclo_bienestar_settings_v1', JSON.stringify(updatedSettings));
+        } catch {}
+
+        if (cloudUrl) {
+          setSyncStatus('syncing');
+          try {
+            const cleanUrl = cloudUrl.trim().replace(/\/+$/, '');
+            await fetch(`${cleanUrl}/ciclo_data.json`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ events: updatedEvents, settings: updatedSettings, updatedAt: Date.now() })
+            });
+            setSyncStatus('synced');
+          } catch {
+            setSyncStatus('error');
+          }
+        }
+      };
+
+      const handleExportJsonBackup = () => {
+        const payload = { app: 'Ciclo & Bienestar', exportedAt: todayStr, settings, events };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ciclo-bienestar-respaldo-${todayStr}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      const handleImportJsonBackup = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const parsed = JSON.parse(ev.target.result);
+            if (parsed && Array.isArray(parsed.events)) {
+              const nextSettings = parsed.settings ? { ...settings, ...parsed.settings } : settings;
+              persistCloud(parsed.events, nextSettings);
+              alert('Respaldo restaurado y sincronizado.');
+            }
+          } catch {
+            alert('Archivo JSON no válido.');
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      const toggleBleedingDay = (dateStr, flowLevel = 'medium') => {
+        const existing = events.find(e => e.date === dateStr && (e.type === 'period_day' || e.type === 'period_start'));
+        if (existing) {
+          if (existing.flow === flowLevel) {
+            persistCloud(events.filter(e => e.id !== existing.id));
+          } else {
+            const updated = events.map(e => e.id === existing.id ? { ...e, flow: flowLevel, details: `Flujo ${FLOW_LEVELS.find(f => f.id === flowLevel)?.label.toLowerCase()}.` } : e);
+            persistCloud(updated);
+          }
+        } else {
+          const prevDay = addDays(dateStr, -1);
+          const hadPrevBleed = events.some(e => e.date === prevDay && (e.type === 'period_day' || e.type === 'period_start'));
+          const created = {
+            id: String(Date.now()),
+            date: dateStr,
+            type: hadPrevBleed ? 'period_day' : 'period_start',
+            title: hadPrevBleed ? 'Día de Periodo' : 'Inicio de Periodo',
+            details: `Flujo ${FLOW_LEVELS.find(f => f.id === flowLevel)?.label.toLowerCase()}.`,
+            tags: [],
+            flow: flowLevel,
+            alteredCycle: false
+          };
+          const updated = [...events, created].sort((a, b) => b.date.localeCompare(a.date));
+          persistCloud(updated);
+        }
+      };
+
+      const cycleAnalytics = useMemo(() => {
+        const periodStarts = events
+          .filter(e => e.type === 'period_start')
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        const periodDaySet = new Set(
+          events.filter(e => e.type === 'period_day' || e.type === 'period_start').map(e => e.date)
+        );
+
+        const starts = periodStarts.length ? periodStarts.map(e => e.date) : [todayStr];
+        const historyRows = [];
+        const naturalLengths = [];
+
+        for (let i = 0; i < periodStarts.length; i++) {
+          const curr = periodStarts[i];
+          const next = periodStarts[i + 1];
+          const length = next ? diffDays(curr.date, next.date) : null;
+          const hasPillBetween = next
+            ? events.some(ev => ev.type === 'pill' && ev.date >= curr.date && ev.date < next.date)
+            : false;
+
+          let bleedDays = 1;
+          while (periodDaySet.has(addDays(curr.date, bleedDays)) && bleedDays < 12) {
+            bleedDays++;
+          }
+          const estimatedBleedDays = bleedDays > 1 ? bleedDays : 5;
+
+          if (length !== null && !hasPillBetween && !next?.alteredCycle && length >= 21 && length <= 45) {
+            naturalLengths.push(length);
+          }
+
+          historyRows.push({
+            id: curr.id,
+            start: curr.date,
+            end: addDays(curr.date, estimatedBleedDays - 1),
+            bleedDays: estimatedBleedDays,
+            length,
+            isAltered: Boolean(hasPillBetween || next?.alteredCycle || (length !== null && length < 21)),
+            title: curr.title
+          });
+        }
+
+        const avgCycleLength = naturalLengths.length > 0
+          ? Math.round(naturalLengths.reduce((a, b) => a + b, 0) / naturalLengths.length)
+          : 28;
+        const minObservedCycle = naturalLengths.length > 0 ? Math.min(...naturalLengths) : 28;
+        const maxObservedCycle = naturalLengths.length > 0 ? Math.max(...naturalLengths, 28) : 28;
+        const variation = maxObservedCycle - minObservedCycle;
+        const isIrregular = variation >= 7;
+
+        const peakOvulationOffset = Math.max(10, avgCycleLength - 14);
+        const peakStartOffset = Math.max(8, peakOvulationOffset - 2);
+        const peakEndOffset = peakOvulationOffset + 1;
+        const safeFertileStartOffset = Math.max(5, Math.min(8, peakOvulationOffset - 5));
+        const safeFertileEndOffset = Math.min(
+          avgCycleLength - 3,
+          Math.max(peakOvulationOffset + 3, maxObservedCycle > 30 ? 21 : 16)
+        );
+
+        const cleanTempLogs = events
+          .filter(ev => typeof ev.bbt === 'number' && !Number.isNaN(ev.bbt))
+          .map(ev => ({
+            date: ev.date,
+            temp: ev.bbt,
+            noisy: (ev.tags || []).includes('poor_sleep')
+          }))
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        const validTemps = cleanTempLogs.filter(x => !x.noisy);
+        const folicularTemps = validTemps.filter(x => {
+          const st = [...starts].reverse().find(s => s <= x.date);
+          if (!st) return false;
+          const d = diffDays(st, x.date) + 1;
+          return d >= 6 && d <= safeFertileStartOffset + 2;
+        });
+        const baselineTemp = folicularTemps.length > 0
+          ? Number((folicularTemps.reduce((acc, cur) => acc + cur.temp, 0) / folicularTemps.length).toFixed(2))
+          : validTemps.length > 0
+            ? Number((validTemps.reduce((acc, cur) => acc + cur.temp, 0) / validTemps.length).toFixed(2))
+            : null;
+
+        const highTempStreak = baselineTemp !== null
+          ? validTemps.filter(x => x.temp >= baselineTemp + 0.2).length
+          : 0;
+        const thermalOvulationConfirmed = highTempStreak >= 3;
+
+        const prePeriodTagCounts = {};
+        periodStarts.forEach(ps => {
+          const windowEvents = events.filter(ev => {
+            const diff = diffDays(ev.date, ps.date);
+            return diff >= 1 && diff <= 3;
+          });
+          windowEvents.forEach(ev => {
+            (ev.tags || []).forEach(tid => {
+              prePeriodTagCounts[tid] = (prePeriodTagCounts[tid] || 0) + 1;
+            });
+          });
+        });
+
+        const correlatedSymptoms = Object.entries(prePeriodTagCounts)
+          .filter(([, count]) => count >= 2)
+          .map(([tid, count]) => {
+            const tagObj = SYMPTOM_TAGS.find(t => t.id === tid);
+            return tagObj ? { ...tagObj, count } : null;
+          })
+          .filter(Boolean);
+
+        return {
+          starts,
+          periodDaySet,
+          historyRows: historyRows.reverse(),
+          baseCycleLength: avgCycleLength,
+          minObservedCycle,
+          maxObservedCycle,
+          variation,
+          isIrregular,
+          safeFertileStartOffset,
+          peakStartOffset,
+          peakOvulationOffset,
+          peakEndOffset,
+          safeFertileEndOffset,
+          cleanTempLogs,
+          baselineTemp,
+          thermalOvulationConfirmed,
+          correlatedSymptoms
+        };
+      }, [events, todayStr]);
+
+      const activeMethod = useMemo(() => {
+        return BIRTH_CONTROL_METHODS.find(m => m.id === settings.birthControlMethod) || BIRTH_CONTROL_METHODS[0];
+      }, [settings.birthControlMethod]);
+
+      const activeGoal = useMemo(() => {
+        return APP_GOALS.find(g => g.id === settings.goal) || APP_GOALS[0];
+      }, [settings.goal]);
+
+      const activePeriodStart = useMemo(() => {
+        const valid = cycleAnalytics.starts.filter(d => d <= referenceDate);
+        return valid.length ? valid[valid.length - 1] : cycleAnalytics.starts[0];
+      }, [cycleAnalytics.starts, referenceDate]);
+
+      const activePillInCycle = useMemo(() => {
+        return events.find(
+          ev => ev.type === 'pill' && ev.date >= activePeriodStart && ev.date <= referenceDate
+        );
+      }, [events, activePeriodStart, referenceDate]);
+
+      const cycleDay = Math.max(1, diffDays(activePeriodStart, referenceDate) + 1);
+      const nextPeriodEst = addDays(activePeriodStart, cycleAnalytics.baseCycleLength);
+      const daysUntilNext = diffDays(referenceDate, nextPeriodEst);
+      const fertileStart = addDays(activePeriodStart, cycleAnalytics.safeFertileStartOffset);
+      const fertileEnd = addDays(activePeriodStart, cycleAnalytics.safeFertileEndOffset);
+      const peakStart = addDays(activePeriodStart, cycleAnalytics.peakStartOffset);
+      const peakEnd = addDays(activePeriodStart, cycleAnalytics.peakEndOffset);
+
+      const projectedPeriodStarts = useMemo(() => {
+        const lastReal = cycleAnalytics.starts[cycleAnalytics.starts.length - 1];
+        const list = [];
+        for (let i = 1; i <= 6; i++) {
+          list.push(addDays(lastReal, cycleAnalytics.baseCycleLength * i));
+        }
+        return list;
+      }, [cycleAnalytics.starts, cycleAnalytics.baseCycleLength]);
+
+      const getPhaseKey = (day) => {
+        const fStart = cycleAnalytics.safeFertileStartOffset + 1;
+        const fEnd = cycleAnalytics.safeFertileEndOffset + 1;
+        if (day <= 5) return 'menstrual';
+        if (day >= fStart && day <= fEnd) return 'ovulatory';
+        if (day < fStart) return 'folicular';
+        return 'luteal';
+      };
+
+      const currentPhaseKey = getPhaseKey(cycleDay);
+
+      useEffect(() => {
+        if (isUnlocked && !currentDailyMsg) {
+          setCurrentDailyMsg(pickNextDailyMessage(currentPhaseKey));
+          if (viewMode === 'angie' && !discreetMode) setWelcomeModalOpen(true);
+        }
+      }, [isUnlocked, currentPhaseKey]);
+
+      const handleUnlock = (e) => {
+        e.preventDefault();
+        if (pinInput.trim() === ACCESS_PIN) {
+          setIsUnlocked(true);
+          setPinError(false);
+          try { sessionStorage.setItem('ciclo_unlocked_v7', 'true'); } catch {}
+          setCurrentDailyMsg(pickNextDailyMessage(currentPhaseKey));
+          if (viewMode === 'angie' && !discreetMode) setWelcomeModalOpen(true);
+        } else {
+          setPinError(true);
+          setPinInput('');
+        }
+      };
+
+      const handleLock = () => {
+        setIsUnlocked(false);
+        setPinInput('');
+        setCurrentDailyMsg(null);
+        try { sessionStorage.removeItem('ciclo_unlocked_v7'); } catch {}
+      };
+
+      const handleNewMotivationalMsg = () => {
+        setCurrentDailyMsg(pickNextDailyMessage(currentPhaseKey));
+      };
+
+      const safeWindows = useMemo(() => {
+        const safeEndOffset = cycleAnalytics.safeFertileEndOffset;
+        const preOvStart = addDays(activePeriodStart, 5);
+        const preOvEnd = addDays(activePeriodStart, cycleAnalytics.safeFertileStartOffset - 1);
+        const postOvStart = addDays(activePeriodStart, safeEndOffset + 1);
+        const postOvEnd = addDays(nextPeriodEst, -1);
+
+        const nextPreOvStart = addDays(nextPeriodEst, 5);
+        const nextPreOvEnd = addDays(nextPeriodEst, cycleAnalytics.safeFertileStartOffset - 1);
+        const nextPostOvStart = addDays(nextPeriodEst, safeEndOffset + 1);
+        const nextPostOvEnd = addDays(nextPeriodEst, cycleAnalytics.baseCycleLength - 1);
+
+        const isCurrentlySafe = !activePillInCycle && (
+          (referenceDate >= preOvStart && referenceDate <= preOvEnd) ||
+          (referenceDate >= postOvStart && referenceDate <= postOvEnd) ||
+          (cycleDay <= 5)
+        );
+
+        let nextSafeRange = null;
+        if (activePillInCycle) {
+          nextSafeRange = { start: nextPreOvStart, end: nextPreOvEnd, label: 'Pausado hasta confirmar próximo periodo', risk: 'Precaución activa' };
+        } else if (referenceDate < preOvStart) {
+          nextSafeRange = { start: preOvStart, end: preOvEnd, label: `Fase Folicular Temprana (Días 6 a ${cycleAnalytics.safeFertileStartOffset})`, risk: 'Baja' };
+        } else if (referenceDate <= preOvEnd) {
+          nextSafeRange = { start: referenceDate, end: preOvEnd, label: 'Hoy en ventana de menor probabilidad biológica', risk: 'Baja' };
+        } else if (referenceDate < postOvStart) {
+          nextSafeRange = { start: postOvStart, end: postOvEnd, label: `Fase Lútea (Días ${safeEndOffset + 2} a ${cycleAnalytics.baseCycleLength})`, risk: 'Mínima' };
+        } else if (referenceDate <= postOvEnd) {
+          nextSafeRange = { start: referenceDate, end: postOvEnd, label: 'Hoy en etapa de menor probabilidad biológica', risk: 'Mínima' };
+        } else {
+          nextSafeRange = { start: nextPreOvStart, end: nextPreOvEnd, label: 'Siguiente ciclo post-periodo', risk: 'Baja' };
+        }
+
+        return { preOvStart, preOvEnd, postOvStart, postOvEnd, nextPreOvStart, nextPreOvEnd, nextPostOvStart, nextPostOvEnd, isCurrentlySafe, nextSafeRange };
+      }, [activePeriodStart, nextPeriodEst, referenceDate, cycleDay, cycleAnalytics, activePillInCycle]);
+
+      const getPhaseInfo = (day) => {
+        const fStart = cycleAnalytics.safeFertileStartOffset + 1;
+        const pStart = cycleAnalytics.peakStartOffset + 1;
+        const pEnd = cycleAnalytics.peakEndOffset + 1;
+        const fEnd = cycleAnalytics.safeFertileEndOffset + 1;
+
+        if (activePillInCycle && day > 5) {
+          return {
+            name: 'Ciclo en Ajuste (Pastilla)',
+            fertility: 'Impredecible (Usar Condón)',
+            desc: `Anticoncepción de emergencia registrada el ${formatDateES(activePillInCycle.date, false)}. La ovulación y el periodo pueden recorrerse; mantener protección hasta confirmar sangrado.`,
+            partnerTip: 'Puede haber sensibilidad, cansancio o retraso/adelanto del periodo por el ajuste hormonal. Apoyo, calma y protección obligatoria.',
+            possibleSymptoms: ['Retraso o adelanto del periodo', 'Cansancio', 'Sensibilidad', 'Manchado ligero'],
+            ringColor: '#F59E0B',
+            badgeBg: 'bg-amber-100 text-amber-800',
+            emoji: '🛡️'
+          };
+        }
+        if (day <= 5) {
+          return {
+            name: 'Fase Menstrual',
+            fertility: 'Muy Baja',
+            desc: 'Días de sangrado menstrual. Priorizar descanso, calor local e hidratación.',
+            partnerTip: 'Nivel de energía bajo y posible sensibilidad física. Ideal consentirla, evitar esfuerzos pesados y ofrecer algo calientito.',
+            possibleSymptoms: ['Cólicos', 'Cansancio', 'Inflamación', 'Dolor lumbar'],
+            ringColor: '#FF4B72',
+            badgeBg: 'bg-rose-100 text-rose-700',
+            emoji: '🌷'
+          };
+        }
+        if (day >= pStart && day <= pEnd) {
+          return {
+            name: cycleAnalytics.thermalOvulationConfirmed ? 'Ovulación Confirmada (BBT)' : 'Pico de Ovulación',
+            fertility: settings.goal === 'conceive' ? 'Máxima (Ventana Fértil)' : 'Muy Alta (Riesgo Máximo)',
+            desc: `Días centrales de fertilidad (ciclo promedio ${cycleAnalytics.baseCycleLength}d). ${settings.goal === 'conceive' ? 'Días de mayor fertilidad.' : 'Uso obligatorio de protección.'}`,
+            partnerTip: 'Fertilidad alta y pico de energía. Precaución según su objetivo actual.',
+            possibleSymptoms: ['Energía alta', 'Flujo clara de huevo', 'Libido elevada'],
+            ringColor: '#EF4444',
+            badgeBg: 'bg-red-100 text-red-700',
+            emoji: '✨'
+          };
+        }
+        if (day >= fStart && day <= fEnd) {
+          return {
+            name: 'Ventana Fértil Ampliada',
+            fertility: 'Alta (Margen Seguridad)',
+            desc: `Dentro del margen de seguridad (Días ${fStart} a ${fEnd}) que cubre variaciones naturales del ciclo.`,
+            partnerTip: `Zona de precaución activa. Mantener protección de barrera hasta pasar el día ${fEnd}.`,
+            possibleSymptoms: ['Buen ánimo', 'Aumento de flujo', 'Energía estable'],
+            ringColor: '#F59E0B',
+            badgeBg: 'bg-amber-100 text-amber-800',
+            emoji: '☀️'
+          };
+        }
+        if (day < fStart) {
+          return {
+            name: 'Fase Folicular Temprana',
+            fertility: 'Baja (No es anticonceptivo)',
+            desc: 'Días inmediatos posteriores al periodo antes de abrir la ventana fértil.',
+            partnerTip: 'Buen ánimo, claridad mental y energía en subida. Buen momento para salidas o planes activos juntos.',
+            possibleSymptoms: ['Energía en subida', 'Buen ánimo', 'Claridad mental'],
+            ringColor: '#10B981',
+            badgeBg: 'bg-emerald-100 text-emerald-800',
+            emoji: '🌱'
+          };
+        }
+        return {
+          name: 'Fase Lútea',
+          fertility: 'Mínima (No es anticonceptivo)',
+          desc: 'Etapa posterior al margen fértil ampliado hasta el inicio del siguiente periodo.',
+          partnerTip: 'Etapa premenstrual: puede haber cansancio, antojos o sensibilidad. Ideal planes relajados, comida rica y apapacho.',
+          possibleSymptoms: ['Antojos', 'Cansancio', 'Sensibilidad emocional', 'Inflamación'],
+          ringColor: '#10B981',
+          badgeBg: 'bg-emerald-100 text-emerald-800',
+          emoji: '🌙'
+        };
+      };
+
+      const phase = getPhaseInfo(cycleDay);
+
+      const getDayStatus = (dateStr) => {
+        const allPeriodStarts = [...cycleAnalytics.starts, ...projectedPeriodStarts];
+        const explicitBleed = cycleAnalytics.periodDaySet.has(dateStr);
+
+        const allPeriods = allPeriodStarts.map(s => {
+          const hist = cycleAnalytics.historyRows.find(r => r.start === s);
+          const dur = hist ? hist.bleedDays - 1 : 4;
+          return { start: s, end: addDays(s, dur), isProjected: projectedPeriodStarts.includes(s) };
+        });
+        const periodMatch = allPeriods.find(r => dateStr >= r.start && dateStr <= r.end);
+
+        const isAlteredActive = Boolean(activePillInCycle && dateStr >= activePillInCycle.date && dateStr < projectedPeriodStarts[0]);
+        const isPeak = allPeriodStarts.some(s => dateStr >= addDays(s, cycleAnalytics.peakStartOffset) && dateStr <= addDays(s, cycleAnalytics.peakEndOffset));
+        const isFertile = isAlteredActive || allPeriodStarts.some(s => dateStr >= addDays(s, cycleAnalytics.safeFertileStartOffset) && dateStr <= addDays(s, cycleAnalytics.safeFertileEndOffset));
+        const isLowRisk = !isAlteredActive && allPeriodStarts.some(s => {
+          const d6 = addDays(s, 5);
+          const dPreEnd = addDays(s, cycleAnalytics.safeFertileStartOffset - 1);
+          const dPostStart = addDays(s, cycleAnalytics.safeFertileEndOffset + 1);
+          const dEnd = addDays(s, cycleAnalytics.baseCycleLength - 1);
+          return (dateStr >= d6 && dateStr <= dPreEnd) || (dateStr >= dPostStart && dateStr <= dEnd);
+        });
+
+        const dayEvents = events.filter(e => e.date === dateStr);
+        return {
+          isPeriod: explicitBleed || Boolean(periodMatch),
+          isProjectedPeriod: !explicitBleed && Boolean(periodMatch && periodMatch.isProjected),
+          isFertile, isPeak, isLowRisk, isAlteredActive, dayEvents
+        };
+      };
+
+      const activeReactiveInsights = useMemo(() => {
+        const dayEvs = events.filter(e => e.date === referenceDate);
+        const tagsToday = new Set();
+        dayEvs.forEach(ev => (ev.tags || []).forEach(t => tagsToday.add(t)));
+        return Object.entries(REACTIVE_INSIGHTS)
+          .filter(([key]) => tagsToday.has(key))
+          .map(([key, val]) => ({ id: key, ...val }));
+      }, [events, referenceDate]);
+
+      const todayBleedEvent = useMemo(() => {
+        return events.find(e => e.date === referenceDate && (e.type === 'period_day' || e.type === 'period_start'));
+      }, [events, referenceDate]);
+
+      const weekStrip = useMemo(() => {
+        const dayLetters = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+        return Array.from({ length: 7 }).map((_, idx) => {
+          const dStr = addDays(referenceDate, idx - 3);
+          const dt = parseLocalDate(dStr);
+          return {
+            dateStr: dStr,
+            letter: dayLetters[dt.getDay()],
+            dayNum: dt.getDate(),
+            isToday: dStr === todayStr,
+            isSelected: dStr === referenceDate,
+            status: getDayStatus(dStr)
+          };
+        });
+      }, [referenceDate, todayStr, events, cycleAnalytics, projectedPeriodStarts, activePillInCycle]);
+
+      const openAddModal = (type, dateOverride) => {
+        const targetDate = dateOverride || referenceDate;
+        setNewEventType(type);
+        setNewEventDate(targetDate);
+        const defaultTitles = {
+          period_start: 'Inicio de Periodo',
+          intimacy_protected: 'Relación con Condón',
+          intimacy_unprotected: 'Relación sin Protección',
+          pill: 'Pastilla de Emergencia',
+          medical: 'Registro de Síntomas / Flujo / BBT'
+        };
+        setNewEventTitle(defaultTitles[type] || '');
+        setNewEventDetails('');
+        setNewEventTags(type === 'pill' ? ['altered_cycle'] : []);
+        setNewEventAltered(false);
+        setNewEventFlow('medium');
+        setNewEventTemp('');
+        setModalOpen(true);
+      };
+
+      const toggleTag = (tagId) => {
+        setNewEventTags(prev => prev.includes(tagId) ? prev.filter(t => t !== tagId) : [...prev, tagId]);
+      };
+
+      const handleSaveEvent = (e) => {
+        e.preventDefault();
+        if (!newEventTitle.trim()) return;
+        const parsedTemp = newEventTemp !== '' ? parseFloat(String(newEventTemp).replace(',', '.')) : undefined;
+        const validTemp = parsedTemp !== undefined && !Number.isNaN(parsedTemp) && parsedTemp >= 34 && parsedTemp <= 41 ? parsedTemp : undefined;
+
+        const created = {
+          id: String(Date.now()),
+          date: newEventDate,
+          type: newEventType,
+          title: newEventTitle.trim(),
+          details: newEventDetails.trim() || (validTemp ? `Temperatura basal: ${validTemp}°C.` : 'Registrado en bitácora.'),
+          tags: newEventTags,
+          alteredCycle: newEventType === 'period_start' ? newEventAltered : false,
+          flow: newEventType === 'period_start' ? newEventFlow : undefined,
+          bbt: validTemp
+        };
+        const updated = [...events, created].sort((a, b) => b.date.localeCompare(a.date));
+        persistCloud(updated);
+        setSelectedDay(newEventDate);
+        setModalOpen(false);
+      };
+
+      const handleDeleteEvent = (id) => {
+        persistCloud(events.filter(ev => ev.id !== id));
+      };
+
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const daysInMonth = new Date(currentMonth.year, currentMonth.month + 1, 0).getDate();
+      const firstWeekday = new Date(currentMonth.year, currentMonth.month, 1).getDay();
+
+      const prevMonth = () => setCurrentMonth(prev => prev.month === 0 ? { year: prev.year - 1, month: 11 } : { year: prev.year, month: prev.month - 1 });
+      const nextMonth = () => setCurrentMonth(prev => prev.month === 11 ? { year: prev.year + 1, month: 0 } : { year: prev.year, month: prev.month + 1 });
+
+      const selectedDayInfo = getDayStatus(selectedDay);
+      const sortedEvents = [...events].sort((a, b) => b.date.localeCompare(a.date));
+
+      const getEventBadge = (type) => {
+        switch (type) {
+          case 'period_start': return { icon: '🩸', label: 'Inicio Periodo', color: 'bg-rose-100 text-rose-700 border-rose-200' };
+          case 'period_day': return { icon: '💧', label: 'Sangrado', color: 'bg-rose-50 text-rose-700 border-rose-200' };
+          case 'intimacy_protected': return { icon: '🛡️❤️', label: 'Con protección', color: 'bg-purple-100 text-purple-700 border-purple-200' };
+          case 'intimacy_unprotected': return { icon: '❤️', label: 'Sin protección', color: 'bg-pink-100 text-pink-700 border-pink-200' };
+          case 'pill': return { icon: '💊', label: 'Emergencia', color: 'bg-amber-100 text-amber-800 border-amber-200' };
+          default: return { icon: '🩺', label: 'Síntoma / BBT', color: 'bg-sky-100 text-sky-700 border-sky-200' };
+        }
+      };
+
+      const handleExportMedicalReport = () => {
+        const reportWindow = window.open('', '_blank', 'width=850,height=900');
+        if (!reportWindow) { window.print(); return; }
+
+        const cyclesHtml = cycleAnalytics.historyRows.map(c => `
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${formatDateES(c.start)} – ${formatDateES(c.end)} (${c.bleedDays}d)</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${c.length ? c.length + ' días' : 'En curso'}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${c.isAltered ? 'Alterado (Postday)' : 'Natural'}</td>
+          </tr>
+        `).join('');
+
+        const eventsHtml = sortedEvents.map(ev => {
+          const tagsText = (ev.tags || []).map(tid => SYMPTOM_TAGS.find(t => t.id === tid)?.label).filter(Boolean).join(', ');
+          const bbtText = typeof ev.bbt === 'number' ? `BBT: ${ev.bbt}°C` : '';
+          return `
+            <tr>
+              <td style="padding:8px;border-bottom:1px solid #e2e8f0;white-space:nowrap;">${formatDateES(ev.date)}</td>
+              <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-weight:bold;">${ev.title}</td>
+              <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${ev.details}${bbtText ? ' • ' + bbtText : ''}${tagsText ? ' [' + tagsText + ']' : ''}</td>
+            </tr>
+          `;
+        }).join('');
+
+        reportWindow.document.write(`
+          <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8" /><title>Reporte Ginecológico</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1e293b; padding: 32px; max-width: 800px; margin: 0 auto; }
+            h1 { color: #e11d48; margin-bottom: 4px; font-size: 22px; }
+            .sub { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+            .summary-box { display: flex; gap: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+            .summary-item { flex: 1; }
+            .summary-item span { display: block; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
+            .summary-item strong { font-size: 14px; color: #0f172a; }
+            h2 { font-size: 16px; border-bottom: 2px solid #f1f5f9; padding-bottom: 6px; margin-top: 24px; }
+            table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+            th { background: #f8fafc; padding: 8px; border-bottom: 2px solid #cbd5e1; color: #475569; }
+            @media print { .no-print { display: none; } }
+          </style></head><body>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <h1>Resumen Clínico y Control de Ciclo Menstrual</h1>
+              <div class="sub">Generado el ${formatDateES(todayStr)} • Método: ${activeMethod.label} • Objetivo: ${activeGoal.label}</div>
+            </div>
+            <button class="no-print" onclick="window.print()" style="background:#0f172a;color:white;border:none;padding:10px 16px;border-radius:8px;font-weight:bold;cursor:pointer;">🖨️ Imprimir / PDF</button>
+          </div>
+          <div class="summary-box">
+            <div class="summary-item"><span>Último Periodo (FUM)</span><strong>${formatDateES(activePeriodStart)}</strong></div>
+            <div class="summary-item"><span>Promedio / Rango</span><strong>${cycleAnalytics.baseCycleLength}d (${cycleAnalytics.minObservedCycle} a ${cycleAnalytics.maxObservedCycle}d)</strong></div>
+            <div class="summary-item"><span>Temp. Basal Base</span><strong>${cycleAnalytics.baselineTemp ? cycleAnalytics.baselineTemp + '°C' : 'Sin registro'}</strong></div>
+            <div class="summary-item"><span>Próximo Periodo Est.</span><strong>${formatDateES(nextPeriodEst)}</strong></div>
+          </div>
+          <h2>Historial de Ciclos Menstruales</h2>
+          <table><thead><tr><th>Sangrado</th><th>Duración Ciclo</th><th>Clasificación</th></tr></thead><tbody>${cyclesHtml}</tbody></table>
+          <h2>Bitácora Clínica, Flujo y Síntomas</h2>
+          <table><thead><tr><th>Fecha</th><th>Evento</th><th>Detalle</th></tr></thead><tbody>${eventsHtml}</tbody></table>
+          </body></html>
+        `);
+        reportWindow.document.close();
+      };
+
+      const svgRadius = 96;
+      const svgCircumference = 2 * Math.PI * svgRadius;
+      const cycleProgress = Math.min(1, cycleDay / cycleAnalytics.baseCycleLength);
+      const strokeDashoffset = svgCircumference * (1 - cycleProgress);
+
+      const heroHeadline = (() => {
+        if (cycleDay <= 5) return { top: 'PERIODO', big: `Día ${cycleDay}`, sub: `Ciclo promedio ${cycleAnalytics.baseCycleLength} días` };
+        if (daysUntilNext > 0) return { top: 'PRÓXIMO PERIODO EN', big: `${daysUntilNext} ${daysUntilNext === 1 ? 'día' : 'días'}`, sub: `Día ${cycleDay} del ciclo` };
+        if (daysUntilNext === 0) return { top: 'PERIODO ESPERADO', big: 'Hoy', sub: `Día ${cycleDay} del ciclo` };
+        return { top: 'POSIBLE RETRASO', big: `${Math.abs(daysUntilNext)} ${Math.abs(daysUntilNext) === 1 ? 'día' : 'días'}`, sub: `Día ${cycleDay} del ciclo` };
+      })();
+
+      if (!isUnlocked) {
+        return (
+          <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-rose-50 via-white to-fuchsia-50">
+            <div className="bg-white rounded-3xl shadow-xl border border-rose-100 max-w-sm w-full p-7 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-500 to-fuchsia-500 flex items-center justify-center text-white text-3xl mx-auto mb-4 shadow-md">
+                🔒
+              </div>
+              <h1 className="text-xl font-extrabold text-slate-900">Espacio Privado</h1>
+              <p className="text-xs text-slate-500 mt-1 mb-6">
+                Ingresa el código de seguridad para ver y editar el calendario.
+              </p>
+              <form onSubmit={handleUnlock} className="space-y-4">
+                <input
+                  type="password" inputMode="numeric" value={pinInput}
+                  onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
+                  placeholder="••••" maxLength={8} autoFocus
+                  className="w-full text-center text-2xl tracking-[0.5em] font-bold border-2 border-slate-200 rounded-2xl py-3 px-4 focus:outline-none focus:border-rose-500 transition"
+                />
+                {pinError && <p className="text-xs font-bold text-rose-600">Código incorrecto. Intenta de nuevo.</p>}
+                <button type="submit" className="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition">
+                  Desbloquear
+                </button>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="max-w-3xl mx-auto px-4 pt-3">
+          <header className="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5 mb-4 flex flex-col gap-3 no-print">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-white text-lg shadow-sm ${discreetMode ? 'bg-slate-800' : viewMode === 'jorge' ? 'bg-gradient-to-tr from-indigo-600 to-purple-600' : 'bg-gradient-to-tr from-rose-500 to-fuchsia-500'}`}>
+                  {discreetMode ? '🕶️' : viewMode === 'jorge' ? '💞' : '💗'}
+                </div>
+                <div>
+                  <h1 className="text-base font-extrabold text-slate-900 leading-tight">
+                    {discreetMode ? 'Bienestar Diario' : 'Ciclo & Bienestar'}
+                  </h1>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className={`inline-block w-2 h-2 rounded-full ${syncStatus === 'synced' ? 'bg-emerald-500' : syncStatus === 'error' ? 'bg-rose-500' : 'bg-amber-400 animate-pulse'}`}></span>
+                    <span className="text-[11px] font-medium text-slate-500">
+                      {syncStatus === 'synced' ? 'Sincronizado' : syncStatus === 'error' ? 'Sin conexión' : 'Sincronizando...'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setDiscreetMode(prev => !prev)}
+                  title="Modo discreto"
+                  className={`text-xs font-bold px-2.5 py-2 rounded-xl border transition ${discreetMode ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                >
+                  🕶️
+                </button>
+                <button onClick={() => setSettingsModalOpen(true)} title="Ajustes, método y respaldo" className="text-xs font-bold px-2.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center gap-1">
+                  <span>⚙️</span> <span className="hidden sm:inline">Ajustes</span>
+                </button>
+                {!discreetMode && (
+                  <button onClick={() => setWelcomeModalOpen(true)} title="Mensaje del día" className="text-xs font-bold px-2.5 py-2 rounded-xl bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 hover:bg-fuchsia-100 transition">
+                    💌
+                  </button>
+                )}
+                <button onClick={handleInstallClick} title="Instalar App" className="text-xs font-bold px-2.5 py-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 transition">
+                  📲
+                </button>
+                <button onClick={handleLock} title="Bloquear" className="text-xs font-bold px-2.5 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                  🔒
+                </button>
+              </div>
+            </div>
+
+            {!discreetMode && (
+              <div className="flex items-center justify-between gap-2 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                <button
+                  onClick={() => toggleViewMode('angie')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${viewMode === 'angie' ? 'bg-white text-rose-600 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+                >
+                  <span>🌷</span> Vista Angie
+                </button>
+                <button
+                  onClick={() => toggleViewMode('jorge')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${viewMode === 'jorge' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+                >
+                  <span>💞</span> Vista Pareja (Jorge)
+                </button>
+              </div>
+            )}
+
+            <nav className="hidden md:flex bg-slate-100 p-1 rounded-xl gap-1">
+              <button onClick={() => setActiveTab('today')} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${activeTab === 'today' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>Hoy</button>
+              <button onClick={() => setActiveTab('calendar')} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${activeTab === 'calendar' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>Calendario</button>
+              <button onClick={() => setActiveTab('history')} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${activeTab === 'history' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>Historial y Patrones</button>
+            </nav>
+          </header>
+
+          {activeTab === 'today' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-extrabold text-slate-900 capitalize">{formatDateES(referenceDate)}</span>
+                    {referenceDate === todayStr ? (
+                      <span className="text-[10px] font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">HOY</span>
+                    ) : (
+                      <button onClick={() => setReferenceDate(todayStr)} className="text-[11px] font-bold bg-slate-900 text-white px-2.5 py-0.5 rounded-full hover:bg-slate-700 transition">
+                        Volver a Hoy
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setReferenceDate(addDays(referenceDate, -7))} className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold">◀</button>
+                    <input type="date" value={referenceDate} onChange={(e) => e.target.value && setReferenceDate(e.target.value)} className="w-7 h-7 opacity-70 hover:opacity-100 text-xs border border-slate-200 rounded-lg px-1 cursor-pointer" title="Elegir fecha" />
+                    <button onClick={() => setReferenceDate(addDays(referenceDate, 7))} className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold">▶</button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1">
+                  {weekStrip.map(d => {
+                    let dotColor = 'bg-transparent';
+                    if (d.status.isPeriod) dotColor = 'bg-rose-500';
+                    else if (d.status.isPeak) dotColor = 'bg-red-500';
+                    else if (d.status.isFertile) dotColor = 'bg-amber-400';
+                    else if (d.status.isLowRisk) dotColor = 'bg-emerald-400';
+
+                    return (
+                      <button
+                        key={d.dateStr}
+                        onClick={() => setReferenceDate(d.dateStr)}
+                        className={`flex flex-col items-center py-2 rounded-2xl transition ${
+                          d.isSelected ? 'bg-slate-900 text-white shadow-sm' : d.isToday ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-300' : 'hover:bg-slate-50 text-slate-700'
+                        }`}
+                      >
+                        <span className={`text-[10px] font-bold ${d.isSelected ? 'text-slate-300' : 'text-slate-400'}`}>{d.letter}</span>
+                        <span className="text-sm font-extrabold my-0.5">{d.dayNum}</span>
+                        <div className="flex items-center gap-0.5 h-1.5">
+                          <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
+                          {d.status.dayEvents.length > 0 && <span className={`w-1.5 h-1.5 rounded-full ${d.isSelected ? 'bg-fuchsia-400' : 'bg-purple-500'}`}></span>}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {activePillInCycle && !discreetMode && (
+                <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3.5 flex items-start gap-3">
+                  <span className="text-xl mt-0.5">⚠️</span>
+                  <div>
+                    <p className="text-xs font-extrabold text-amber-950">Ciclo en ajuste por anticoncepción de emergencia</p>
+                    <p className="text-xs text-amber-900 mt-0.5 leading-relaxed">
+                      Registrada el <strong>{formatDateES(activePillInCycle.date, false)}</strong>. La ovulación y el periodo pueden recorrerse; mantener protección de barrera hasta confirmar el siguiente periodo.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className={`rounded-3xl shadow-sm border p-5 text-center ${discreetMode ? 'bg-white border-slate-200' : viewMode === 'jorge' ? 'bg-gradient-to-b from-indigo-50/70 via-white to-white border-indigo-100' : 'bg-gradient-to-b from-rose-50/70 via-white to-white border-rose-100/90'}`}>
+                <div className="relative w-56 h-56 mx-auto flex items-center justify-center mb-3">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 220 220">
+                    <circle cx="110" cy="110" r={svgRadius} fill="white" stroke="#F1F5F9" strokeWidth="14" />
+                    <circle
+                      cx="110" cy="110" r={svgRadius} fill="none" stroke={discreetMode ? '#334155' : phase.ringColor} strokeWidth="14"
+                      strokeLinecap="round" strokeDasharray={svgCircumference} strokeDashoffset={strokeDashoffset}
+                      style={{ transition: 'stroke-dashoffset 0.5s ease, stroke 0.3s ease' }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center px-5">
+                    <span className="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase">{heroHeadline.top}</span>
+                    <span className="text-3xl font-black text-slate-900 my-1 leading-none">{heroHeadline.big}</span>
+                    <span className="text-[11px] font-semibold text-slate-500 mb-2">{heroHeadline.sub}</span>
+                    {!discreetMode && (
+                      <span className={`text-[11px] font-bold px-3 py-0.5 rounded-full ${phase.badgeBg}`}>{phase.name}</span>
+                    )}
+                  </div>
+                </div>
+
+                {!discreetMode && (
+                  <>
+                    <p className="text-xs font-medium text-slate-500 mb-1">
+                      Probabilidad biológica de embarazo: <strong className="text-slate-900">{phase.fertility}</strong>
+                    </p>
+                    <p className="text-xs text-slate-600 max-w-md mx-auto mb-4 leading-relaxed">{phase.desc}</p>
+                  </>
+                )}
+
+                {viewMode === 'angie' && !discreetMode && (
+                  <div className="max-w-md mx-auto mb-4 bg-white border border-rose-100 rounded-2xl p-3">
+                    <p className="text-[11px] font-bold text-slate-500 mb-2">
+                      Sangrado el {formatDateES(referenceDate, false)}: <span className="text-rose-600">{todayBleedEvent ? '(Marcado — toca de nuevo para quitar)' : '(Toca intensidad)'}</span>
+                    </p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {FLOW_LEVELS.map(fl => {
+                        const active = todayBleedEvent && todayBleedEvent.flow === fl.id;
+                        return (
+                          <button
+                            key={fl.id}
+                            onClick={() => toggleBleedingDay(referenceDate, fl.id)}
+                            className={`py-1.5 px-1 rounded-xl text-[11px] font-bold border transition ${active ? fl.color + ' ring-2 ring-slate-900' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-rose-50'}`}
+                          >
+                            <div>{fl.icon}</div>
+                            <div className="mt-0.5">{fl.label}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto">
+                  <button onClick={() => openAddModal('period_start', referenceDate)} className="bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-2 rounded-2xl text-xs shadow-sm transition flex items-center justify-center gap-1.5">
+                    <span>🩸</span> {discreetMode ? 'Día 1' : 'Periodo'}
+                  </button>
+                  <button onClick={() => openAddModal('intimacy_protected', referenceDate)} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-2 rounded-2xl text-xs shadow-sm transition flex items-center justify-center gap-1.5">
+                    <span>❤️</span> {discreetMode ? 'Registro' : 'Intimidad'}
+                  </button>
+                  <button onClick={() => openAddModal('medical', referenceDate)} className="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-2 rounded-2xl text-xs shadow-sm transition flex items-center justify-center gap-1.5">
+                    <span>🌡️</span> Síntomas/BBT
+                  </button>
+                </div>
+              </div>
+
+              {!discreetMode && activeReactiveInsights.length > 0 && (
+                <div className="space-y-2.5">
+                  {activeReactiveInsights.map(item => (
+                    <div key={item.id} className="bg-sky-50 border border-sky-200 rounded-2xl p-3.5 flex items-start gap-3">
+                      <span className="text-xl mt-0.5">{item.icon}</span>
+                      <div>
+                        <p className="text-xs font-extrabold text-sky-950">{item.title}</p>
+                        <p className="text-xs text-sky-900 mt-0.5 leading-relaxed">
+                          {viewMode === 'jorge' ? item.jorge : item.angie}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!discreetMode && (
+                viewMode === 'jorge' ? (
+                  <div className="bg-indigo-50/90 border border-indigo-200 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">💞</span>
+                      <div>
+                        <p className="text-xs font-extrabold text-indigo-950">Resumen para Jorge • Día {cycleDay}</p>
+                        <p className="text-[11px] text-indigo-700">Cómo apoyar a Angie hoy en su {phase.name}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-indigo-950 leading-relaxed bg-white/80 p-3 rounded-xl border border-indigo-100">
+                      {phase.partnerTip}
+                    </p>
+                    <div>
+                      <p className="text-[11px] font-bold text-indigo-800 mb-1.5">Síntomas frecuentes en esta etapa:</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {phase.possibleSymptoms.map(s => (
+                          <span key={s} className="text-[11px] bg-white text-indigo-900 border border-indigo-200 px-2.5 py-1 rounded-full font-semibold">{s}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  currentDailyMsg && (
+                    <div onClick={() => setWelcomeModalOpen(true)} className="bg-gradient-to-r from-rose-500 via-pink-500 to-fuchsia-600 text-white rounded-2xl p-4 shadow-sm cursor-pointer hover:opacity-95 transition">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-2.5">
+                          <span className="text-xl mt-0.5">{phase.emoji}</span>
+                          <div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Para ti hoy • Día {cycleDay}</span>
+                            <p className="text-sm font-semibold mt-1.5 leading-snug">"{currentDailyMsg.main}"</p>
+                            <p className="text-xs text-rose-100 mt-1 italic">{currentDailyMsg.moral}</p>
+                          </div>
+                        </div>
+                        <button type="button" onClick={(e) => { e.stopPropagation(); handleNewMotivationalMsg(); }} className="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl shrink-0">🔄</button>
+                      </div>
+                    </div>
+                  )
+                )
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div onClick={() => setSettingsModalOpen(true)} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5 cursor-pointer hover:border-rose-200 transition">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">Método</span>
+                    <span className="text-[11px] font-bold text-rose-600">Editar</span>
+                  </div>
+                  <p className="text-xs font-extrabold text-slate-900 mt-1">{activeMethod.icon} {activeMethod.label}</p>
+                  <p className="text-[10px] text-slate-500 mt-1">Objetivo: <strong>{activeGoal.label}</strong></p>
+                </div>
+
+                <div
+                  onClick={() => setSafeDaysModalOpen(true)}
+                  className={`rounded-2xl p-3.5 border cursor-pointer transition ${activePillInCycle ? 'bg-amber-50/80 border-amber-200' : 'bg-emerald-50/80 border-emerald-200'}`}
+                >
+                  <span className={`text-[10px] font-bold uppercase ${activePillInCycle ? 'text-amber-800' : 'text-emerald-800'}`}>
+                    {activePillInCycle ? 'Precaución' : 'Menor Probabilidad'}
+                  </span>
+                  <p className={`text-xs font-extrabold mt-1 ${activePillInCycle ? 'text-amber-950' : 'text-emerald-900'}`}>
+                    {activePillInCycle ? 'Pausado por pastilla' : `${formatDateES(safeWindows.nextSafeRange.start, false)} a ${formatDateES(safeWindows.nextSafeRange.end, false)}`}
+                  </p>
+                  <p className="text-[10px] text-slate-600 mt-1">No es anticonceptivo.</p>
+                </div>
+
+                <div onClick={() => openAddModal('medical', referenceDate)} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5 cursor-pointer hover:border-sky-200 transition">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Temp. Basal (BBT)</span>
+                  <p className="text-xs font-extrabold text-slate-900 mt-1">
+                    {cycleAnalytics.baselineTemp ? `Base: ${cycleAnalytics.baselineTemp}°C` : 'Sin lectura aún'}
+                  </p>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    {cycleAnalytics.thermalOvulationConfirmed ? 'Ovulación confirmada' : 'Toca para anotar °C'}
+                  </p>
+                </div>
+              </div>
+
+              {!discreetMode && (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2.5">Guía Rápida y Salud</h3>
+                  <div className="divide-y divide-slate-100">
+                    {QUICK_FAQS.map((item, idx) => (
+                      <div key={idx} className="py-2.5 first:pt-0 last:pb-0">
+                        <button onClick={() => setFaqOpenIdx(faqOpenIdx === idx ? null : idx)} className="w-full flex items-center justify-between text-left gap-2">
+                          <span className="text-xs font-bold text-slate-800">{item.q}</span>
+                          <span className="text-slate-400 text-xs font-bold shrink-0">{faqOpenIdx === idx ? '-' : '+'}</span>
+                        </button>
+                        {faqOpenIdx === idx && <p className="text-xs text-slate-600 mt-2 leading-relaxed bg-slate-50 p-2.5 rounded-xl">{item.a}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'calendar' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <button onClick={prevMonth} className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-bold">◀</button>
+                  <div className="text-center">
+                    <h2 className="text-base font-extrabold text-slate-900">{monthNames[currentMonth.month]} {currentMonth.year}</h2>
+                    <button onClick={() => { setCurrentMonth({ year: todayDateObj.getFullYear(), month: todayDateObj.getMonth() }); setSelectedDay(todayStr); }} className="text-[11px] font-bold text-rose-600 hover:underline">
+                      Ir a hoy
+                    </button>
+                  </div>
+                  <button onClick={nextMonth} className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-bold">▶</button>
+                </div>
+
+                <div className="flex flex-wrap gap-3 text-[11px] text-slate-600 mb-3 pb-3 border-b border-slate-100">
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Periodo</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> Menor prob.</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Ovulación</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-100 border border-amber-300 inline-block"></span> Precaución</span>
+                </div>
+
+                <div className="grid grid-cols-7 text-center text-xs font-bold text-slate-400 mb-2">
+                  <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1.5">
+                  {Array.from({ length: firstWeekday }).map((_, i) => <div key={`empty-${i}`} className="h-12"></div>)}
+                  {Array.from({ length: daysInMonth }).map((_, idx) => {
+                    const dayNum = idx + 1;
+                    const mm = String(currentMonth.month + 1).padStart(2, '0');
+                    const dd = String(dayNum).padStart(2, '0');
+                    const dateStr = `${currentMonth.year}-${mm}-${dd}`;
+                    const status = getDayStatus(dateStr);
+                    const isSelected = selectedDay === dateStr;
+                    const isToday = dateStr === todayStr;
+
+                    let bgClass = 'bg-slate-50 hover:bg-slate-100 text-slate-800';
+                    if (status.isPeriod && !status.isProjectedPeriod) bgClass = 'bg-rose-500 text-white font-bold';
+                    else if (status.isProjectedPeriod) bgClass = 'bg-rose-100 text-rose-800 border border-dashed border-rose-400 font-semibold';
+                    else if (!discreetMode && status.isPeak) bgClass = 'bg-amber-400 text-slate-900 font-bold';
+                    else if (!discreetMode && status.isFertile) bgClass = 'bg-amber-100/80 text-amber-900 font-medium';
+                    else if (!discreetMode && status.isLowRisk) bgClass = 'bg-emerald-100 text-emerald-900 font-semibold';
+
+                    return (
+                      <button
+                        key={dateStr}
+                        onClick={() => setSelectedDay(dateStr)}
+                        className={`h-12 rounded-xl flex flex-col items-center justify-center relative transition ${bgClass} ${isSelected ? 'ring-2 ring-slate-900 ring-offset-1' : isToday ? 'ring-2 ring-rose-500' : ''}`}
+                      >
+                        <span className="text-sm leading-none">{dayNum}</span>
+                        {status.dayEvents.length > 0 && (
+                          <div className="flex gap-0.5 mt-1 text-[10px] leading-none">
+                            {status.dayEvents.slice(0, 2).map(ev => (
+                              <span key={ev.id}>
+                                {ev.type === 'period_start' || ev.type === 'period_day' ? '🩸' : ev.type.startsWith('intimacy') ? '❤️' : ev.type === 'pill' ? '💊' : '🩺'}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Detalle del día</p>
+                  <h3 className="text-base font-extrabold text-slate-900 mt-0.5 mb-3">
+                    {formatDateES(selectedDay)} {selectedDay === todayStr && <span className="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full ml-1">HOY</span>}
+                  </h3>
+
+                  {!discreetMode && (
+                    <div className="space-y-2 mb-4">
+                      {selectedDayInfo.isPeriod && !selectedDayInfo.isProjectedPeriod && <div className="text-xs bg-rose-50 text-rose-700 px-3 py-2 rounded-xl font-medium">🩸 Día de periodo confirmado</div>}
+                      {selectedDayInfo.isProjectedPeriod && <div className="text-xs bg-rose-50 text-rose-700 border border-dashed border-rose-300 px-3 py-2 rounded-xl font-medium">📅 Periodo proyectado (promedio {cycleAnalytics.baseCycleLength}d)</div>}
+                      {selectedDayInfo.isAlteredActive && <div className="text-xs bg-amber-50 text-amber-900 border border-amber-200 px-3 py-2 rounded-xl font-medium">⚠️ Ciclo en ajuste por anticoncepción de emergencia</div>}
+                      {!selectedDayInfo.isAlteredActive && selectedDayInfo.isPeak && <div className="text-xs bg-red-50 text-red-700 px-3 py-2 rounded-xl font-medium">🔥 Pico de ovulación estimado</div>}
+                      {!selectedDayInfo.isAlteredActive && !selectedDayInfo.isPeak && selectedDayInfo.isFertile && <div className="text-xs bg-amber-50 text-amber-800 px-3 py-2 rounded-xl font-medium">⚠️ Margen fértil de precaución</div>}
+                      {!selectedDayInfo.isPeriod && !selectedDayInfo.isFertile && selectedDayInfo.isLowRisk && <div className="text-xs bg-emerald-50 text-emerald-800 px-3 py-2 rounded-xl font-medium">🟢 Menor probabilidad biológica</div>}
+                    </div>
+                  )}
+
+                  {selectedDayInfo.dayEvents.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic py-4 text-center">No hay eventos registrados en este día.</p>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {selectedDayInfo.dayEvents.map(ev => {
+                        const badge = getEventBadge(ev.type);
+                        return (
+                          <div key={ev.id} className="p-3 rounded-xl border border-slate-100 bg-slate-50/70">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${badge.color}`}>{badge.icon} {badge.label}</span>
+                              <button onClick={() => handleDeleteEvent(ev.id)} className="text-xs text-slate-400 hover:text-rose-600">✕</button>
+                            </div>
+                            <p className="text-sm font-bold text-slate-800 mt-1.5">{ev.title}</p>
+                            <p className="text-xs text-slate-600 mt-0.5">
+                              {ev.details} {typeof ev.bbt === 'number' ? `(${ev.bbt}°C)` : ''}
+                            </p>
+                            {ev.tags && ev.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {ev.tags.map(tid => {
+                                  const t = SYMPTOM_TAGS.find(x => x.id === tid);
+                                  return t ? <span key={tid} className="text-[10px] bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-full">{t.icon} {t.label}</span> : null;
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
+                  <button onClick={() => toggleBleedingDay(selectedDay, 'medium')} className="w-full py-2.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition">
+                    🩸 Marcar / Quitar Sangrado este día
+                  </button>
+                  <button onClick={() => openAddModal('medical', selectedDay)} className="w-full py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition">
+                    🌡️ Registrar Síntomas / Flujo / BBT
+                  </button>
+                  <button onClick={() => openAddModal('intimacy_protected', selectedDay)} className="w-full py-2.5 px-3 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition">
+                    ❤️ Registrar Intimidad
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-extrabold text-slate-900">Patrones y Tendencias</h2>
+                    <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${cycleAnalytics.isIrregular ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                      {cycleAnalytics.isIrregular ? `Variable (${cycleAnalytics.minObservedCycle} a ${cycleAnalytics.maxObservedCycle}d)` : `Regular (${cycleAnalytics.baseCycleLength}d)`}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Rango médico normal: 21 a 35 días. Promedio natural: <strong>{cycleAnalytics.baseCycleLength} días</strong>.
+                  </p>
+                </div>
+                <button onClick={handleExportMedicalReport} className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center justify-center gap-2 shrink-0">
+                  <span>📄</span> Exportar Reporte (PDF)
+                </button>
+              </div>
+
+              {!discreetMode && (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                  <h3 className="text-sm font-bold text-slate-900 mb-2">Patrones detectados en tu historial</h3>
+                  {cycleAnalytics.correlatedSymptoms.length === 0 ? (
+                    <p className="text-xs text-slate-500">
+                      Sigue registrando síntomas y BBT en cada ciclo para detectar qué señales aparecen antes de tu periodo.
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {cycleAnalytics.correlatedSymptoms.map(sym => (
+                        <span key={sym.id} className="text-xs bg-rose-50 text-rose-800 border border-rose-200 px-3 py-1.5 rounded-xl font-semibold">
+                          {sym.icon} {sym.label} <span className="text-[10px] opacity-75">(1 a 3d antes del periodo)</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {cycleAnalytics.cleanTempLogs.length > 0 && (
+                    <p className="text-xs text-slate-600 mt-3 pt-2.5 border-t border-slate-100">
+                      🌡️ <strong>Temperatura basal:</strong> {cycleAnalytics.baselineTemp ? `línea base ${cycleAnalytics.baselineTemp}°C` : 'en cálculo'} • {cycleAnalytics.cleanTempLogs.filter(x => x.noisy).length} lectura(s) marcada(s) con ruido/sueño filtradas.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 print-card">
+                <h3 className="text-sm font-bold text-slate-900 mb-3">Duración por Ciclo</h3>
+                <div className="space-y-3">
+                  {cycleAnalytics.historyRows.map((row) => {
+                    const barDays = row.length || cycleDay;
+                    const barPct = Math.min(100, Math.round((barDays / 45) * 100));
+                    const barColor = row.isAltered ? 'bg-amber-400' : barDays > 35 || barDays < 21 ? 'bg-orange-400' : 'bg-rose-500';
+                    return (
+                      <div key={row.id} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-slate-800">
+                            {formatDateES(row.start)} <span className="text-slate-400 font-normal">({row.bleedDays}d sangrado)</span>
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {row.isAltered && <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Alterado</span>}
+                            <span className="font-extrabold text-slate-900">{row.length ? `${row.length} días` : `Día ${cycleDay} (En curso)`}</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${barColor}`} style={{ width: `${barPct}%` }}></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 print-card">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-slate-900">Bitácora Completa</h3>
+                  <button onClick={() => openAddModal('medical', referenceDate)} className="text-xs font-bold bg-rose-500 text-white px-3 py-1.5 rounded-xl hover:bg-rose-600 no-print">+ Nuevo</button>
+                </div>
+                <div className="space-y-2.5">
+                  {sortedEvents.map(ev => {
+                    const badge = getEventBadge(ev.type);
+                    return (
+                      <div key={ev.id} className="p-3.5 rounded-xl border border-slate-100 flex items-start justify-between gap-3 hover:bg-slate-50 transition">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-bold text-slate-500">{formatDateES(ev.date)}</span>
+                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${badge.color}`}>{badge.icon} {badge.label}</span>
+                            {typeof ev.bbt === 'number' && (
+                              <span className="text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-200 px-2 py-0.5 rounded-full">
+                                🌡️ {ev.bbt}°C
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm font-bold text-slate-900 mt-1">{ev.title}</p>
+                          <p className="text-xs text-slate-600 mt-0.5">{ev.details}</p>
+                          {ev.tags && ev.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {ev.tags.map(tid => {
+                                const t = SYMPTOM_TAGS.find(x => x.id === tid);
+                                return t ? <span key={tid} className="text-[11px] bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full font-medium">{t.icon} {t.label}</span> : null;
+                              })}
+                            </div>
+                          )}
+                        </div>
+                        <button onClick={() => handleDeleteEvent(ev.id)} title="Eliminar" className="text-slate-400 hover:text-rose-600 text-xs p-1 no-print">✕</button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-slate-200 grid grid-cols-3 py-2 px-2 z-40 no-print">
+            <button onClick={() => setActiveTab('today')} className={`flex flex-col items-center py-1 text-xs font-bold ${activeTab === 'today' ? 'text-rose-600' : 'text-slate-400'}`}>
+              <span className="text-lg mb-0.5">💗</span> Hoy
+            </button>
+            <button onClick={() => setActiveTab('calendar')} className={`flex flex-col items-center py-1 text-xs font-bold ${activeTab === 'calendar' ? 'text-rose-600' : 'text-slate-400'}`}>
+              <span className="text-lg mb-0.5">📅</span> Calendario
+            </button>
+            <button onClick={() => setActiveTab('history')} className={`flex flex-col items-center py-1 text-xs font-bold ${activeTab === 'history' ? 'text-rose-600' : 'text-slate-400'}`}>
+              <span className="text-lg mb-0.5">📊</span> Historial
+            </button>
+          </nav>
+
+          {settingsModalOpen && (
+            <div className="fixed inset-0 bg-slate-900/50 flex items-end sm:items-center justify-center sm:p-4 z-50">
+              <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full p-5 shadow-2xl animate-sheet max-h-[90vh] overflow-y-auto space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-extrabold text-slate-900">Ajustes y Privacidad</h3>
+                  <button onClick={() => setSettingsModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+                </div>
+
+                <div>
+                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Objetivo principal</p>
+                  <div className="space-y-1.5">
+                    {APP_GOALS.map(g => {
+                      const active = settings.goal === g.id;
+                      return (
+                        <button
+                          key={g.id}
+                          onClick={() => persistCloud(events, { ...settings, goal: g.id })}
+                          className={`w-full text-left p-2.5 rounded-2xl border transition ${active ? 'bg-rose-50 border-rose-400' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}
+                        >
+                          <div className="text-xs font-extrabold text-slate-900">{g.icon} {g.label}</div>
+                          <div className="text-[11px] text-slate-600">{g.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Método anticonceptivo activo</p>
+                  <div className="space-y-1.5">
+                    {BIRTH_CONTROL_METHODS.map(m => {
+                      const active = settings.birthControlMethod === m.id;
+                      return (
+                        <button
+                          key={m.id}
+                          onClick={() => persistCloud(events, { ...settings, birthControlMethod: m.id })}
+                          className={`w-full text-left p-2.5 rounded-2xl border transition ${active ? 'bg-rose-50 border-rose-400' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-extrabold text-slate-900">{m.icon} {m.label}</span>
+                            {active && <span className="text-[10px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full">Activo</span>}
+                          </div>
+                          <p className="text-[11px] text-slate-600 mt-0.5">{m.note}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100">
+                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Control de tus datos (Respaldo JSON)</p>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={handleExportJsonBackup} className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800">
+                      ⬇ Descargar JSON
+                    </button>
+                    <label className="flex-1 py-2.5 px-3 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold hover:bg-slate-200 text-center cursor-pointer">
+                      ⬆ Restaurar JSON
+                      <input type="file" accept="application/json" onChange={handleImportJsonBackup} className="hidden" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {welcomeModalOpen && currentDailyMsg && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-rose-100 animate-welcome">
+                <div className="bg-gradient-to-tr from-rose-500 via-pink-500 to-fuchsia-600 p-6 text-white text-center relative">
+                  <button onClick={() => setWelcomeModalOpen(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white text-sm font-bold">✕</button>
+                  <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl mx-auto mb-3">{phase.emoji}</div>
+                  <span className="text-[11px] font-bold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">Día {cycleDay} • {phase.name}</span>
+                  <h2 className="text-xl font-extrabold mt-3">Un recordatorio bonito para ti</h2>
+                </div>
+                <div className="p-6 text-center space-y-4">
+                  <p className="text-base font-bold text-slate-800 leading-relaxed">"{currentDailyMsg.main}"</p>
+                  <div className="bg-rose-50/70 border border-rose-100 rounded-2xl p-3.5">
+                    <p className="text-xs font-medium text-rose-900 italic leading-relaxed">✨ {currentDailyMsg.moral}</p>
+                  </div>
+                  <div className="flex gap-2.5 pt-1">
+                    <button type="button" onClick={handleNewMotivationalMsg} className="flex-1 py-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition">🔄 Otro mensaje</button>
+                    <button type="button" onClick={() => setWelcomeModalOpen(false)} className="flex-1 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">Ir a mi calendario 💗</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {safeDaysModalOpen && (
+            <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+              <div className="bg-white rounded-3xl max-w-md w-full p-5 shadow-xl my-8 animate-welcome">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-extrabold text-slate-900">Menor Probabilidad Biológica</h3>
+                  <button onClick={() => setSafeDaysModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+                </div>
+                <div className="p-3 rounded-2xl bg-slate-100 text-[11px] text-slate-700 mb-3 leading-relaxed">
+                  <strong>Aviso importante:</strong> El cálculo de calendario <strong>no es un método anticonceptivo</strong> ni protege contra ITS. La ovulación puede adelantarse o retrasarse por estrés, hormonas o cambios de rutina.
+                </div>
+                {activePillInCycle ? (
+                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-950 mb-4 leading-relaxed">
+                    Hubo anticoncepción de emergencia el <strong>{formatDateES(activePillInCycle.date)}</strong>. Por seguridad, no se muestran ventanas de menor riesgo hasta confirmar el siguiente periodo.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+                      <span className="text-[11px] font-bold uppercase text-emerald-700">Fase Lútea • Ciclo Actual</span>
+                      <p className="text-base font-extrabold text-emerald-950 mt-1">{formatDateES(safeWindows.postOvStart)} al {formatDateES(safeWindows.postOvEnd)}</p>
+                    </div>
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                      <span className="text-[11px] font-bold uppercase text-slate-500">Pre-Ovulatoria • Ciclo Actual</span>
+                      <p className="text-sm font-bold text-slate-800 mt-1">{formatDateES(safeWindows.preOvStart)} al {formatDateES(safeWindows.preOvEnd)}</p>
+                    </div>
+                  </div>
+                )}
+                <button onClick={() => setSafeDaysModalOpen(false)} className="w-full mt-4 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800">Entendido</button>
+              </div>
+            </div>
+          )}
+
+          {modalOpen && (
+            <div className="fixed inset-0 bg-slate-900/50 flex items-end sm:items-center justify-center sm:p-4 z-50 overflow-y-auto">
+              <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full p-5 shadow-2xl animate-sheet max-h-[92vh] overflow-y-auto">
+                <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-3 sm:hidden"></div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-base font-extrabold text-slate-900">Registrar en Bitácora</h3>
+                  <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+                </div>
+
+                <form onSubmit={handleSaveEvent} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'period_start', label: '🩸 Inicio Periodo' },
+                      { id: 'intimacy_protected', label: '🛡️ Con condón' },
+                      { id: 'intimacy_unprotected', label: '❤️ Sin protección' },
+                      { id: 'pill', label: '💊 Emergencia' },
+                      { id: 'medical', label: '🌡️ Síntomas / BBT' }
+                    ].map(opt => (
+                      <button
+                        key={opt.id} type="button"
+                        onClick={() => {
+                          setNewEventType(opt.id);
+                          const titles = { period_start: 'Inicio de Periodo', intimacy_protected: 'Relación con Condón', intimacy_unprotected: 'Relación sin Protección', pill: 'Pastilla de Emergencia', medical: 'Registro de Síntomas / Flujo / BBT' };
+                          setNewEventTitle(titles[opt.id]);
+                        }}
+                        className={`py-2 px-3 rounded-xl text-xs font-bold border text-left transition ${newEventType === opt.id ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Fecha</label>
+                      <input type="date" value={newEventDate} onChange={(e) => setNewEventDate(e.target.value)} required className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-400" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. Basal (°C)</label>
+                      <input type="number" step="0.01" min="34" max="41" value={newEventTemp} onChange={(e) => setNewEventTemp(e.target.value)} placeholder="Ej. 36.45" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 mb-1">Título</label>
+                    <input type="text" value={newEventTitle} onChange={(e) => setNewEventTitle(e.target.value)} required className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-400" />
+                  </div>
+
+                  {newEventType === 'period_start' && (
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {FLOW_LEVELS.map(fl => (
+                          <button key={fl.id} type="button" onClick={() => setNewEventFlow(fl.id)} className={`py-1.5 rounded-xl text-[11px] font-bold border ${newEventFlow === fl.id ? fl.color : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                            {fl.icon} {fl.label}
+                          </button>
+                        ))}
+                      </div>
+                      <label className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-xs text-amber-900 cursor-pointer">
+                        <input type="checkbox" checked={newEventAltered} onChange={(e) => setNewEventAltered(e.target.checked)} className="rounded text-rose-500" />
+                        <span>Adelantado/retrasado por pastilla de emergencia</span>
+                      </label>
+                    </div>
+                  )}
+
+                  <div className="space-y-2.5">
+                    {['Físico', 'Ánimo', 'Flujo', 'Pruebas', 'Hábitos'].map(cat => (
+                      <div key={cat}>
+                        <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">{cat}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {SYMPTOM_TAGS.filter(t => t.cat === cat).map(tag => {
+                            const active = newEventTags.includes(tag.id);
+                            return (
+                              <button
+                                type="button" key={tag.id} onClick={() => toggleTag(tag.id)}
+                                className={`text-[11px] px-2.5 py-1 rounded-full border font-semibold transition ${active ? 'bg-rose-500 text-white border-rose-500' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}`}
+                              >
+                                {tag.icon} {tag.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 mb-1">Notas (opcional)</label>
+                    <textarea rows="2" value={newEventDetails} onChange={(e) => setNewEventDetails(e.target.value)} placeholder="Notas adicionales..." className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-rose-400"></textarea>
+                  </div>
+
+                  <div className="flex gap-2 pt-1">
+                    <button type="button" onClick={() => setModalOpen(false)} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200">Cancelar</button>
+                    <button type="submit" className="flex-1 py-3 rounded-xl bg-rose-500 text-white text-xs font-bold hover:bg-rose-600 shadow-sm">Guardar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {showPwaGuide && (
+            <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-3xl max-w-sm w-full p-5 shadow-xl">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-extrabold text-slate-900">Instalar como App Nativa</h3>
+                  <button onClick={() => setShowPwaGuide(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+                </div>
+                <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <p className="font-bold text-slate-900 mb-1">En iPhone (Safari):</p>
+                    <p>Toca <strong>Compartir</strong> y selecciona <strong>"Agregar a inicio"</strong>.</p>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <p className="font-bold text-slate-900 mb-1">En Android (Chrome):</p>
+                    <p>Toca los <strong>3 puntos</strong> arriba a la derecha y elige <strong>"Instalar aplicación"</strong>.</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowPwaGuide(false)} className="w-full mt-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold">Entendido</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
