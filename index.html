@@ -241,13 +241,13 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
 
-    const APP_VERSION = "4.0.2";
+    const APP_VERSION = "4.0.3";
     const CHANGELOG = {
       version: APP_VERSION,
-      title: "Edición Navidad 2.5D & 100 Decoraciones",
+      title: "Edición Navidad 2.5D & Cupones Gestionables",
       date: "Noviembre 2026",
       items: [
-        { icon: "🎄", title: "Temporada automática (5 intros)", desc: "Fondo invernal con nieve suave y 5 pantallas de bienvenida navideñas rotativas." },
+        { icon: "🎟️", title: "Eliminar cupones Rasca y Gana", desc: "Borra los cupones que ya raspaste o limpia todos los rascados con un toque." },
         { icon: "🟢", title: "Días de Bajo Riesgo en Verde", desc: "Identifica visualmente en verde los días fuera de la ventana fértil en el calendario." },
         { icon: "❤️", title: "Indicadores en Calendario", desc: "Visualiza corazones, pastillas, chequeos y temperaturas directo en cada día del mes." }
       ]
@@ -260,7 +260,7 @@
 
     // DETECCIÓN AUTOMÁTICA DE TEMPORADA
     function getCurrentSeason() {
-      const m = new Date().getMonth() + 1; // 1-12
+      const m = new Date().getMonth() + 1;
       if (m === 11 || m === 12 || m === 1) return 'winter';
       if (m >= 2 && m <= 4) return 'spring';
       if (m >= 5 && m <= 7) return 'summer';
@@ -1258,7 +1258,7 @@
       );
     };
 
-    const ScratchCouponCard = ({ coupon, scratched, onScratch }) => {
+    const ScratchCouponCard = ({ coupon, scratched, onScratch, onDelete }) => {
       const canvasRef = useRef(null);
       const drawingRef = useRef(false);
 
@@ -1295,9 +1295,12 @@
       };
 
       return (
-        <div className="relative rounded-2xl bg-gradient-to-r from-white/85 to-[#FFE4EC]/85 border border-white p-3.5 overflow-hidden min-h-[92px] flex flex-col justify-center">
+        <div className="relative rounded-2xl bg-gradient-to-r from-white/85 to-[#FFE4EC]/85 border border-white p-3.5 pr-10 overflow-hidden min-h-[92px] flex flex-col justify-center">
           <p className="text-xs font-extrabold text-[#2D2229]">{coupon.title}</p>
           <p className="text-[11px] text-[#7A6370] mt-0.5">{coupon.subtitle}</p>
+          {scratched && (
+            <span className="inline-block mt-1 text-[10px] font-extrabold text-emerald-700">✓ Revelado</span>
+          )}
           {!scratched && (
             <canvas
               ref={canvasRef}
@@ -1309,6 +1312,19 @@
               onTouchMove={(e) => { if (e.touches[0]) handleMove(e.touches[0].clientX, e.touches[0].clientY); }}
               className="absolute inset-0 w-full h-full cursor-pointer touch-none"
             />
+          )}
+          {onDelete && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onDelete(coupon.id); }}
+              title="Eliminar cupón"
+              aria-label="Eliminar cupón"
+              className={`absolute top-2 right-2 z-10 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-extrabold transition active:scale-90 ${
+                scratched ? 'bg-white/90 text-[#8C7380] shadow-xs' : 'bg-black/25 text-white'
+              }`}
+            >
+              ✕
+            </button>
           )}
         </div>
       );
@@ -1531,6 +1547,7 @@
             lumiPet: { hunger: 80, energy: 85, happiness: 90, sleeping: false, lastUpdated: Date.now() },
             sosAlert: null,
             scratchedCoupons: [],
+            deletedCoupons: [],
             customCouponTitle: '',
             customCouponSub: '',
             ...(saved ? JSON.parse(saved) : {})
@@ -1542,7 +1559,7 @@
             unlockedRoom: ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'],
             roomEquipped: { wall: 'w_01', rug: 'r_01', window: 'win_01', shelf: 'sh_01', decor: 'd_01' },
             lumiPet: { hunger: 80, energy: 85, happiness: 90, sleeping: false, lastUpdated: Date.now() },
-            sosAlert: null, scratchedCoupons: []
+            sosAlert: null, scratchedCoupons: [], deletedCoupons: []
           };
         }
       });
@@ -1649,7 +1666,7 @@
                     unlockedRoom: ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'],
                     roomEquipped: { wall: 'w_01', rug: 'r_01', window: 'win_01', shelf: 'sh_01', decor: 'd_01' },
                     lumiPet: { hunger: 80, energy: 85, happiness: 90, sleeping: false, lastUpdated: Date.now() },
-                    sosAlert: null, scratchedCoupons: [],
+                    sosAlert: null, scratchedCoupons: [], deletedCoupons: [],
                     ...data.settings
                   };
                   setSettings(merged);
@@ -1997,7 +2014,6 @@
         const isPeak = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.peakStartOffset) && dateStr <= addDays(s, cycleAnalytics.peakEndOffset));
         const isFertile = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.safeFertileStartOffset) && dateStr <= addDays(s, cycleAnalytics.safeFertileEndOffset));
         const isPeriod = explicitBleed || Boolean(periodMatch);
-        // Días seguros / menor peligro: fuera del periodo y fuera de la ventana fértil (desde el primer ciclo registrado en adelante)
         const firstTrackedStart = cycleAnalytics.starts[0];
         const isSafe = !isPeriod && !isPeak && !isFertile && (!firstTrackedStart || dateStr >= firstTrackedStart);
         return { isPeriod, isProjectedPeriod: isProjected, isPeak, isFertile, isSafe, dayEvents: events.filter(e => e.date === dateStr) };
@@ -2015,10 +2031,45 @@
       const todayBleedEvent = useMemo(() => events.find(e => e.date === referenceDate && (e.type === 'period_day' || e.type === 'period_start')), [events, referenceDate]);
 
       const allCoupons = useMemo(() => {
+        const deleted = Array.isArray(settings.deletedCoupons) ? settings.deletedCoupons : [];
         const list = [...DEFAULT_COUPONS];
-        if (settings.customCouponTitle) list.unshift({ id: 'custom_jorge', title: settings.customCouponTitle, subtitle: settings.customCouponSub || 'Sorpresa de Jorge' });
-        return list;
-      }, [settings.customCouponTitle, settings.customCouponSub]);
+        if (settings.customCouponTitle) {
+          list.unshift({ id: 'custom_jorge', title: settings.customCouponTitle, subtitle: settings.customCouponSub || 'Sorpresa de Jorge' });
+        }
+        return list.filter(cp => !deleted.includes(cp.id));
+      }, [settings.customCouponTitle, settings.customCouponSub, settings.deletedCoupons]);
+
+      const handleDeleteCoupon = (id) => {
+        const deleted = Array.isArray(settings.deletedCoupons) ? settings.deletedCoupons : [];
+        const scratched = Array.isArray(settings.scratchedCoupons) ? settings.scratchedCoupons : [];
+        const nextSettings = {
+          ...settings,
+          deletedCoupons: deleted.includes(id) ? deleted : [...deleted, id],
+          scratchedCoupons: scratched.filter(x => x !== id)
+        };
+        if (id === 'custom_jorge') {
+          nextSettings.customCouponTitle = '';
+          nextSettings.customCouponSub = '';
+        }
+        persistCloud(events, nextSettings);
+      };
+
+      const handleClearScratchedCoupons = () => {
+        const scratched = Array.isArray(settings.scratchedCoupons) ? settings.scratchedCoupons : [];
+        if (scratched.length === 0) return;
+        const deleted = Array.isArray(settings.deletedCoupons) ? settings.deletedCoupons : [];
+        const nextDeleted = Array.from(new Set([...deleted, ...scratched]));
+        const nextSettings = {
+          ...settings,
+          deletedCoupons: nextDeleted,
+          scratchedCoupons: []
+        };
+        if (scratched.includes('custom_jorge')) {
+          nextSettings.customCouponTitle = '';
+          nextSettings.customCouponSub = '';
+        }
+        persistCloud(events, nextSettings);
+      };
 
       const openAddModal = (type, dateOverride) => {
         const found = EVENT_TYPE_OPTIONS.find(o => o.id === type) || EVENT_TYPE_OPTIONS[0];
@@ -2121,6 +2172,8 @@
           </div>
         );
       }
+
+      const visibleScratchedCount = allCoupons.filter(cp => (settings.scratchedCoupons || []).includes(cp.id)).length;
 
       return (
         <div className="min-h-screen relative">
@@ -2440,27 +2493,69 @@
 
                   {viewMode === 'angie' ? (
                     <div className="liquid-glass rounded-[26px] p-4 space-y-2.5">
-                      <h3 className="text-sm font-extrabold text-[#2D2229]">Rasca y Gana (Sorpresas de Jorge)</h3>
-                      {allCoupons.map(cp => (
-                        <ScratchCouponCard
-                          key={cp.id}
-                          coupon={cp}
-                          scratched={(settings.scratchedCoupons || []).includes(cp.id)}
-                          onScratch={(id) => {
-                            if (!(settings.scratchedCoupons || []).includes(id)) {
-                              persistCloud(events, { ...settings, scratchedCoupons: [...(settings.scratchedCoupons || []), id] });
-                            }
-                          }}
-                        />
-                      ))}
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm font-extrabold text-[#2D2229]">Rasca y Gana (Sorpresas de Jorge)</h3>
+                        {visibleScratchedCount > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearScratchedCoupons}
+                            className="liquid-pill px-2.5 py-1 rounded-full text-[10px] font-extrabold text-[#E94B77] active:scale-95 transition shrink-0"
+                          >
+                            Limpiar rascados ({visibleScratchedCount})
+                          </button>
+                        )}
+                      </div>
+
+                      {allCoupons.length === 0 ? (
+                        <div className="text-center py-4 bg-white/60 rounded-2xl space-y-2">
+                          <p className="text-xs text-[#7A6370]">No hay cupones activos por ahora.</p>
+                          {(settings.deletedCoupons || []).length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => persistCloud(events, { ...settings, deletedCoupons: [], scratchedCoupons: [] })}
+                              className="liquid-pill px-3 py-1 rounded-full text-[10px] font-extrabold text-[#5B4BDB]"
+                            >
+                              Restaurar cupones base
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        allCoupons.map(cp => (
+                          <ScratchCouponCard
+                            key={cp.id}
+                            coupon={cp}
+                            scratched={(settings.scratchedCoupons || []).includes(cp.id)}
+                            onDelete={handleDeleteCoupon}
+                            onScratch={(id) => {
+                              if (!(settings.scratchedCoupons || []).includes(id)) {
+                                persistCloud(events, { ...settings, scratchedCoupons: [...(settings.scratchedCoupons || []), id] });
+                              }
+                            }}
+                          />
+                        ))
+                      )}
                     </div>
                   ) : (
-                    <div className="liquid-glass rounded-[26px] p-4 space-y-2">
-                      <p className="text-xs font-extrabold text-[#2D2229]">Dejar cupón sorpresa para Angie</p>
+                    <div className="liquid-glass rounded-[26px] p-4 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-extrabold text-[#2D2229]">Dejar cupón sorpresa para Angie</p>
+                        {settings.customCouponTitle && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCoupon('custom_jorge')}
+                            className="liquid-pill px-2.5 py-1 rounded-full text-[10px] font-extrabold text-red-500 active:scale-95 transition"
+                          >
+                            Eliminar cupón
+                          </button>
+                        )}
+                      </div>
                       <input
                         type="text"
                         value={settings.customCouponTitle || ''}
-                        onChange={e => persistCloud(events, { ...settings, customCouponTitle: e.target.value })}
+                        onChange={e => {
+                          const nextDeleted = (settings.deletedCoupons || []).filter(x => x !== 'custom_jorge');
+                          persistCloud(events, { ...settings, customCouponTitle: e.target.value, deletedCoupons: nextDeleted });
+                        }}
                         placeholder="Ej. Vale por pizza y peli"
                         className="w-full bg-white/80 rounded-2xl px-3 py-2 text-xs font-semibold"
                       />
@@ -2471,6 +2566,15 @@
                         placeholder="Nota extra"
                         className="w-full bg-white/80 rounded-2xl px-3 py-2 text-xs"
                       />
+                      {(settings.deletedCoupons || []).length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => persistCloud(events, { ...settings, deletedCoupons: [], scratchedCoupons: [] })}
+                          className="w-full py-2 rounded-full liquid-pill text-[11px] font-extrabold text-[#5B4BDB]"
+                        >
+                          Restaurar cupones eliminados ({(settings.deletedCoupons || []).length})
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
