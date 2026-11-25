@@ -241,14 +241,14 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
 
-    const APP_VERSION = "4.0.1";
+    const APP_VERSION = "4.0.2";
     const CHANGELOG = {
       version: APP_VERSION,
       title: "Edición Navidad 2.5D & 100 Decoraciones",
       date: "Noviembre 2026",
       items: [
         { icon: "🎄", title: "Temporada automática (5 intros)", desc: "Fondo invernal con nieve suave y 5 pantallas de bienvenida navideñas rotativas." },
-        { icon: "🧥", title: "Cuarto 2.5D + Animaciones", desc: "Lumi mastica al comer, se anima al ponerse chamarra/gorro y el globo de texto desaparece solo." },
+        { icon: "🟢", title: "Días de Bajo Riesgo en Verde", desc: "Identifica visualmente en verde los días fuera de la ventana fértil en el calendario." },
         { icon: "❤️", title: "Indicadores en Calendario", desc: "Visualiza corazones, pastillas, chequeos y temperaturas directo en cada día del mes." }
       ]
     };
@@ -1996,7 +1996,11 @@
         const isProjected = !explicitBleed && Boolean(periodMatch && projectedPeriodStarts.includes(periodMatch));
         const isPeak = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.peakStartOffset) && dateStr <= addDays(s, cycleAnalytics.peakEndOffset));
         const isFertile = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.safeFertileStartOffset) && dateStr <= addDays(s, cycleAnalytics.safeFertileEndOffset));
-        return { isPeriod: explicitBleed || Boolean(periodMatch), isProjectedPeriod: isProjected, isPeak, isFertile, dayEvents: events.filter(e => e.date === dateStr) };
+        const isPeriod = explicitBleed || Boolean(periodMatch);
+        // Días seguros / menor peligro: fuera del periodo y fuera de la ventana fértil (desde el primer ciclo registrado en adelante)
+        const firstTrackedStart = cycleAnalytics.starts[0];
+        const isSafe = !isPeriod && !isPeak && !isFertile && (!firstTrackedStart || dateStr >= firstTrackedStart);
+        return { isPeriod, isProjectedPeriod: isProjected, isPeak, isFertile, isSafe, dayEvents: events.filter(e => e.date === dateStr) };
       };
 
       const weekStrip = useMemo(() => {
@@ -2305,8 +2309,8 @@
                         else if (st.isProjectedPeriod) cls = 'bg-[#FFE4EC]/85 text-[#C73660] border border-dashed border-[#E94B77] font-bold';
                         else if (!discreetMode && st.isPeak) cls = 'bg-amber-400 text-[#2D2229] font-extrabold';
                         else if (!discreetMode && st.isFertile) cls = 'bg-amber-100/85 text-amber-900 font-semibold';
+                        else if (!discreetMode && st.isSafe) cls = 'bg-emerald-100/85 text-emerald-900 border border-emerald-300/75 font-semibold';
 
-                        // Filtramos los eventos extra (relaciones, pastillas, médico, temperatura) para mostrar sus iconos
                         const extraBadges = !discreetMode
                           ? Array.from(new Set(
                               st.dayEvents
@@ -2332,12 +2336,13 @@
                       })}
                     </div>
 
-                    {/* LEYENDA DE ICONOS */}
+                    {/* LEYENDA DE ICONOS Y COLORES */}
                     {!discreetMode && (
                       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 mt-4 pt-3 border-t border-white/60 text-[10px] font-bold text-[#6B5460]">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#E94B77]"></span>Periodo</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span>Fértil</span>
-                        <span>❤️ Con condón</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#E94B77]"></span>Periodo</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Fértil</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Bajo riesgo</span>
+                        <span>❤️ Condón</span>
                         <span>🧡 Sin prot.</span>
                         <span>💊 Pastilla</span>
                         <span>🩺 Chequeo</span>
