@@ -45,7 +45,7 @@
 
     /* LIQUID GLASS SYSTEM */
     .liquid-glass {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.36) 100%);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 255, 255, 0.38) 100%);
       backdrop-filter: blur(28px) saturate(185%);
       -webkit-backdrop-filter: blur(28px) saturate(185%);
       border: 1px solid rgba(255, 255, 255, 0.88);
@@ -57,23 +57,19 @@
     }
 
     .liquid-pill {
-      background: linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.45) 100%);
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.48) 100%);
       backdrop-filter: blur(22px) saturate(180%);
       -webkit-backdrop-filter: blur(22px) saturate(180%);
       border: 1px solid rgba(255, 255, 255, 0.92);
-      box-shadow:
-        0 8px 20px -6px rgba(45, 34, 41, 0.1),
-        inset 0 1px 1px rgba(255, 255, 255, 1);
+      box-shadow: 0 8px 20px -6px rgba(45, 34, 41, 0.1), inset 0 1px 1px rgba(255, 255, 255, 1);
     }
 
     .liquid-nav {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.62) 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.64) 100%);
       backdrop-filter: blur(32px) saturate(200%);
       -webkit-backdrop-filter: blur(32px) saturate(200%);
       border: 1px solid rgba(255, 255, 255, 0.95);
-      box-shadow:
-        0 20px 45px -10px rgba(45, 34, 41, 0.18),
-        inset 0 1.5px 1px rgba(255, 255, 255, 1);
+      box-shadow: 0 20px 45px -10px rgba(45, 34, 41, 0.18), inset 0 1.5px 1px rgba(255, 255, 255, 1);
     }
 
     .liquid-orb-ring {
@@ -81,9 +77,7 @@
       backdrop-filter: blur(24px) saturate(180%);
       -webkit-backdrop-filter: blur(24px) saturate(180%);
       border: 1.5px solid rgba(255, 255, 255, 0.92);
-      box-shadow:
-        0 24px 50px -12px rgba(233, 75, 119, 0.22),
-        inset 0 2px 3px rgba(255, 255, 255, 0.95);
+      box-shadow: 0 24px 50px -12px rgba(233, 75, 119, 0.22), inset 0 2px 3px rgba(255, 255, 255, 0.95);
     }
 
     .hero-glow {
@@ -103,9 +97,36 @@
       box-shadow: inset 0 2px 6px rgba(255,255,255,0.55), 0 18px 38px -10px rgba(31, 157, 116, 0.4);
     }
 
+    /* 2.5D ROOM PERSPECTIVE */
+    .room-25d {
+      perspective: 650px;
+    }
+    .room-floor-25d {
+      transform: rotateX(58deg);
+      transform-origin: bottom center;
+    }
+
     @keyframes floatSlow {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-7px) rotate(1.5deg); }
+      50% { transform: translateY(-6px) rotate(1.2deg); }
+    }
+    @keyframes chewAnim {
+      0%, 100% { transform: scale(1, 1); }
+      25% { transform: scale(1.09, 0.92); }
+      50% { transform: scale(0.96, 1.06); }
+      75% { transform: scale(1.07, 0.94); }
+    }
+    @keyframes dressAnim {
+      0% { transform: scale(1) rotate(0deg); }
+      30% { transform: scale(1.18) rotate(-10deg) translateY(-12px); }
+      65% { transform: scale(1.12) rotate(10deg) translateY(-8px); }
+      100% { transform: scale(1) rotate(0deg) translateY(0); }
+    }
+    @keyframes snowFall {
+      0% { transform: translateY(-10vh) translateX(0px); opacity: 0; }
+      15% { opacity: 0.75; }
+      85% { opacity: 0.75; }
+      100% { transform: translateY(105vh) translateX(25px); opacity: 0; }
     }
     @keyframes blobDrift1 {
       0%, 100% { transform: translate(0px, 0px) scale(1); }
@@ -133,8 +154,8 @@
       100% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
     }
     @keyframes splashTextUp {
-      0% { opacity: 0; transform: translateY(18px); letter-spacing: 0.08em; }
-      100% { opacity: 1; transform: translateY(0); letter-spacing: -0.02em; }
+      0% { opacity: 0; transform: translateY(18px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
     @keyframes sparkleRise {
       0% { opacity: 0; transform: translateY(25px) scale(0.5); }
@@ -143,8 +164,8 @@
     }
     @keyframes foodFly {
       0% { opacity: 1; transform: translateY(55px) scale(1.3); }
-      65% { opacity: 1; transform: translateY(-10px) scale(1.05); }
-      100% { opacity: 0; transform: translateY(-28px) scale(0.3); }
+      65% { opacity: 1; transform: translateY(-8px) scale(1.05); }
+      100% { opacity: 0; transform: translateY(-25px) scale(0.25); }
     }
     @keyframes progressFill {
       0% { width: 0%; }
@@ -152,8 +173,8 @@
     }
     @keyframes popBounce {
       0% { transform: scale(1); }
-      40% { transform: scale(1.18) rotate(-5deg); }
-      70% { transform: scale(0.93) rotate(3deg); }
+      40% { transform: scale(1.16) rotate(-5deg); }
+      70% { transform: scale(0.94) rotate(3deg); }
       100% { transform: scale(1) rotate(0deg); }
     }
     @keyframes slideUp {
@@ -168,6 +189,9 @@
       80% { transform: translateX(6px); }
     }
     .animate-float { animation: floatSlow 3.6s ease-in-out infinite; }
+    .animate-chew { animation: chewAnim 0.35s ease-in-out 3; }
+    .animate-dress { animation: dressAnim 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .animate-snow { animation: snowFall 9s linear infinite; }
     .animate-blob-1 { animation: blobDrift1 11s ease-in-out infinite; }
     .animate-blob-2 { animation: blobDrift2 14s ease-in-out infinite; }
     .animate-tab-right { animation: slideFromRight 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
@@ -217,15 +241,15 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
 
-    const APP_VERSION = "3.0.0";
+    const APP_VERSION = "4.0.0";
     const CHANGELOG = {
       version: APP_VERSION,
-      title: "Liquid Glass & Cuarto de Lumi",
+      title: "Edición Navidad 2.5D & 100 Decoraciones",
       date: "Noviembre 2026",
       items: [
-        { icon: "💧", title: "Diseño Liquid Glass", desc: "Tarjetas translúcidas con brillo especular, desenfoque profundo y barra flotante de cristal." },
-        { icon: "🍓", title: "Cuarto de Lumi estilo Pou", desc: "Nueva pestaña dedicada: dale de comer, mímalo, duérmelo y cuida sus barras de Hambre, Energía y Cariño." },
-        { icon: "✨", title: "5 Intros dinámicas", desc: "Cada vez que entras a la app cambia el escenario y saludo de bienvenida." }
+        { icon: "🎄", title: "Temporada automática (5 intros)", desc: "Fondo invernal con nieve suave y 5 pantallas de bienvenida navideñas rotativas." },
+        { icon: "🧥", title: "Cuarto 2.5D + Animaciones", desc: "Lumi mastica al comer, se anima al ponerse chamarra/gorro y el globo de texto desaparece solo." },
+        { icon: "🎮", title: "3 Juegos nuevos + 100 objetos", desc: "Gana puntos reales y desbloquea 100 variaciones de paredes, tapetes, ventanas y luces." }
       ]
     };
 
@@ -234,68 +258,166 @@
     const SOS_WEBHOOK_URL = "https://sos-angie.scutionspadehd.workers.dev/";
     const TAB_ORDER = ['today', 'calendar', 'lumi', 'games', 'history'];
 
-    const SPLASH_THEMES = [
-      {
-        id: 'sunrise',
-        badge: 'Amanecer Rosa',
-        greeting: 'Hola, Angie',
-        subtitle: 'Qué bonito verte hoy por aquí',
-        bg: 'radial-gradient(circle at 30% 20%, #FFD6E4 0%, #FFF5F8 55%, #F0E7FF 100%)',
-        orb1: '#FF7AA2',
-        orb2: '#C084FC',
-        titleGrad: 'from-[#E94B77] via-[#D946EF] to-[#6366F1]',
-        emojis: ['✨', '💖', '🌸'],
-        dark: false
-      },
-      {
-        id: 'night',
-        badge: 'Noche Estrellada',
-        greeting: 'Tu espacio seguro',
-        subtitle: 'Respira hondo, todo está en calma',
-        bg: 'radial-gradient(circle at 50% 25%, #2E1F47 0%, #191326 65%, #0F0C18 100%)',
-        orb1: '#8B5CF6',
-        orb2: '#EC4899',
-        titleGrad: 'from-[#F9A8D4] via-[#C4B5FD] to-[#93C5FD]',
-        emojis: ['🌙', '⭐', '💫'],
-        dark: true
-      },
-      {
-        id: 'spring',
-        badge: 'Jardín Pastel',
-        greeting: 'Floreciendo juntas',
-        subtitle: 'Cada día cuenta a tu propio ritmo',
-        bg: 'radial-gradient(circle at 70% 20%, #D1FAE5 0%, #F4FBF8 52%, #FCE7F3 100%)',
-        orb1: '#34D399',
-        orb2: '#F472B6',
-        titleGrad: 'from-[#059669] via-[#E94B77] to-[#8B5CF6]',
-        emojis: ['🌷', '🦋', '🌿'],
-        dark: false
-      },
-      {
-        id: 'peach',
-        badge: 'Atardecer Tibio',
-        greeting: 'Bienvenida de vuelta',
-        subtitle: 'Apapacho, energía y bienestar para ti',
-        bg: 'radial-gradient(circle at 25% 25%, #FFEDD5 0%, #FFF7ED 55%, #FFE4E6 100%)',
-        orb1: '#FB923C',
-        orb2: '#F43F5E',
-        titleGrad: 'from-[#EA580C] via-[#E94B77] to-[#DB2777]',
-        emojis: ['🍑', '☀️', '🧡'],
-        dark: false
-      },
-      {
-        id: 'galaxy',
-        badge: 'Cristal Cósmico',
-        greeting: 'Angie & Lumi',
-        subtitle: 'Tu ritmo, tus metas y tu cuidado',
-        bg: 'radial-gradient(circle at 50% 30%, #E0E7FF 0%, #F5F3FF 55%, #FCE7F3 100%)',
-        orb1: '#6366F1',
-        orb2: '#EC4899',
-        titleGrad: 'from-[#4F46E5] via-[#9333EA] to-[#E94B77]',
-        emojis: ['🔮', '💎', '✨'],
-        dark: false
-      }
-    ];
+    // DETECCIÓN AUTOMÁTICA DE TEMPORADA
+    function getCurrentSeason() {
+      const m = new Date().getMonth() + 1; // 1-12
+      if (m === 11 || m === 12 || m === 1) return 'winter';
+      if (m >= 2 && m <= 4) return 'spring';
+      if (m >= 5 && m <= 7) return 'summer';
+      return 'autumn';
+    }
+
+    // 5 VARIANTES POR TEMPORADA (20 TOTALES)
+    const SEASON_SPLASHES = {
+      winter: [
+        { id: 'w1', badge: 'Navidad Mágica', greeting: 'Hola, Angie', subtitle: 'Época de frío, apapachos y chocolate caliente', bg: 'radial-gradient(circle at 30% 20%, #991B1B 0%, #450A0A 60%, #1F0910 100%)', orb1: '#EF4444', orb2: '#F59E0B', titleGrad: 'from-[#FDE68A] via-[#FCA5A5] to-[#FFFFFF]', emojis: ['❄️', '🎄', '✨'], dark: true },
+        { id: 'w2', badge: 'Noche de Paz', greeting: 'Tu refugio tibio', subtitle: 'Estrellas de invierno y calma para ti', bg: 'radial-gradient(circle at 50% 20%, #1E3A8A 0%, #0F172A 65%, #090D16 100%)', orb1: '#38BDF8', orb2: '#818CF8', titleGrad: 'from-[#BAE6FD] via-[#E0E7FF] to-[#FBCFE8]', emojis: ['❄️', '🌙', '⭐'], dark: true },
+        { id: 'w3', badge: 'Bosque Nevado', greeting: 'Invierno juntas', subtitle: 'Abrígate rico, hoy toca consentirte', bg: 'radial-gradient(circle at 60% 20%, #065F46 0%, #064E3B 55%, #022C22 100%)', orb1: '#34D399', orb2: '#FBBF24', titleGrad: 'from-[#A7F3D0] via-[#FDE68A] to-[#FFFFFF]', emojis: ['🌲', '❄️', '🎁'], dark: true },
+        { id: 'w4', badge: 'Galleta de Jengibre', greeting: 'Dulce Diciembre', subtitle: 'Con olor a canela y buenas vibras', bg: 'radial-gradient(circle at 30% 25%, #FFE4E6 0%, #FFF1F2 55%, #FEF3C7 100%)', orb1: '#F43F5E', orb2: '#F59E0B', titleGrad: 'from-[#BE123C] via-[#D97706] to-[#E11D48]', emojis: ['🍪', '☕', '❤️'], dark: false },
+        { id: 'w5', badge: 'Aurora Polar', greeting: 'Angie & Lumi', subtitle: 'Luces de invierno brillando para ti', bg: 'radial-gradient(circle at 50% 25%, #312E81 0%, #1E1B4B 55%, #0F172A 100%)', orb1: '#2DD4BF', orb2: '#F472B6', titleGrad: 'from-[#5EEAD4] via-[#F9A8D4] to-[#C4B5FD]', emojis: ['✨', '❄️', '🧣'], dark: true }
+      ],
+      spring: [
+        { id: 'sp1', badge: 'Jardín Pastel', greeting: 'Hola, Angie', subtitle: 'Floreciendo a tu propio ritmo', bg: 'radial-gradient(circle at 70% 20%, #D1FAE5 0%, #F4FBF8 52%, #FCE7F3 100%)', orb1: '#34D399', orb2: '#F472B6', titleGrad: 'from-[#059669] via-[#E94B77] to-[#8B5CF6]', emojis: ['🌷', '🦋', '🌿'], dark: false },
+        { id: 'sp2', badge: 'Cerezos en Flor', greeting: 'Primavera Rosa', subtitle: 'Energía fresca para tu día', bg: 'radial-gradient(circle at 30% 20%, #FFD6E4 0%, #FFF5F8 55%, #F0E7FF 100%)', orb1: '#FF7AA2', orb2: '#C084FC', titleGrad: 'from-[#E94B77] via-[#D946EF] to-[#6366F1]', emojis: ['🌸', '✨', '💖'], dark: false },
+        { id: 'sp3', badge: 'Mañana Clara', greeting: 'Bienvenida', subtitle: 'Cielo despejado y buena vibra', bg: 'radial-gradient(circle at 50% 20%, #E0F2FE 0%, #F0F9FF 55%, #FEF9C3 100%)', orb1: '#38BDF8', orb2: '#FACC15', titleGrad: 'from-[#0284C7] via-[#10B981] to-[#F59E0B]', emojis: ['☀️', '🌼', '☁️'], dark: false },
+        { id: 'sp4', badge: 'Lavanda Suave', greeting: 'Tu espacio', subtitle: 'Calma, claridad y bienestar', bg: 'radial-gradient(circle at 40% 30%, #EDE9FE 0%, #F5F3FF 55%, #FCE7F3 100%)', orb1: '#A78BFA', orb2: '#F472B6', titleGrad: 'from-[#7C3AED] via-[#EC4899] to-[#6366F1]', emojis: ['🪻', '💫', '✨'], dark: false },
+        { id: 'sp5', badge: 'Brisa Tibia', greeting: 'Angie & Lumi', subtitle: 'Cada día cuenta contigo', bg: 'radial-gradient(circle at 25% 25%, #FFEDD5 0%, #FFF7ED 55%, #FFE4E6 100%)', orb1: '#FB923C', orb2: '#F43F5E', titleGrad: 'from-[#EA580C] via-[#E94B77] to-[#DB2777]', emojis: ['🍑', '🌺', '✨'], dark: false }
+      ],
+      summer: [
+        { id: 'su1', badge: 'Sol de Verano', greeting: 'Hola, Angie', subtitle: 'Energía radiante para hoy', bg: 'radial-gradient(circle at 30% 20%, #FEF08A 0%, #FFFBEB 55%, #FFE4E6 100%)', orb1: '#F59E0B', orb2: '#FB7185', titleGrad: 'from-[#D97706] via-[#E11D48] to-[#F59E0B]', emojis: ['☀️', '🌴', '✨'], dark: false },
+        { id: 'su2', badge: 'Brisa Marina', greeting: 'Modo Relax', subtitle: 'Como tarde tranquila frente al mar', bg: 'radial-gradient(circle at 50% 25%, #BAE6FD 0%, #ECFEFF 55%, #E0E7FF 100%)', orb1: '#06B6D4', orb2: '#3B82F6', titleGrad: 'from-[#0284C7] via-[#0D9488] to-[#4F46E5]', emojis: ['🌊', '🐚', '💙'], dark: false },
+        { id: 'su3', badge: 'Atardecer Coral', greeting: 'Bienvenida', subtitle: 'Colores cálidos para tu tarde', bg: 'radial-gradient(circle at 25% 25%, #FED7AA 0%, #FFF1F2 55%, #F3E8FF 100%)', orb1: '#F97316', orb2: '#EC4899', titleGrad: 'from-[#EA580C] via-[#DB2777] to-[#7C3AED]', emojis: ['🌅', '🍹', '✨'], dark: false },
+        { id: 'su4', badge: 'Tropical Pastel', greeting: 'Buena Vibra', subtitle: 'A disfrutar el día a tu ritmo', bg: 'radial-gradient(circle at 70% 20%, #A7F3D0 0%, #ECFDF5 55%, #FEF9C3 100%)', orb1: '#10B981', orb2: '#FACC15', titleGrad: 'from-[#059669] via-[#0D9488] to-[#D97706]', emojis: ['🍍', '🌺', '🌿'], dark: false },
+        { id: 'su5', badge: 'Noche Cálida', greeting: 'Angie & Lumi', subtitle: 'Descanso y estrellas de verano', bg: 'radial-gradient(circle at 50% 25%, #312E81 0%, #1E1B4B 60%, #0F172A 100%)', orb1: '#818CF8', orb2: '#F472B6', titleGrad: 'from-[#FDE68A] via-[#F9A8D4] to-[#93C5FD]', emojis: ['🌙', '✨', '🌊'], dark: true }
+      ],
+      autumn: [
+        { id: 'au1', badge: 'Otoño Tibio', greeting: 'Hola, Angie', subtitle: 'Hojas doradas y cafecito rico', bg: 'radial-gradient(circle at 30% 20%, #FED7AA 0%, #FFF7ED 55%, #FEE2E2 100%)', orb1: '#EA580C', orb2: '#DC2626', titleGrad: 'from-[#C2410C] via-[#B91C1C] to-[#D97706]', emojis: ['🍂', '☕', '🧡'], dark: false },
+        { id: 'au2', badge: 'Canela & Miel', greeting: 'Bienvenida', subtitle: 'Tarde acogedora para consentirte', bg: 'radial-gradient(circle at 50% 25%, #FEF3C7 0%, #FFFBEB 55%, #FFEDD5 100%)', orb1: '#D97706', orb2: '#F59E0B', titleGrad: 'from-[#B45309] via-[#EA580C] to-[#92400E]', emojis: ['🍁', '🍯', '✨'], dark: false },
+        { id: 'au3', badge: 'Lluvia Suave', greeting: 'Tu refugio', subtitle: 'Cobijita y calma para hoy', bg: 'radial-gradient(circle at 50% 25%, #E2E8F0 0%, #F8FAFC 55%, #EDE9FE 100%)', orb1: '#64748B', orb2: '#8B5CF6', titleGrad: 'from-[#334155] via-[#6366F1] to-[#475569]', emojis: ['🌧️', '🧣', '💜'], dark: false },
+        { id: 'au4', badge: 'Bosque Dorado', greeting: 'Paz de Otoño', subtitle: 'Respira hondo y disfruta tu día', bg: 'radial-gradient(circle at 30% 25%, #D9F99D 0%, #FEFCE8 55%, #FFEDD5 100%)', orb1: '#65A30D', orb2: '#EA580C', titleGrad: 'from-[#4D7C0F] via-[#D97706] to-[#B45309]', emojis: ['🍃', '🌰', '✨'], dark: false },
+        { id: 'au5', badge: 'Noche de Octubre', greeting: 'Angie & Lumi', subtitle: 'Magia de otoño y buena compañía', bg: 'radial-gradient(circle at 50% 25%, #4C1D95 0%, #2E1065 60%, #1E1B4B 100%)', orb1: '#A855F7', orb2: '#F97316', titleGrad: 'from-[#FDBA74] via-[#E9D5FF] to-[#F9A8D4]', emojis: ['🌙', '🍂', '✨'], dark: true }
+      ]
+    };
+
+    // 100 VARIACIONES DE DECORACIÓN PARA EL CUARTO 2.5D (5 categorías x 20 ítems)
+    const ROOM_CATALOG = (() => {
+      const walls = [
+        ['w_01', 'Rosa Navidad', 'linear-gradient(180deg, #FFE4EC 0%, #F5EEFF 100%)', 0],
+        ['w_02', 'Rojo Terciopelo', 'linear-gradient(180deg, #FECDD3 0%, #FDA4AF 100%)', 15],
+        ['w_03', 'Pino Invernal', 'linear-gradient(180deg, #D1FAE5 0%, #A7F3D0 100%)', 15],
+        ['w_04', 'Cielo Helado', 'linear-gradient(180deg, #E0F2FE 0%, #BAE6FD 100%)', 15],
+        ['w_05', 'Nieve Dorada', 'linear-gradient(180deg, #FEF9C3 0%, #FDE68A 100%)', 20],
+        ['w_06', 'Lavanda Polar', 'linear-gradient(180deg, #EDE9FE 0%, #DDD6FE 100%)', 20],
+        ['w_07', 'Galleta Canela', 'linear-gradient(180deg, #FFEDD5 0%, #FED7AA 100%)', 20],
+        ['w_08', 'Menta Dulce', 'linear-gradient(180deg, #CCFBF1 0%, #99F6E4 100%)', 20],
+        ['w_09', 'Noche Polar', 'linear-gradient(180deg, #312E81 0%, #1E1B4B 100%)', 25],
+        ['w_10', 'Aurora Boreal', 'linear-gradient(180deg, #0F766E 0%, #312E81 100%)', 30],
+        ['w_11', 'Cabaña Tibia', 'linear-gradient(180deg, #FDE68A 0%, #FDBA74 100%)', 25],
+        ['w_12', 'Fresa Crema', 'linear-gradient(180deg, #FCE7F3 0%, #FBCFE8 100%)', 20],
+        ['w_13', 'Perla Cristal', 'linear-gradient(180deg, #F8FAFC 0%, #E2E8F0 100%)', 20],
+        ['w_14', 'Vino Navideño', 'linear-gradient(180deg, #881337 0%, #4C0519 100%)', 30],
+        ['w_15', 'Bosque Oscuro', 'linear-gradient(180deg, #065F46 0%, #022C22 100%)', 30],
+        ['w_16', 'Atardecer Rosa', 'linear-gradient(180deg, #FBCFE8 0%, #FDBA74 100%)', 25],
+        ['w_17', 'Algodón Azul', 'linear-gradient(180deg, #DBEAFE 0%, #E0E7FF 100%)', 20],
+        ['w_18', 'Durazno Suave', 'linear-gradient(180deg, #FFE4E6 0%, #FFEDD5 100%)', 20],
+        ['w_19', 'Galaxia Pastel', 'linear-gradient(180deg, #C4B5FD 0%, #F9A8D4 100%)', 30],
+        ['w_20', 'Oro Imperial', 'linear-gradient(180deg, #FEF08A 0%, #F59E0B 100%)', 40]
+      ].map(([id, label, value, cost]) => ({ id, cat: 'wall', label, value, cost, icon: '🎨' }));
+
+      const rugs = [
+        ['r_01', 'Crema Suave', '#FFFFFF', 0],
+        ['r_02', 'Rojo Santa', '#E11D48', 15],
+        ['r_03', 'Verde Pino', '#059669', 15],
+        ['r_04', 'Dorado Brillo', '#F59E0B', 20],
+        ['r_05', 'Rosa Pastel', '#F9A8D4', 15],
+        ['r_06', 'Celeste Hielo', '#7DD3FC', 15],
+        ['r_07', 'Lila Nube', '#C4B5FD', 15],
+        ['r_08', 'Chocolate', '#92400E', 20],
+        ['r_09', 'Menta Fresca', '#5EEAD4', 20],
+        ['r_10', 'Coral Tibio', '#FB7185', 20],
+        ['r_11', 'Durazno', '#FDBA74', 20],
+        ['r_12', 'Azul Noche', '#312E81', 25],
+        ['r_13', 'Vino Tinto', '#9F1239', 25],
+        ['r_14', 'Plata Nieve', '#CBD5E1', 20],
+        ['r_15', 'Esmeralda', '#047857', 25],
+        ['r_16', 'Magenta', '#DB2777', 25],
+        ['r_17', 'Índigo', '#4F46E5', 25],
+        ['r_18', 'Vainilla', '#FEF08A', 20],
+        ['r_19', 'Carbón Chic', '#334155', 30],
+        ['r_20', 'Arcoíris', 'linear-gradient(90deg,#F472B6,#FBBF24,#34D399,#60A5FA)', 40]
+      ].map(([id, label, value, cost]) => ({ id, cat: 'rug', label, value, cost, icon: '🧶' }));
+
+      const windows = [
+        ['win_01', 'Nieve Suave', '❄️', 0],
+        ['win_02', 'Luna Llena', '🌕', 15],
+        ['win_03', 'Santa Volando', '🎅', 25],
+        ['win_04', 'Estrella Fugaz', '🌠', 20],
+        ['win_05', 'Pinos Nevados', '🌲', 15],
+        ['win_06', 'Fuegos Artif.', '🎆', 25],
+        ['win_07', 'Aurora Polar', '🌌', 30],
+        ['win_08', 'Nubes Rosas', '☁️', 15],
+        ['win_09', 'Sol Invernal', '☀️', 15],
+        ['win_10', 'Cometa Azul', '☄️', 25],
+        ['win_11', 'Montaña Fría', '🏔️', 20],
+        ['win_12', 'Lluvia Suave', '🌧️', 20],
+        ['win_13', 'Arcoíris', '🌈', 25],
+        ['win_14', 'Búho Nocturno', '🦉', 25],
+        ['win_15', 'Reno Mágico', '🦌', 30],
+        ['win_16', 'Castillo', '🏰', 35],
+        ['win_17', 'Globo Aéreo', '🎈', 20],
+        ['win_18', 'Cerezos', '🌸', 20],
+        ['win_19', 'Palmeras', '🌴', 20],
+        ['win_20', 'Planetas', '🪐', 35]
+      ].map(([id, label, value, cost]) => ({ id, cat: 'window', label, value, cost, icon: value }));
+
+      const shelves = [
+        ['sh_01', 'Clásica', '🪴 📚 🧸', 0],
+        ['sh_02', 'Navideña', '🎄 🎁 🔔', 15],
+        ['sh_03', 'Cafetería', '☕ 🍪 🧁', 15],
+        ['sh_04', 'Dulcería', '🍭 🍫 🍬', 20],
+        ['sh_05', 'Música', '🎸 🎧 🎵', 20],
+        ['sh_06', 'Cine', '🍿 🎬 🎞️', 20],
+        ['sh_07', 'Peluches', '🧸 🐰 🐱', 20],
+        ['sh_08', 'Botánica', '🌵 🪴 🌷', 20],
+        ['sh_09', 'Estudio', '💻 📖 ✏️', 20],
+        ['sh_10', 'Spa', '🕯️ 🫧 🧴', 20],
+        ['sh_11', 'Astrología', '🔮 🌙 ⭐', 25],
+        ['sh_12', 'Viajes', '✈️ 🗺️ 📸', 25],
+        ['sh_13', 'Gamer', '🎮 🕹️ 👾', 25],
+        ['sh_14', 'Arte', '🎨 🖌️ 🖼️', 25],
+        ['sh_15', 'Té & Paz', '🍵 🫖 🪷', 25],
+        ['sh_16', 'Nieve', '⛄ ❄️ 🧤', 25],
+        ['sh_17', 'Cumple', '🎂 🎈 🎉', 25],
+        ['sh_18', 'Corazones', '💖 💌 🌹', 30],
+        ['sh_19', 'Trofeos', '🏆 🥇 👑', 35],
+        ['sh_20', 'Magia', '🪄 ✨ 🦄', 40]
+      ].map(([id, label, value, cost]) => ({ id, cat: 'shelf', label, value, cost, icon: '🪵' }));
+
+      const decors = [
+        ['d_01', 'Árbol Mini', '🎄', 0],
+        ['d_02', 'Muñeco Nieve', '⛄', 15],
+        ['d_03', 'Regalo Rojo', '🎁', 15],
+        ['d_04', 'Calcetín', '🧦', 15],
+        ['d_05', 'Vela Tibia', '🕯️', 15],
+        ['d_06', 'Osito', '🧸', 20],
+        ['d_07', 'Perrito Baloo', '🐶', 30],
+        ['d_08', 'Gatito', '🐱', 25],
+        ['d_09', 'Conejito', '🐰', 25],
+        ['d_10', 'Lámpara Luna', '🌙', 25],
+        ['d_11', 'Planta Monstera', '🪴', 20],
+        ['d_12', 'Ramo Rosas', '💐', 25],
+        ['d_13', 'Cojín Corazón', '💖', 20],
+        ['d_14', 'Bola Cristal', '🔮', 30],
+        ['d_15', 'Casita Jengibre', '🏠', 30],
+        ['d_16', 'Guitarra', '🎸', 25],
+        ['d_17', 'Cámara Retro', '📷', 25],
+        ['d_18', 'Estrella Oro', '🌟', 30],
+        ['d_19', 'Corona Nav.', '🎀', 25],
+        ['d_20', 'Chimenea', '🔥', 40]
+      ].map(([id, label, value, cost]) => ({ id, cat: 'decor', label, value, cost, icon: value }));
+
+      return [...walls, ...rugs, ...windows, ...shelves, ...decors];
+    })();
 
     const SOS_OPTIONS = [
       { id: 'cramps', emoji: '🩸', label: 'Traigo cólicos', note: 'Necesito un apapacho o algo calientito.' },
@@ -311,46 +433,30 @@
     ];
 
     const LUMI_FOODS = [
-      { id: 'strawberry', emoji: '🍓', label: 'Fresitas', hunger: 20, mood: 8, cost: 0, reaction: '¡Mmm, fresitas dulces! Me encantan 🍓✨' },
-      { id: 'matcha', emoji: '🍵', label: 'Té tibio', hunger: 12, mood: 15, energy: 10, cost: 0, reaction: 'Qué rico y calientito se siente en la pancita 🍵' },
-      { id: 'tacos', emoji: '🌮', label: 'Taquitos', hunger: 35, mood: 15, cost: 5, reaction: '¡Unos buenos tacos siempre curan todo! 🌮💖' },
-      { id: 'chocolate', emoji: '🍫', label: 'Chocolate', hunger: 18, mood: 22, cost: 5, reaction: '¡Chocolatito rico! Subió mi ánimo al instante 🍫' },
-      { id: 'cake', emoji: '🧁', label: 'Cupcake', hunger: 28, mood: 25, cost: 10, reaction: '¡Fiesta de azúcar! Gracias por consentirme 🧁🎉' }
+      { id: 'cocoa', emoji: '☕', label: 'Choco tibio', hunger: 18, mood: 15, energy: 10, cost: 0, reaction: '¡Mmm, chocolatito espumoso! ☕✨' },
+      { id: 'cookie', emoji: '🍪', label: 'Galleta', hunger: 16, mood: 12, energy: 5, cost: 0, reaction: '¡Crujiente y con canela! 🍪' },
+      { id: 'strawberry', emoji: '🍓', label: 'Fresitas', hunger: 20, mood: 10, energy: 5, cost: 5, reaction: '¡Fresitas dulces! Me encantan 🍓' },
+      { id: 'tacos', emoji: '🌮', label: 'Taquitos', hunger: 35, mood: 18, energy: 8, cost: 10, reaction: '¡Unos taquitos siempre curan todo! 🌮' },
+      { id: 'cake', emoji: '🧁', label: 'Cupcake', hunger: 26, mood: 25, energy: 6, cost: 12, reaction: '¡Qué rico postre navideño! 🧁' }
     ];
 
+    // ROPA DE TEMPORADA (INVIERNO / NAVIDAD + CLÁSICOS)
     const LUMI_ACCESSORIES = [
-      { id: 'crown', emoji: '👑', label: 'Coronita', cost: 20 },
-      { id: 'bow', emoji: '🎀', label: 'Moñito', cost: 25 },
-      { id: 'glasses', emoji: '🕶️', label: 'Lentes', cost: 35 },
-      { id: 'headphones', emoji: '🎧', label: 'Audífonos', cost: 45 },
-      { id: 'blanket', emoji: '🧣', label: 'Cobijita', cost: 55 }
+      { id: 'santa_hat', emoji: '🎅', label: 'Gorro Santa', cost: 20, seasonal: true },
+      { id: 'jacket', emoji: '🧥', label: 'Chamarra', cost: 30, seasonal: true },
+      { id: 'scarf', emoji: '🧣', label: 'Bufanda', cost: 25, seasonal: true },
+      { id: 'sweater', emoji: '🧶', label: 'Suéter Nav.', cost: 35, seasonal: true },
+      { id: 'earmuffs', emoji: '🎧', label: 'Orejeras', cost: 30, seasonal: true },
+      { id: 'crown', emoji: '👑', label: 'Coronita', cost: 25, seasonal: false },
+      { id: 'bow', emoji: '🎀', label: 'Moñito', cost: 20, seasonal: false },
+      { id: 'glasses', emoji: '🕶️', label: 'Lentes', cost: 30, seasonal: false }
     ];
 
     const SELFCARE_ROULETTE = {
-      menstrual: [
-        "Té calientito o chocolate + 15 min sin celular",
-        "Compresa tibia en el abdomen y tu serie favorita",
-        "Estiramiento suave de espalda por 5 minutos",
-        "Pídele a Jorge un masaje o un antojo con el botón SOS"
-      ],
-      folicular: [
-        "Pon tu playlist favorita y haz algo creativo hoy",
-        "Sal a caminar 15 minutos con aire fresco",
-        "Anota 1 cosa que te emocione hacer esta semana",
-        "Toma un vaso grande de agua y estira los brazos"
-      ],
-      ovulatory: [
-        "Aprovecha tu energía para un plan padre hoy",
-        "Tómate una foto bonita, hoy traes toda la vibra",
-        "Haz una actividad en pareja o salgan por algo rico",
-        "Escucha una canción que te ponga de súper buenas"
-      ],
-      luteal: [
-        "Baja el ritmo: hoy está permitido decir que no",
-        "Date un baño calientito relajante",
-        "Haz 1 minuto de respiración 4-4-6 aquí mismo",
-        "Consiéntete con tu snack favorito sin culpa"
-      ]
+      menstrual: ["Chocolate caliente espumoso + 15 min sin celular", "Compresa tibia y tu serie favorita", "Estiramiento suave de espalda por 5 min", "Pídele a Jorge un apapacho con el botón SOS"],
+      folicular: ["Pon tu playlist navideña o favorita y haz algo creativo", "Sal a caminar 15 minutos con aire fresco", "Anota 1 cosa que te emocione esta semana", "Toma un vaso grande de agua y estira los brazos"],
+      ovulatory: ["Aprovecha tu energía para un plan padre hoy", "Tómate una foto bonita, hoy traes toda la vibra", "Armen un plan en pareja o salgan por algo rico", "Escucha una canción que te ponga de súper buenas"],
+      luteal: ["Baja el ritmo: hoy está permitido decir que no", "Date un baño calientito relajante", "Haz 1 minuto de respiración 4-4-6 aquí mismo", "Consiéntete con tu snack favorito sin culpa"]
     };
 
     const DEFAULT_COUPONS = [
@@ -359,8 +465,9 @@
       { id: 'c3', title: 'Noche de peli + antojo', subtitle: 'Yo pongo el plan y el snack' }
     ];
 
-    const AnimatedPhaseBackground = ({ phaseKey, viewMode, discreetMode }) => {
+    const AnimatedPhaseBackground = ({ phaseKey, viewMode, discreetMode, season }) => {
       const palettes = {
+        winter: { bg: '#F4F7FF', c1: '#FCA5A5', c2: '#93C5FD', c3: '#FDE68A' },
         menstrual: { bg: '#FFF0F5', c1: '#FF759F', c2: '#E94B77', c3: '#FDBA74' },
         folicular: { bg: '#F4F9FF', c1: '#FF9EBB', c2: '#38BDF8', c3: '#FDE047' },
         ovulatory: { bg: '#FFF3F8', c1: '#F43F5E', c2: '#A855F7', c3: '#FB923C' },
@@ -368,18 +475,32 @@
         jorge: { bg: '#EEF2FF', c1: '#6366F1', c2: '#9333EA', c3: '#0EA5E9' },
         discreet: { bg: '#F1F5F9', c1: '#CBD5E1', c2: '#94A3B8', c3: '#E2E8F0' }
       };
-      const p = discreetMode ? palettes.discreet : viewMode === 'jorge' ? palettes.jorge : (palettes[phaseKey] || palettes.folicular);
+      const p = discreetMode ? palettes.discreet : viewMode === 'jorge' ? palettes.jorge : season === 'winter' ? palettes.winter : (palettes[phaseKey] || palettes.folicular);
 
       return (
         <div className="fixed inset-0 -z-10 overflow-hidden transition-colors duration-700" style={{ backgroundColor: p.bg }}>
-          <div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-45 animate-blob-1 transition-colors duration-700" style={{ backgroundColor: p.c1 }}></div>
-          <div className="absolute top-1/3 -right-28 w-[420px] h-[420px] rounded-full blur-3xl opacity-40 animate-blob-2 transition-colors duration-700" style={{ backgroundColor: p.c2 }}></div>
-          <div className="absolute -bottom-28 left-1/4 w-[380px] h-[380px] rounded-full blur-3xl opacity-40 animate-blob-1 transition-colors duration-700" style={{ backgroundColor: p.c3 }}></div>
+          <div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-45 animate-blob-1" style={{ backgroundColor: p.c1 }}></div>
+          <div className="absolute top-1/3 -right-28 w-[420px] h-[420px] rounded-full blur-3xl opacity-40 animate-blob-2" style={{ backgroundColor: p.c2 }}></div>
+          <div className="absolute -bottom-28 left-1/4 w-[380px] h-[380px] rounded-full blur-3xl opacity-40 animate-blob-1" style={{ backgroundColor: p.c3 }}></div>
+          {!discreetMode && season === 'winter' && (
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              {[8, 22, 38, 54, 71, 86].map((left, i) => (
+                <span
+                  key={i}
+                  className="absolute text-white/75 text-sm animate-snow"
+                  style={{ left: `${left}%`, animationDelay: `${i * 1.4}s`, animationDuration: `${8 + (i % 3) * 2}s` }}
+                >
+                  ❄️
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       );
     };
 
-    const LumiMascot = ({ phaseKey, viewMode, bouncing, onTap, size = "w-20 h-20", equipped = [], sleeping = false }) => {
+    // LUMI CON ANIMACIONES DE COMER (MASTICAR), VESTIRSE Y ROPA DE TEMPORADA
+    const LumiMascot = ({ phaseKey, viewMode, animState = 'idle', onTap, size = "w-20 h-20", equipped = [], sleeping = false }) => {
       const styles = {
         menstrual: { body: '#FF8DA8', cheek: '#E94B77', aura: '#FFE4EC' },
         folicular: { body: '#FF9EBB', cheek: '#F43F5E', aura: '#E0F2FE' },
@@ -390,61 +511,119 @@
       const st = viewMode === 'jorge' ? styles.jorge : (styles[phaseKey] || styles.folicular);
       const eq = Array.isArray(equipped) ? equipped : [];
 
+      const animClass =
+        animState === 'eating' ? 'animate-chew'
+        : animState === 'dressing' ? 'animate-dress'
+        : animState === 'bounce' ? 'animate-pop'
+        : 'animate-float';
+
       return (
         <button
           type="button"
           onClick={onTap}
           aria-label="Interactuar con Lumi"
-          className={`relative flex items-center justify-center focus:outline-none cursor-pointer ${bouncing ? 'animate-pop' : 'animate-float'}`}
+          className={`relative flex items-center justify-center focus:outline-none cursor-pointer ${animClass}`}
         >
           <svg viewBox="0 0 120 120" className={size}>
             <circle cx="60" cy="62" r="46" fill={st.aura} opacity="0.88" />
-            {eq.includes('headphones') && (
+
+            {/* OREJERAS */}
+            {eq.includes('earmuffs') && (
               <g>
-                <path d="M22 60 A38 38 0 0 1 98 60" fill="none" stroke="#2D2229" strokeWidth="5" strokeLinecap="round" />
-                <rect x="14" y="52" width="12" height="22" rx="6" fill="#E94B77" stroke="#2D2229" strokeWidth="2" />
-                <rect x="94" y="52" width="12" height="22" rx="6" fill="#E94B77" stroke="#2D2229" strokeWidth="2" />
+                <path d="M22 58 A38 38 0 0 1 98 58" fill="none" stroke="#E11D48" strokeWidth="4.5" strokeLinecap="round" />
+                <circle cx="20" cy="60" r="9" fill="#FFFFFF" stroke="#E11D48" strokeWidth="2.5" />
+                <circle cx="100" cy="60" r="9" fill="#FFFFFF" stroke="#E11D48" strokeWidth="2.5" />
               </g>
             )}
+
+            {/* CUERPO */}
             <path d="M60 18 C84 18, 98 42, 98 66 C98 88, 82 102, 60 102 C38 102, 22 88, 22 66 C22 42, 36 18, 60 18 Z" fill={st.body} />
             <ellipse cx="45" cy="36" rx="10" ry="6" fill="#FFFFFF" opacity="0.38" transform="rotate(-22 45 36)" />
-            {(sleeping || (phaseKey === 'menstrual' && viewMode !== 'jorge')) ? (
+
+            {/* SUÉTER NAVIDEÑO */}
+            {eq.includes('sweater') && (
+              <g>
+                <path d="M24 76 Q60 88 96 76 L92 95 Q60 106 28 95 Z" fill="#15803D" stroke="#166534" strokeWidth="1.5" />
+                <path d="M30 85 L40 81 L50 86 L60 81 L70 86 L80 81 L90 85" fill="none" stroke="#FEF08A" strokeWidth="2" strokeLinecap="round" />
+              </g>
+            )}
+
+            {/* CHAMARRA INVERNAL */}
+            {eq.includes('jacket') && (
+              <g>
+                <path d="M21 70 Q60 82 99 70 L95 96 Q60 108 25 96 Z" fill="#BE123C" stroke="#881337" strokeWidth="2" />
+                <line x1="60" y1="77" x2="60" y2="103" stroke="#FDA4AF" strokeWidth="2.2" />
+                <path d="M23 70 Q60 82 97 70" fill="none" stroke="#FFFFFF" strokeWidth="4.5" strokeLinecap="round" />
+              </g>
+            )}
+
+            {/* BUFANDA */}
+            {eq.includes('scarf') && (
+              <g>
+                <path d="M28 76 Q60 87 92 76" fill="none" stroke="#DC2626" strokeWidth="8" strokeLinecap="round" />
+                <path d="M28 76 Q60 87 92 76" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" />
+                <rect x="70" y="78" width="10" height="19" rx="4" fill="#DC2626" />
+              </g>
+            )}
+
+            {/* OJOS */}
+            {(sleeping || (phaseKey === 'menstrual' && viewMode !== 'jorge' && animState === 'idle')) ? (
               <g stroke="#2D2229" strokeWidth="3" strokeLinecap="round" fill="none">
-                <path d="M40 62 Q45 67 50 62" />
-                <path d="M70 62 Q75 67 80 62" />
+                <path d="M40 60 Q45 65 50 60" />
+                <path d="M70 60 Q75 65 80 60" />
               </g>
             ) : (
               <g>
-                <circle cx="45" cy="60" r="4.5" fill="#2D2229" />
-                <circle cx="75" cy="60" r="4.5" fill="#2D2229" />
-                <circle cx="46.5" cy="58.5" r="1.5" fill="#FFFFFF" />
-                <circle cx="76.5" cy="58.5" r="1.5" fill="#FFFFFF" />
+                <circle cx="45" cy="58" r="4.5" fill="#2D2229" />
+                <circle cx="75" cy="58" r="4.5" fill="#2D2229" />
+                <circle cx="46.5" cy="56.5" r="1.5" fill="#FFFFFF" />
+                <circle cx="76.5" cy="56.5" r="1.5" fill="#FFFFFF" />
               </g>
             )}
-            <ellipse cx="36" cy="69" rx="5.5" ry="3.2" fill={st.cheek} opacity="0.45" />
-            <ellipse cx="84" cy="69" rx="5.5" ry="3.2" fill={st.cheek} opacity="0.45" />
-            <path d="M53 71 Q60 78 67 71" stroke="#2D2229" strokeWidth="2.8" strokeLinecap="round" fill="none" />
 
+            {/* CACHETES */}
+            <ellipse cx="36" cy="67" rx={animState === 'eating' ? 7 : 5.5} ry="3.4" fill={st.cheek} opacity="0.5" />
+            <ellipse cx="84" cy="67" rx={animState === 'eating' ? 7 : 5.5} ry="3.4" fill={st.cheek} opacity="0.5" />
+
+            {/* BOCA (MASTICANDO O SONRIENDO) */}
+            {animState === 'eating' ? (
+              <ellipse cx="60" cy="70" rx="6.5" ry="5.5" fill="#9F1239" stroke="#2D2229" strokeWidth="2" />
+            ) : (
+              <path d="M53 69 Q60 76 67 69" stroke="#2D2229" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+            )}
+
+            {/* GORRO DE SANTA */}
+            {eq.includes('santa_hat') && (
+              <g>
+                <path d="M32 30 Q58 0 88 28 Z" fill="#DC2626" stroke="#991B1B" strokeWidth="1.5" />
+                <rect x="28" y="25" width="64" height="9" rx="4.5" fill="#FFFFFF" />
+                <circle cx="90" cy="27" r="6" fill="#FFFFFF" />
+              </g>
+            )}
+
+            {/* CORONA */}
             {eq.includes('crown') && (
               <path d="M42 22 L48 10 L60 18 L72 10 L78 22 Z" fill="#FBBF24" stroke="#D97706" strokeWidth="1.8" strokeLinejoin="round" />
             )}
+
+            {/* MOÑO */}
             {eq.includes('bow') && (
-              <g transform="translate(74, 22) rotate(18)">
+              <g transform="translate(76, 22) rotate(18)">
                 <path d="M0 0 L-12 -7 L-12 7 Z" fill="#FF4D8D" stroke="#FFFFFF" strokeWidth="1.2" />
                 <path d="M0 0 L12 -7 L12 7 Z" fill="#FF4D8D" stroke="#FFFFFF" strokeWidth="1.2" />
                 <circle cx="0" cy="0" r="3.5" fill="#FFD166" />
               </g>
             )}
+
+            {/* LENTES */}
             {eq.includes('glasses') && (
               <g stroke="#2D2229" strokeWidth="2.4" fill="rgba(45,34,41,0.22)">
-                <rect x="33" y="53" width="20" height="13" rx="5" />
-                <rect x="67" y="53" width="20" height="13" rx="5" />
-                <line x1="53" y1="59" x2="67" y2="59" />
+                <rect x="33" y="51" width="20" height="13" rx="5" />
+                <rect x="67" y="51" width="20" height="13" rx="5" />
+                <line x1="53" y1="57" x2="67" y2="57" />
               </g>
             )}
-            {(eq.includes('blanket') || sleeping) && (
-              <path d="M25 81 Q60 98 95 81 L90 98 Q60 110 30 98 Z" fill="#FDE68A" stroke="#F59E0B" strokeWidth="1.8" />
-            )}
+
             {sleeping && (
               <text x="86" y="34" fontSize="13" fontWeight="800" fill="#6366F1">zZ</text>
             )}
@@ -453,74 +632,98 @@
       );
     };
 
-    const LumiRoomTab = ({ phaseKey, viewMode, settings, onFeed, onPetCare, onToggleSleep, onBuyOrToggleAcc }) => {
+    // CUARTO 2.5D DE LUMI (CON 100 DECORACIONES Y FIX DE TEXTO FLOTANTE)
+    const LumiRoomTab = ({ phaseKey, viewMode, settings, onFeed, onPetCare, onToggleSleep, onBuyOrToggleAcc, onEquipRoomItem }) => {
       const [subPanel, setSubPanel] = useState('food');
-      const [petBounce, setPetBounce] = useState(false);
+      const [decorCat, setDecorCat] = useState('wall');
+      const [animState, setAnimState] = useState('idle');
       const [flyingEmoji, setFlyingEmoji] = useState('');
-      const [roomSpeech, setRoomSpeech] = useState('¡Hola! Qué gusto verte en mi cuartito 💕');
+      const [roomSpeech, setRoomSpeech] = useState('');
+
+      const speechTimerRef = useRef(null);
+      const animTimerRef = useRef(null);
+      const flyTimerRef = useRef(null);
+
+      useEffect(() => {
+        return () => {
+          clearTimeout(speechTimerRef.current);
+          clearTimeout(animTimerRef.current);
+          clearTimeout(flyTimerRef.current);
+        };
+      }, []);
+
+      const showTemporaryReaction = (msg, anim = 'bounce', emoji = '') => {
+        clearTimeout(speechTimerRef.current);
+        clearTimeout(animTimerRef.current);
+        clearTimeout(flyTimerRef.current);
+
+        if (msg) {
+          setRoomSpeech(msg);
+          speechTimerRef.current = setTimeout(() => setRoomSpeech(''), 1200);
+        }
+        setAnimState(anim);
+        animTimerRef.current = setTimeout(() => setAnimState('idle'), anim === 'eating' ? 1100 : 750);
+
+        if (emoji) {
+          setFlyingEmoji(emoji);
+          flyTimerRef.current = setTimeout(() => setFlyingEmoji(''), 850);
+        }
+      };
 
       const pet = settings.lumiPet || { hunger: 80, energy: 85, happiness: 90, sleeping: false };
       const points = settings.lumiPoints || 0;
-      const unlocked = Array.isArray(settings.unlockedAccessories) ? settings.unlockedAccessories : [];
-      const equipped = Array.isArray(settings.equipped) ? settings.equipped : [];
+      const unlockedAcc = Array.isArray(settings.unlockedAccessories) ? settings.unlockedAccessories : [];
+      const equippedAcc = Array.isArray(settings.equipped) ? settings.equipped : [];
+      const unlockedRoom = Array.isArray(settings.unlockedRoom) ? settings.unlockedRoom : ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'];
+      const roomEquipped = settings.roomEquipped || { wall: 'w_01', rug: 'r_01', window: 'win_01', shelf: 'sh_01', decor: 'd_01' };
 
-      const triggerBounce = (msg, emoji = '') => {
-        setPetBounce(true);
-        if (msg) setRoomSpeech(msg);
-        if (emoji) {
-          setFlyingEmoji(emoji);
-          setTimeout(() => setFlyingEmoji(''), 850);
-        }
-        setTimeout(() => setPetBounce(false), 450);
-      };
+      const activeWall = ROOM_CATALOG.find(x => x.id === roomEquipped.wall) || ROOM_CATALOG[0];
+      const activeRug = ROOM_CATALOG.find(x => x.id === roomEquipped.rug) || ROOM_CATALOG.find(x => x.id === 'r_01');
+      const activeWin = ROOM_CATALOG.find(x => x.id === roomEquipped.window) || ROOM_CATALOG.find(x => x.id === 'win_01');
+      const activeShelf = ROOM_CATALOG.find(x => x.id === roomEquipped.shelf) || ROOM_CATALOG.find(x => x.id === 'sh_01');
+      const activeDecor = ROOM_CATALOG.find(x => x.id === roomEquipped.decor) || ROOM_CATALOG.find(x => x.id === 'd_01');
 
       const handleFeedClick = (food) => {
         if (pet.sleeping) {
-          triggerBounce('Shhh... estoy dormidito, despiértame primero 😴');
+          showTemporaryReaction('Shhh... estoy dormido 😴', 'bounce');
           return;
         }
         if (food.cost > 0 && points < food.cost) {
-          triggerBounce(`Te faltan ${food.cost - points} pts para ${food.label} ✨`);
+          showTemporaryReaction(`Te faltan ${food.cost - points} pts ✨`, 'bounce');
           return;
         }
         onFeed(food);
-        triggerBounce(food.reaction, food.emoji);
+        showTemporaryReaction(food.reaction, 'eating', food.emoji);
       };
 
       const handleCuddleClick = () => {
         if (pet.sleeping) {
           onToggleSleep();
-          triggerBounce('¡Ya desperté con toda la pila! ☀️', '✨');
+          showTemporaryReaction('¡Ya desperté! ☀️', 'bounce', '✨');
           return;
         }
         onPetCare();
-        const msgs = [
-          '¡Eso se sintió súper bonito! 💖',
-          '¡Eres la mejor cuidándome, Angie! 🥰',
-          '¡Subió mi cariño y ganaste +3 pts! ✨',
-          '¡Qué apapacho tan rico! 🌸'
-        ];
-        triggerBounce(msgs[Math.floor(Math.random() * msgs.length)], '💖');
+        const msgs = ['¡Qué apapacho tan rico! 💖', '¡Me encanta estar contigo! 🥰', '¡Súper a gusto! ✨'];
+        showTemporaryReaction(msgs[Math.floor(Math.random() * msgs.length)], 'bounce', '💖');
       };
 
       return (
         <div className="space-y-4">
-          {/* BARRAS DE ESTADO ESTILO POU */}
           <div className="liquid-glass rounded-[28px] p-4 space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-[#2D2229]">Cuarto de Lumi</span>
+              <span className="text-xs font-extrabold text-[#2D2229]">Cuarto 2.5D de Lumi</span>
               <span className="liquid-pill text-xs font-extrabold text-[#E94B77] px-3 py-1 rounded-full">
                 ✨ {points} pts
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-3 gap-2">
               {[
                 { label: '🍓 Hambre', val: Math.round(pet.hunger), color: 'from-rose-400 to-[#E94B77]' },
                 { label: '⚡ Energía', val: Math.round(pet.energy), color: 'from-amber-400 to-orange-500' },
                 { label: '💖 Cariño', val: Math.round(pet.happiness), color: 'from-purple-400 to-[#6366F1]' }
               ].map((st, idx) => (
-                <div key={idx} className="bg-white/60 rounded-2xl p-2.5 border border-white/80">
+                <div key={idx} className="bg-white/60 rounded-2xl p-2 border border-white/80">
                   <div className="flex justify-between text-[10px] font-extrabold text-[#2D2229] mb-1">
                     <span>{st.label}</span>
                     <span>{st.val}%</span>
@@ -533,85 +736,91 @@
             </div>
           </div>
 
-          {/* ESCENARIO ILUSTRADO DEL CUARTO DE LUMI */}
+          {/* ESCENARIO 2.5D CON PAREDES LATERALES Y PISO EN PERSPECTIVA */}
           <div
-            className="rounded-[34px] relative overflow-hidden border border-white/90 shadow-xl transition-all duration-700"
+            className="room-25d rounded-[34px] relative overflow-hidden border border-white/90 shadow-xl transition-all duration-700"
             style={{
-              background: pet.sleeping
-                ? 'linear-gradient(180deg, #1E1B3A 0%, #2D2654 68%, #3B2E58 68%, #281F3D 100%)'
-                : 'linear-gradient(180deg, #FFE8F0 0%, #F5EEFF 68%, #FDE8D7 68%, #F8D5BE 100%)',
-              minHeight: '305px'
+              background: pet.sleeping ? 'linear-gradient(180deg, #1E1B3A 0%, #2D2654 100%)' : activeWall.value,
+              minHeight: '320px'
             }}
           >
-            {/* VENTANA DEL CUARTO */}
-            <div className={`absolute top-5 left-5 w-24 h-28 rounded-2xl border-4 border-white/90 shadow-inner overflow-hidden ${pet.sleeping ? 'bg-[#121026]' : 'bg-gradient-to-b from-sky-200 to-sky-100'}`}>
-              {pet.sleeping ? (
-                <>
-                  <div className="w-5 h-5 rounded-full bg-amber-200 absolute top-3 right-3 shadow-md shadow-amber-200/50"></div>
-                  <span className="text-[10px] absolute top-4 left-3 text-white">✨</span>
-                  <span className="text-[8px] absolute bottom-5 left-5 text-white">⭐</span>
-                </>
-              ) : (
-                <>
-                  <div className="w-6 h-6 rounded-full bg-amber-300 absolute top-2.5 right-2.5"></div>
-                  <div className="w-12 h-4 rounded-full bg-white/90 absolute bottom-4 left-2"></div>
-                </>
-              )}
+            {/* PAREDES LATERALES 2.5D PARA PROFUNDIDAD */}
+            <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black/15 to-transparent pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/15 to-transparent pointer-events-none"></div>
+
+            {/* PISO EN PERSPECTIVA 2.5D + ZOCLO */}
+            <div
+              className="absolute bottom-0 inset-x-0 h-28 border-t-4 border-white/80"
+              style={{
+                background: pet.sleeping
+                  ? 'linear-gradient(180deg, #31254D 0%, #1F1733 100%)'
+                  : 'linear-gradient(180deg, #F5D0B5 0%, #E7B694 100%)'
+              }}
+            >
+              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 36px, rgba(0,0,0,0.25) 36px, rgba(0,0,0,0.25) 38px)' }}></div>
+            </div>
+
+            {/* VENTANA CON MARCO PROFUNDO */}
+            <div className={`absolute top-5 left-6 w-24 h-28 rounded-2xl border-4 border-white shadow-lg overflow-hidden flex items-center justify-center ${pet.sleeping ? 'bg-[#121026]' : 'bg-gradient-to-b from-sky-200 to-sky-100'}`}>
+              <span className="text-4xl drop-shadow-sm">{pet.sleeping ? '🌙' : activeWin.value}</span>
               <div className="absolute inset-x-0 top-1/2 h-1 bg-white/90"></div>
               <div className="absolute inset-y-0 left-1/2 w-1 bg-white/90"></div>
             </div>
 
-            {/* REPISA DECORATIVA */}
-            <div className="absolute top-10 right-5 flex flex-col items-center">
-              <div className="flex items-end gap-2 px-2 text-lg">
-                <span>🪴</span>
-                <span>📚</span>
-                <span>🧸</span>
-              </div>
-              <div className="w-24 h-2 rounded-full bg-white/90 shadow-xs"></div>
+            {/* REPISA 2.5D CON SOMBRA */}
+            <div className="absolute top-10 right-6 flex flex-col items-center">
+              <div className="text-lg tracking-widest drop-shadow-sm">{activeShelf.value}</div>
+              <div className="w-28 h-2.5 rounded-full bg-white shadow-md"></div>
+              <div className="w-24 h-2 bg-black/10 blur-xs rounded-full -mt-0.5"></div>
             </div>
 
-            {/* GLOBO DE DIÁLOGO */}
-            <div className="relative z-10 flex flex-col items-center pt-6 px-4">
-              <div className="liquid-pill px-4 py-2 rounded-2xl text-xs font-extrabold text-[#2D2229] text-center max-w-[260px] mb-4">
-                {roomSpeech}
-              </div>
+            {/* DECORACIÓN DE PISO (ÁRBOL / CHIMENEA / BALOO) */}
+            <div className="absolute bottom-16 right-7 text-4xl drop-shadow-md select-none">
+              {activeDecor.value}
+            </div>
 
-              {/* PERSONAJE EN EL CENTRO DEL CUARTO */}
-              <div className="relative mt-6 flex flex-col items-center">
+            {/* GLOBO DE TEXTO TEMPORAL (DESAPARECE SOLO A LOS 1.2s) */}
+            <div className="relative z-10 flex flex-col items-center pt-5 px-4 min-h-[260px] justify-end pb-14">
+              {roomSpeech && (
+                <div className="absolute top-4 liquid-pill px-4 py-1.5 rounded-2xl text-xs font-extrabold text-[#2D2229] text-center max-w-[250px] shadow-md animate-pop z-30">
+                  {roomSpeech}
+                </div>
+              )}
+
+              <div className="relative flex flex-col items-center">
                 {flyingEmoji && (
-                  <span className="absolute -top-6 text-3xl animate-food-fly pointer-events-none z-20">
+                  <span className="absolute -top-8 text-3xl animate-food-fly pointer-events-none z-20">
                     {flyingEmoji}
                   </span>
                 )}
                 <LumiMascot
                   phaseKey={phaseKey}
                   viewMode={viewMode}
-                  bouncing={petBounce}
+                  animState={animState}
                   onTap={handleCuddleClick}
                   size="w-40 h-40"
-                  equipped={equipped}
+                  equipped={equippedAcc}
                   sleeping={pet.sleeping}
                 />
-                {/* TAPETE REDONDO */}
-                <div className="w-44 h-6 rounded-full bg-white/65 border border-white/90 -mt-2 shadow-xs"></div>
+                {/* TAPETE 2.5D + SOMBRA DE CONTACTO */}
+                <div
+                  className="w-48 h-8 rounded-full border-2 border-white/85 -mt-4 shadow-md flex items-center justify-center"
+                  style={{ background: activeRug.value }}
+                >
+                  <div className="w-28 h-3 rounded-full bg-black/15 blur-xs"></div>
+                </div>
               </div>
             </div>
 
-            {/* BOTONES FLOTANTES DE ACCIÓN RÁPIDA EN EL CUARTO */}
-            <div className="relative z-10 flex items-center justify-center gap-2.5 px-4 pb-5 pt-3">
-              <button
-                type="button"
-                onClick={handleCuddleClick}
-                className="liquid-pill px-4 py-2 rounded-full text-xs font-extrabold text-[#E94B77] active:scale-95 transition"
-              >
+            <div className="relative z-10 flex items-center justify-center gap-2.5 px-4 pb-4 -mt-8">
+              <button type="button" onClick={handleCuddleClick} className="liquid-pill px-4 py-2 rounded-full text-xs font-extrabold text-[#E94B77] active:scale-95 transition">
                 🤗 Acariciar
               </button>
               <button
                 type="button"
                 onClick={() => {
                   onToggleSleep();
-                  triggerBounce(pet.sleeping ? '¡Buenos días! Ya desperté ☀️' : 'Buenas noches... zZz 🌙', pet.sleeping ? '☀️' : '🌙');
+                  showTemporaryReaction(pet.sleeping ? '¡Buenos días! ☀️' : 'Buenas noches... zZz 🌙', 'bounce', pet.sleeping ? '☀️' : '🌙');
                 }}
                 className="liquid-pill px-4 py-2 rounded-full text-xs font-extrabold text-[#5B4BDB] active:scale-95 transition"
               >
@@ -620,73 +829,68 @@
             </div>
           </div>
 
-          {/* SELECTOR COCINA / ARMARIO */}
+          {/* PANEL INFERIOR: COCINA / ROPA / 100 DECORACIONES */}
           <div className="liquid-glass rounded-[28px] p-4 space-y-3">
-            <div className="grid grid-cols-2 gap-2 p-1 rounded-full bg-white/55 border border-white/80">
-              <button
-                type="button"
-                onClick={() => setSubPanel('food')}
-                className={`py-2 rounded-full text-xs font-extrabold transition ${subPanel === 'food' ? 'bg-[#E94B77] text-white shadow-sm' : 'text-[#6B5460]'}`}
-              >
-                🍓 Cocina & Antojos
-              </button>
-              <button
-                type="button"
-                onClick={() => setSubPanel('wardrobe')}
-                className={`py-2 rounded-full text-xs font-extrabold transition ${subPanel === 'wardrobe' ? 'bg-[#E94B77] text-white shadow-sm' : 'text-[#6B5460]'}`}
-              >
-                👑 Armario ({unlocked.length}/{LUMI_ACCESSORIES.length})
-              </button>
+            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-full bg-white/55 border border-white/80">
+              {[
+                { id: 'food', label: '☕ Cocina' },
+                { id: 'wardrobe', label: '🧥 Ropa' },
+                { id: 'decor', label: `🏠 Cuarto (${unlockedRoom.length}/100)` }
+              ].map(t => (
+                <button
+                  key={t.id} type="button" onClick={() => setSubPanel(t.id)}
+                  className={`py-2 rounded-full text-[11px] font-extrabold transition ${subPanel === t.id ? 'bg-[#E94B77] text-white shadow-sm' : 'text-[#6B5460]'}`}
+                >
+                  {t.label}
+                </button>
+              ))}
             </div>
 
-            {subPanel === 'food' ? (
+            {subPanel === 'food' && (
               <div className="grid grid-cols-5 gap-2">
                 {LUMI_FOODS.map(food => (
                   <button
-                    key={food.id}
-                    type="button"
-                    onClick={() => handleFeedClick(food)}
+                    key={food.id} type="button" onClick={() => handleFeedClick(food)}
                     className="liquid-pill py-2.5 px-1 rounded-2xl flex flex-col items-center gap-1 active:scale-90 transition text-center"
                   >
                     <span className="text-2xl leading-none">{food.emoji}</span>
                     <span className="text-[10px] font-extrabold text-[#2D2229] leading-tight">{food.label}</span>
-                    <span className="text-[9px] font-bold text-[#E94B77]">
-                      {food.cost === 0 ? 'Gratis' : `${food.cost} pts`}
-                    </span>
+                    <span className="text-[9px] font-bold text-[#E94B77]">{food.cost === 0 ? 'Gratis' : `${food.cost} pts`}</span>
                   </button>
                 ))}
               </div>
-            ) : (
+            )}
+
+            {subPanel === 'wardrobe' && (
               <div className="grid grid-cols-2 gap-2">
                 {LUMI_ACCESSORIES.map(acc => {
-                  const isUnlocked = unlocked.includes(acc.id);
-                  const isEquipped = equipped.includes(acc.id);
+                  const isUnlocked = unlockedAcc.includes(acc.id);
+                  const isEquipped = equippedAcc.includes(acc.id);
                   const canBuy = points >= acc.cost;
 
                   return (
                     <button
-                      key={acc.id}
-                      type="button"
+                      key={acc.id} type="button"
                       onClick={() => {
                         onBuyOrToggleAcc(acc);
-                        triggerBounce(
-                          isEquipped ? `Me quité: ${acc.label}` : isUnlocked ? `¡Me puse: ${acc.label}!` : canBuy ? `¡Desbloqueaste ${acc.label}! 🎉` : `Te faltan ${acc.cost - points} pts`,
+                        showTemporaryReaction(
+                          isEquipped ? `Me quité: ${acc.label}` : isUnlocked ? `¡Me puse ${acc.label}! ✨` : canBuy ? `¡Compraste ${acc.label}! 🎉` : `Te faltan ${acc.cost - points} pts`,
+                          'dressing',
                           acc.emoji
                         );
                       }}
                       className={`p-3 rounded-2xl border text-left transition active:scale-95 flex items-center gap-2.5 ${
-                        isEquipped
-                          ? 'bg-[#E94B77] text-white border-[#E94B77] shadow-md'
-                          : isUnlocked
-                            ? 'bg-white/85 text-[#2D2229] border-white'
-                            : canBuy
-                              ? 'bg-white/65 text-[#2D2229] border-white/80'
-                              : 'bg-white/40 text-[#9C8290] border-white/50 opacity-75'
+                        isEquipped ? 'bg-[#E94B77] text-white border-[#E94B77] shadow-md'
+                        : isUnlocked ? 'bg-white/85 text-[#2D2229] border-white'
+                        : canBuy ? 'bg-white/65 text-[#2D2229] border-white/80'
+                        : 'bg-white/40 text-[#9C8290] border-white/50 opacity-75'
                       }`}
                     >
                       <span className="text-xl">{acc.emoji}</span>
                       <div>
-                        <p className="text-xs font-extrabold leading-tight">{acc.label}</p>
+                        <p className="text-xs font-extrabold leading-tight">
+                          {acc.label} {acc.seasonal && <span className="text-[9px]">❄️</span>}
+                        </p>
                         <p className={`text-[10px] font-bold mt-0.5 ${isEquipped ? 'text-white/90' : 'text-[#8C7380]'}`}>
                           {isEquipped ? 'Puesto ✓' : isUnlocked ? 'Equipar' : `${acc.cost} pts`}
                         </p>
@@ -696,6 +900,324 @@
                 })}
               </div>
             )}
+
+            {subPanel === 'decor' && (
+              <div className="space-y-3">
+                <div className="flex gap-1.5 overflow-x-auto pb-1">
+                  {[
+                    { id: 'wall', label: '🎨 Pared (20)' },
+                    { id: 'rug', label: '🧶 Tapete (20)' },
+                    { id: 'window', label: '🪟 Ventana (20)' },
+                    { id: 'shelf', label: '🪵 Repisa (20)' },
+                    { id: 'decor', label: '🎄 Objeto (20)' }
+                  ].map(c => (
+                    <button
+                      key={c.id} type="button" onClick={() => setDecorCat(c.id)}
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold shrink-0 transition ${decorCat === c.id ? 'bg-[#2D2229] text-white' : 'liquid-pill text-[#6B5460]'}`}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                  {ROOM_CATALOG.filter(x => x.cat === decorCat).map(item => {
+                    const isUnlocked = unlockedRoom.includes(item.id);
+                    const isEq = roomEquipped[item.cat] === item.id;
+                    const canBuy = points >= item.cost;
+
+                    return (
+                      <button
+                        key={item.id} type="button"
+                        onClick={() => {
+                          onEquipRoomItem(item);
+                          showTemporaryReaction(
+                            isEq ? 'Ya está puesto ✨' : isUnlocked ? `¡Puesto: ${item.label}!` : canBuy ? `¡Desbloqueaste ${item.label}! 🎉` : `Gana juegos o junta ${item.cost} pts`,
+                            'bounce',
+                            item.icon
+                          );
+                        }}
+                        className={`p-2.5 rounded-2xl border text-left transition active:scale-95 flex items-center gap-2 ${
+                          isEq ? 'bg-[#5B4BDB] text-white border-[#5B4BDB]'
+                          : isUnlocked ? 'bg-white/85 text-[#2D2229] border-white'
+                          : 'bg-white/50 text-[#7A6370] border-white/60'
+                        }`}
+                      >
+                        <span className="text-lg">{item.icon}</span>
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-extrabold truncate">{item.label}</p>
+                          <p className={`text-[9px] font-bold ${isEq ? 'text-white/85' : 'text-[#8C7380]'}`}>
+                            {isEq ? 'Activo ✓' : isUnlocked ? 'Usar' : `${item.cost} pts / Juegos`}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // MINI-JUEGO 1: ATRAPA REGALOS (ARCADE 18 SEGUNDOS)
+    const CatchGiftGameModal = ({ onClose, onWin }) => {
+      const [timeLeft, setTimeLeft] = useState(18);
+      const [score, setScore] = useState(0);
+      const [target, setTarget] = useState({ x: 50, y: 40, emoji: '🎁' });
+      const [finished, setFinished] = useState(false);
+      const emojis = ['🎁', '❄️', '🍪', '⭐', '🎄'];
+
+      useEffect(() => {
+        if (finished) return;
+        const timer = setInterval(() => {
+          setTimeLeft(t => {
+            if (t <= 1) {
+              clearInterval(timer);
+              setFinished(true);
+              return 0;
+            }
+            return t - 1;
+          });
+        }, 1000);
+        return () => clearInterval(timer);
+      }, [finished]);
+
+      useEffect(() => {
+        if (finished) return;
+        const mover = setInterval(() => {
+          setTarget({
+            x: 15 + Math.random() * 70,
+            y: 15 + Math.random() * 70,
+            emoji: emojis[Math.floor(Math.random() * emojis.length)]
+          });
+        }, 950);
+        return () => clearInterval(mover);
+      }, [finished]);
+
+      const hit = () => {
+        if (finished) return;
+        setScore(s => s + 1);
+        setTarget({
+          x: 15 + Math.random() * 70,
+          y: 15 + Math.random() * 70,
+          emoji: emojis[Math.floor(Math.random() * emojis.length)]
+        });
+      };
+
+      const earnedPts = Math.min(35, score * 2);
+
+      return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-5 z-50">
+          <div className="liquid-glass rounded-[34px] max-w-sm w-full p-5 shadow-2xl animate-sheet space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-[#E94B77]">🎁 Atrapa el Regalo</span>
+              <span className="text-xs font-extrabold text-[#2D2229]">{timeLeft}s • {score} pts</span>
+            </div>
+
+            {!finished ? (
+              <div className="relative h-64 rounded-3xl bg-gradient-to-b from-[#1E1B4B] to-[#312E81] overflow-hidden border border-white/40">
+                <button
+                  type="button"
+                  onClick={hit}
+                  style={{ left: `${target.x}%`, top: `${target.y}%`, transform: 'translate(-50%, -50%)' }}
+                  className="absolute text-4xl active:scale-125 transition-all duration-150 cursor-pointer select-none"
+                >
+                  {target.emoji}
+                </button>
+              </div>
+            ) : (
+              <div className="py-6 text-center space-y-2 bg-white/75 rounded-3xl p-4">
+                <p className="text-2xl">🎉</p>
+                <p className="text-sm font-extrabold text-[#2D2229]">¡Atrapaste {score} regalos!</p>
+                <p className="text-xs font-bold text-[#E94B77]">Ganaste +{earnedPts} pts {score >= 10 ? '+ 1 Decoración sorpresa 🎁' : ''}</p>
+                <button
+                  onClick={() => { onWin(earnedPts, score >= 10); onClose(); }}
+                  className="mt-2 w-full py-2.5 rounded-full bg-[#E94B77] text-white text-xs font-extrabold"
+                >
+                  Reclamar premio
+                </button>
+              </div>
+            )}
+
+            {!finished && (
+              <button onClick={onClose} className="w-full py-2.5 rounded-full liquid-pill text-xs font-bold text-[#6B5460]">Salir</button>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // MINI-JUEGO 2: MEMORAMA INVERNAL
+    const MemoryGameModal = ({ onClose, onWin }) => {
+      const baseIcons = ['🎄', '⛄', '🎁', '🍪', '🧣', '⭐'];
+      const [cards, setCards] = useState(() =>
+        [...baseIcons, ...baseIcons]
+          .sort(() => Math.random() - 0.5)
+          .map((icon, i) => ({ id: i, icon, flipped: false, matched: false }))
+      );
+      const [selected, setSelected] = useState([]);
+      const [moves, setMoves] = useState(0);
+
+      const allMatched = cards.every(c => c.matched);
+
+      const handleFlip = (idx) => {
+        if (selected.length === 2 || cards[idx].flipped || cards[idx].matched) return;
+        const next = cards.map((c, i) => i === idx ? { ...c, flipped: true } : c);
+        const nextSel = [...selected, idx];
+        setCards(next);
+        setSelected(nextSel);
+
+        if (nextSel.length === 2) {
+          setMoves(m => m + 1);
+          const [a, b] = nextSel;
+          if (next[a].icon === next[b].icon) {
+            setTimeout(() => {
+              setCards(curr => curr.map((c, i) => (i === a || i === b) ? { ...c, matched: true } : c));
+              setSelected([]);
+            }, 350);
+          } else {
+            setTimeout(() => {
+              setCards(curr => curr.map((c, i) => (i === a || i === b) ? { ...c, flipped: false } : c));
+              setSelected([]);
+            }, 650);
+          }
+        }
+      };
+
+      const rewardPts = Math.max(15, 35 - moves);
+
+      return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-5 z-50">
+          <div className="liquid-glass rounded-[34px] max-w-sm w-full p-5 shadow-2xl animate-sheet space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-[#5B4BDB]">❄️ Memorama Invernal</span>
+              <span className="text-xs font-bold text-[#6B5460]">Intentos: {moves}</span>
+            </div>
+
+            {!allMatched ? (
+              <div className="grid grid-cols-4 gap-2">
+                {cards.map((c, idx) => (
+                  <button
+                    key={c.id} type="button" onClick={() => handleFlip(idx)}
+                    className={`h-16 rounded-2xl text-2xl flex items-center justify-center transition active:scale-95 border ${
+                      c.flipped || c.matched ? 'bg-white border-[#E94B77]' : 'bg-gradient-to-br from-[#FF8DA8] to-[#E94B77] text-white border-white/60'
+                    }`}
+                  >
+                    {c.flipped || c.matched ? c.icon : '✨'}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="py-5 text-center space-y-2 bg-white/80 rounded-3xl p-4">
+                <p className="text-2xl">🏆</p>
+                <p className="text-sm font-extrabold text-[#2D2229]">¡Completado en {moves} intentos!</p>
+                <p className="text-xs font-bold text-[#E94B77]">+{rewardPts} pts + 1 Decoración sorpresa 🎁</p>
+                <button
+                  onClick={() => { onWin(rewardPts, true); onClose(); }}
+                  className="mt-2 w-full py-2.5 rounded-full bg-[#E94B77] text-white text-xs font-extrabold"
+                >
+                  Reclamar premio
+                </button>
+              </div>
+            )}
+
+            {!allMatched && <button onClick={onClose} className="w-full py-2.5 rounded-full liquid-pill text-xs font-bold text-[#6B5460]">Salir</button>}
+          </div>
+        </div>
+      );
+    };
+
+    // MINI-JUEGO 3: SECUENCIA LUMI (SIMON DICE)
+    const SimonGameModal = ({ onClose, onWin }) => {
+      const pads = [
+        { id: 0, color: 'bg-rose-400', active: 'bg-rose-200 scale-105', emoji: '❤️' },
+        { id: 1, color: 'bg-emerald-400', active: 'bg-emerald-200 scale-105', emoji: '🎄' },
+        { id: 2, color: 'bg-amber-400', active: 'bg-amber-200 scale-105', emoji: '⭐' },
+        { id: 3, color: 'bg-indigo-400', active: 'bg-indigo-200 scale-105', emoji: '❄️' }
+      ];
+      const [seq, setSeq] = useState([Math.floor(Math.random() * 4)]);
+      const [userIdx, setUserIdx] = useState(0);
+      const [lit, setLit] = useState(null);
+      const [playingSeq, setPlayingSeq] = useState(true);
+      const [status, setStatus] = useState('playing'); // playing | won | lost
+
+      const playSequence = (list) => {
+        setPlayingSeq(true);
+        list.forEach((padId, i) => {
+          setTimeout(() => setLit(padId), i * 600 + 300);
+          setTimeout(() => setLit(null), i * 600 + 650);
+        });
+        setTimeout(() => setPlayingSeq(false), list.length * 600 + 700);
+      };
+
+      useEffect(() => { playSequence(seq); }, [seq]);
+
+      const handlePad = (id) => {
+        if (playingSeq || status !== 'playing') return;
+        setLit(id);
+        setTimeout(() => setLit(null), 220);
+
+        if (id !== seq[userIdx]) {
+          setStatus('lost');
+          return;
+        }
+        if (userIdx + 1 === seq.length) {
+          if (seq.length >= 5) {
+            setStatus('won');
+          } else {
+            setUserIdx(0);
+            setSeq(prev => [...prev, Math.floor(Math.random() * 4)]);
+          }
+        } else {
+          setUserIdx(u => u + 1);
+        }
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-5 z-50">
+          <div className="liquid-glass rounded-[34px] max-w-sm w-full p-5 shadow-2xl animate-sheet space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-[#2D2229]">🎵 Secuencia Lumi</span>
+              <span className="text-xs font-bold text-[#E94B77]">Nivel {seq.length}/5</span>
+            </div>
+
+            {status === 'playing' ? (
+              <div className="space-y-2">
+                <p className="text-[11px] font-bold text-center text-[#6B5460]">
+                  {playingSeq ? 'Observa la secuencia...' : '¡Tu turno! Repítela'}
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {pads.map(p => (
+                    <button
+                      key={p.id} type="button" onClick={() => handlePad(p.id)}
+                      className={`h-24 rounded-3xl text-3xl flex items-center justify-center transition shadow-md ${lit === p.id ? p.active : p.color}`}
+                    >
+                      {p.emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="py-5 text-center space-y-2 bg-white/80 rounded-3xl p-4">
+                <p className="text-2xl">{status === 'won' ? '🌟' : '😅'}</p>
+                <p className="text-sm font-extrabold text-[#2D2229]">
+                  {status === 'won' ? '¡Memoria perfecta!' : `Llegaste al nivel ${seq.length}`}
+                </p>
+                <p className="text-xs font-bold text-[#E94B77]">
+                  +{status === 'won' ? 30 : seq.length * 4} pts {status === 'won' ? '+ 1 Decoración sorpresa 🎁' : ''}
+                </p>
+                <button
+                  onClick={() => { onWin(status === 'won' ? 30 : seq.length * 4, status === 'won'); onClose(); }}
+                  className="mt-2 w-full py-2.5 rounded-full bg-[#E94B77] text-white text-xs font-extrabold"
+                >
+                  Reclamar
+                </button>
+              </div>
+            )}
+
+            {status === 'playing' && <button onClick={onClose} className="w-full py-2.5 rounded-full liquid-pill text-xs font-bold text-[#6B5460]">Salir</button>}
           </div>
         </div>
       );
@@ -733,17 +1255,13 @@
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#E94B77]">Respiración 4-4-6</span>
               <span className="text-xs font-bold text-[#8C7380]">{secondsLeft}s</span>
             </div>
-
             <div className="py-5 flex items-center justify-center">
               <div className={`w-40 h-40 rounded-full bg-gradient-to-br ${phaseInfo.bg} text-white flex flex-col items-center justify-center shadow-xl transition-transform duration-1000 ${phaseInfo.scale}`}>
                 <span className="text-sm font-extrabold">{phaseInfo.label}</span>
                 <span className="text-[11px] text-white/85 mt-1">Respira con calma</span>
               </div>
             </div>
-
-            <button onClick={onClose} className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold">
-              Cerrar
-            </button>
+            <button onClick={onClose} className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold">Cerrar</button>
           </div>
         </div>
       );
@@ -781,12 +1299,8 @@
 
         const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         let transparent = 0;
-        for (let i = 3; i < data.length; i += 4) {
-          if (data[i] === 0) transparent++;
-        }
-        if (transparent / (data.length / 4) > 0.35) {
-          onScratch(coupon.id);
-        }
+        for (let i = 3; i < data.length; i += 4) if (data[i] === 0) transparent++;
+        if (transparent / (data.length / 4) > 0.35) onScratch(coupon.id);
       };
 
       return (
@@ -811,21 +1325,14 @@
 
     const BbtChart = ({ logs, coverline }) => {
       if (!logs || logs.length < 2) {
-        return (
-          <div className="text-xs text-[#7A6370] py-4 text-center bg-white/55 rounded-2xl">
-            Registra al menos 2 temperaturas basales (°C) para ver tu curva térmica y línea base.
-          </div>
-        );
+        return <div className="text-xs text-[#7A6370] py-4 text-center bg-white/55 rounded-2xl">Registra al menos 2 temperaturas basales (°C) para ver tu curva térmica.</div>;
       }
       const recent = logs.slice(-14);
       const temps = recent.map(l => l.temp);
       const minT = Math.min(...temps, coverline || 36.2) - 0.15;
       const maxT = Math.max(...temps, coverline || 36.8) + 0.15;
       const range = Math.max(0.4, maxT - minT);
-      const w = 320;
-      const h = 130;
-      const padX = 24;
-      const padY = 18;
+      const w = 320, h = 130, padX = 24, padY = 18;
       const getX = (i) => padX + (i / Math.max(1, recent.length - 1)) * (w - padX * 2);
       const getY = (t) => h - padY - ((t - minT) / range) * (h - padY * 2);
       const cleanPoints = recent.map((l, i) => ({ ...l, x: getX(i), y: getY(l.temp) }));
@@ -837,9 +1344,7 @@
             {coverline && (
               <g>
                 <line x1={padX} y1={getY(coverline)} x2={w - padX} y2={getY(coverline)} stroke="#E94B77" strokeWidth="1.3" strokeDasharray="4 4" opacity="0.7" />
-                <text x={w - padX} y={getY(coverline) - 4} textAnchor="end" fontSize="9" fill="#E94B77" fontWeight="700">
-                  Base {coverline}°C
-                </text>
+                <text x={w - padX} y={getY(coverline) - 4} textAnchor="end" fontSize="9" fill="#E94B77" fontWeight="700">Base {coverline}°C</text>
               </g>
             )}
             {linePath && <path d={linePath} fill="none" stroke="#5B4BDB" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />}
@@ -862,7 +1367,6 @@
         games: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
         chart: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 19h16M7 16V9m5 7V5m5 11v-4" />,
         settings: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15a3 3 0 100-6 3 3 0 000 6zm7.4-3a7.4 7.4 0 00-.1-1.3l2-1.5-2-3.4-2.4 1a7.6 7.6 0 00-2.2-1.3L14.3 3h-4.6l-.4 2.5a7.6 7.6 0 00-2.2 1.3l-2.4-1-2 3.4 2 1.5a7.4 7.4 0 000 2.6l-2 1.5 2 3.4 2.4-1a7.6 7.6 0 002.2 1.3l.4 2.5h4.6l.4-2.5a7.6 7.6 0 002.2-1.3l2.4 1 2-3.4-2-1.5c.1-.4.1-.9.1-1.3z" />,
-        lock: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />,
         eyeOff: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-7 0-1.1.5-2.3 1.4-3.4M6.2 6.2A9.9 9.9 0 0112 5c5 0 9 4 9 7 0 1.4-.8 3-2.2 4.3M3 3l18 18" />,
         bell: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 01-6 0" />,
         drop: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />,
@@ -949,57 +1453,36 @@
     ];
 
     const MESSAGE_LIBRARY = {
-      menstrual: [
-        "Hoy tu cuerpo trabaja el doble por dentro; permítete bajar el ritmo sin culpa.",
-        "Descansar hoy no es perder el tiempo, es recargar tu fuerza.",
-        "Si hoy te sientes sensible o cansada, mereces todo el apapacho del mundo."
-      ],
-      folicular: [
-        "Tu energía empieza a subir: aprovecha esta claridad para lo que más disfrutas.",
-        "Las flores no compiten entre ellas, florecen a su propio tiempo.",
-        "Qué bonito verte recuperar tu vitalidad día con día."
-      ],
-      ovulatory: [
-        "Estás en tu punto más alto de energía; hoy irradias una luz increíble.",
-        "Hoy tienes la chispa perfecta para comerte el mundo sin perder tu esencia.",
-        "Hacemos equipo en cada etapa, cuidándonos siempre."
-      ],
-      luteal: [
-        "Si hoy sientes cansancio o cambios de ánimo, sé paciente contigo misma.",
-        "La paz empieza el día en que decides no exigirte perfección.",
-        "Siempre tienes un lugar seguro conmigo, en tus días buenos y en los sensibles."
-      ]
+      menstrual: ["Hoy tu cuerpo trabaja el doble; permítete bajar el ritmo sin culpa.", "Descansar hoy es recargar tu fuerza.", "Mereces todo el apapacho del mundo."],
+      folicular: ["Tu energía empieza a subir: disfruta tu claridad hoy.", "Las flores florecen a su propio tiempo.", "Qué bonito verte recuperar tu vitalidad."],
+      ovulatory: ["Estás en tu punto más alto de energía.", "Hoy tienes la chispa perfecta para comerte el mundo.", "Hacemos equipo en cada etapa."],
+      luteal: ["Si hoy sientes cansancio o cambios de ánimo, sé paciente contigo.", "La paz empieza cuando no te exiges perfección.", "Siempre tienes un lugar seguro conmigo."]
     };
 
     const INITIAL_EVENTS = [
-      { id: '1', date: '2026-08-03', type: 'period_start', title: 'Inicio de Periodo (Agosto)', details: 'Duración estimada 5 días (3 - 7 Ago).', tags: ['cramps_mild'], alteredCycle: false, flow: 'medium' },
-      { id: '2', date: '2026-08-31', type: 'period_start', title: 'Inicio de Periodo (Septiembre)', details: 'Duración estimada 5 días (31 Ago - 4 Sep).', tags: [], alteredCycle: false, flow: 'medium' },
-      { id: '3', date: '2026-10-12', type: 'period_start', title: 'Inicio de Periodo (Octubre)', details: 'Duración 5 días (12 - 16 Oct). Cólicos fuertes el 14 Oct.', tags: ['cramps_strong'], alteredCycle: false, flow: 'heavy' },
-      { id: '4', date: '2026-10-21', type: 'intimacy_unprotected', title: 'Relación (Sin protección / Sin eyaculación)', details: 'Registrado en bitácora.', tags: [] },
-      { id: '5', date: '2026-10-22', type: 'pill', pillKind: 'levonorgestrel', title: 'Pastilla de Emergencia', details: 'Toma nocturna (Levonorgestrel).', tags: ['altered_cycle'] },
-      { id: '6', date: '2026-10-24', type: 'intimacy_unprotected', title: 'Relación (Sin protección)', details: 'Madrugada.', tags: [] },
-      { id: '7', date: '2026-10-26', type: 'medical', title: 'Ultrasonido Transvaginal', details: 'Endometrio inactivo (1.7-1.9 mm) y ovarios en reposo. Sin riesgo.', tags: [] },
-      { id: '8', date: '2026-10-31', type: 'period_start', title: 'Inicio de Periodo Confirmatorio', details: 'Duración 5 días (31 Oct - 4 Nov). Reinicio de ciclo confirmado.', tags: ['altered_cycle'], alteredCycle: true, flow: 'medium' },
-      { id: '9', date: '2026-11-07', type: 'intimacy_protected', title: 'Relaciones con Condón (3x)', details: 'Protección de barrera usada en todo momento.', tags: ['good_mood'] },
-      { id: '10', date: '2026-11-08', type: 'medical', title: 'Síntomas físicos / Chequeo', details: 'Mareos y náuseas por ayuno prolongado y ajuste hormonal.', tags: ['nausea', 'fatigue'] }
+      { id: '1', date: '2026-08-03', type: 'period_start', title: 'Inicio de Periodo (Agosto)', details: 'Duración estimada 5 días.', tags: ['cramps_mild'], alteredCycle: false, flow: 'medium' },
+      { id: '2', date: '2026-08-31', type: 'period_start', title: 'Inicio de Periodo (Septiembre)', details: 'Duración estimada 5 días.', tags: [], alteredCycle: false, flow: 'medium' },
+      { id: '3', date: '2026-10-12', type: 'period_start', title: 'Inicio de Periodo (Octubre)', details: 'Duración 5 días.', tags: ['cramps_strong'], alteredCycle: false, flow: 'heavy' },
+      { id: '8', date: '2026-10-31', type: 'period_start', title: 'Inicio de Periodo Confirmatorio', details: 'Reinicio de ciclo confirmado.', tags: ['altered_cycle'], alteredCycle: true, flow: 'medium' }
     ];
 
     function App() {
       const todayStr = getTodayLocal();
       const todayDateObj = parseLocalDate(todayStr);
+      const season = useMemo(() => getCurrentSeason(), []);
+      const seasonSplashes = SEASON_SPLASHES[season] || SEASON_SPLASHES.winter;
 
-      // ROTACIÓN DE 5 PANTALLAS DE INICIO CADA VEZ QUE ENTRAS
-      const [splashIdx, setSplashIdx] = useState(() => {
+      const [splashIdx] = useState(() => {
         try {
           const prev = Number(localStorage.getItem('ciclo_splash_idx') ?? -1);
-          const next = (prev + 1) % SPLASH_THEMES.length;
+          const next = (prev + 1) % seasonSplashes.length;
           localStorage.setItem('ciclo_splash_idx', String(next));
           return next;
         } catch {
-          return Math.floor(Math.random() * SPLASH_THEMES.length);
+          return Math.floor(Math.random() * seasonSplashes.length);
         }
       });
-      const currentSplash = SPLASH_THEMES[splashIdx] || SPLASH_THEMES[0];
+      const currentSplash = seasonSplashes[splashIdx] || seasonSplashes[0];
 
       const [showSplash, setShowSplash] = useState(true);
       useEffect(() => {
@@ -1027,6 +1510,7 @@
       const [discreetMode, setDiscreetMode] = useState(false);
       const [pushEnabled, setPushEnabled] = useState(false);
       const [pushStatusMsg, setPushStatusMsg] = useState('');
+      const [rewardToast, setRewardToast] = useState('');
 
       const toggleViewMode = (mode) => {
         setViewMode(mode);
@@ -1040,9 +1524,7 @@
       const [tabDirection, setTabDirection] = useState('right');
       const handleSwitchTab = (nextTab) => {
         if (nextTab === activeTab) return;
-        const currIdx = TAB_ORDER.indexOf(activeTab);
-        const nextIdx = TAB_ORDER.indexOf(nextTab);
-        setTabDirection(nextIdx >= currIdx ? 'right' : 'left');
+        setTabDirection(TAB_ORDER.indexOf(nextTab) >= TAB_ORDER.indexOf(activeTab) ? 'right' : 'left');
         setActiveTab(nextTab);
       };
 
@@ -1066,7 +1548,9 @@
             goal: 'prevent',
             lumiPoints: 30,
             unlockedAccessories: [],
-            equipped: [],
+            equipped: ['santa_hat'],
+            unlockedRoom: ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'],
+            roomEquipped: { wall: 'w_01', rug: 'r_01', window: 'win_01', shelf: 'sh_01', decor: 'd_01' },
             lumiPet: { hunger: 80, energy: 85, happiness: 90, sleeping: false, lastUpdated: Date.now() },
             sosAlert: null,
             scratchedCoupons: [],
@@ -1077,36 +1561,24 @@
         } catch {
           return {
             birthControlMethod: 'condom', goal: 'prevent', lumiPoints: 30,
-            unlockedAccessories: [], equipped: [],
+            unlockedAccessories: [], equipped: ['santa_hat'],
+            unlockedRoom: ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'],
+            roomEquipped: { wall: 'w_01', rug: 'r_01', window: 'win_01', shelf: 'sh_01', decor: 'd_01' },
             lumiPet: { hunger: 80, energy: 85, happiness: 90, sleeping: false, lastUpdated: Date.now() },
             sosAlert: null, scratchedCoupons: []
           };
         }
       });
 
-      // DECAIMIENTO NATURAL SUAVE DE LUMI CON EL TIEMPO
-      useEffect(() => {
-        const pet = settings.lumiPet;
-        if (!pet || !pet.lastUpdated) return;
-        const hrsPassed = Math.max(0, (Date.now() - pet.lastUpdated) / (1000 * 60 * 60));
-        if (hrsPassed >= 1) {
-          const nextPet = {
-            ...pet,
-            hunger: Math.max(15, Math.round(pet.hunger - hrsPassed * 3)),
-            energy: pet.sleeping ? Math.min(100, Math.round(pet.energy + hrsPassed * 12)) : Math.max(20, Math.round(pet.energy - hrsPassed * 2)),
-            happiness: Math.max(25, Math.round(pet.happiness - hrsPassed * 2.5)),
-            lastUpdated: Date.now()
-          };
-          setSettings(prev => ({ ...prev, lumiPet: nextPet }));
-        }
-      }, []);
-
-      const [lumiBouncing, setLumiBouncing] = useState(false);
+      const [lumiAnim, setLumiAnim] = useState('idle');
       const [lumiMsg, setLumiMsg] = useState('');
       const [greetedLumiToday, setGreetedLumiToday] = useState(() => {
         try { return localStorage.getItem('ciclo_lumi_greeted') === todayStr; } catch { return false; }
       });
       const [breathingOpen, setBreathingOpen] = useState(false);
+      const [catchGameOpen, setCatchGameOpen] = useState(false);
+      const [memoryGameOpen, setMemoryGameOpen] = useState(false);
+      const [simonGameOpen, setSimonGameOpen] = useState(false);
       const [rouletteResult, setRouletteResult] = useState('');
       const [rouletteSpinning, setRouletteSpinning] = useState(false);
       const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
@@ -1147,11 +1619,9 @@
               await OneSignal.User.addTag("role", viewMode);
               setPushStatusMsg(`Notificaciones activas (${viewMode === 'jorge' ? 'Jorge' : 'Angie'})`);
             } else {
-              setPushStatusMsg('Permiso pendiente o bloqueado en el navegador.');
+              setPushStatusMsg('Permiso pendiente o bloqueado.');
             }
-          } catch {
-            setPushStatusMsg('Revisa el permiso de notificaciones en ajustes.');
-          }
+          } catch { setPushStatusMsg('Revisa el permiso en ajustes.'); }
         });
       };
 
@@ -1174,10 +1644,7 @@
         triggerPinCheck(next);
       };
 
-      const handlePinDelete = () => {
-        if (pinError) return;
-        setPinInput(prev => prev.slice(0, -1));
-      };
+      const handlePinDelete = () => { if (!pinError) setPinInput(prev => prev.slice(0, -1)); };
 
       useEffect(() => {
         if (isUnlocked || showSplash) return;
@@ -1204,6 +1671,8 @@
                   const merged = {
                     birthControlMethod: 'condom', goal: 'prevent', lumiPoints: 30,
                     unlockedAccessories: [], equipped: [],
+                    unlockedRoom: ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'],
+                    roomEquipped: { wall: 'w_01', rug: 'r_01', window: 'win_01', shelf: 'sh_01', decor: 'd_01' },
                     lumiPet: { hunger: 80, energy: 85, happiness: 90, sleeping: false, lastUpdated: Date.now() },
                     sosAlert: null, scratchedCoupons: [],
                     ...data.settings
@@ -1211,13 +1680,6 @@
                   setSettings(merged);
                   localStorage.setItem('ciclo_bienestar_settings_v1', JSON.stringify(merged));
                 }
-                setSyncStatus('synced');
-              } else {
-                await fetch(endpoint, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ events, settings, updatedAt: Date.now() })
-                });
                 setSyncStatus('synced');
               }
             }
@@ -1248,8 +1710,28 @@
         }
       };
 
-      const addLumiPoints = (pts) => {
-        persistCloud(events, { ...settings, lumiPoints: (settings.lumiPoints || 0) + pts });
+      // RECOMPENSA DE JUEGOS: PUNTOS + DESBLOQUEO DE DECORACIÓN ALEATORIA DE LAS 100
+      const handleGameWin = (pts, grantDecor = false) => {
+        const unlockedRoom = Array.isArray(settings.unlockedRoom) ? settings.unlockedRoom : ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'];
+        let nextUnlocked = [...unlockedRoom];
+        let unlockedMsg = `¡Ganaste +${pts} pts! ✨`;
+
+        if (grantDecor) {
+          const lockedPool = ROOM_CATALOG.filter(x => !nextUnlocked.includes(x.id));
+          if (lockedPool.length > 0) {
+            const prize = lockedPool[Math.floor(Math.random() * lockedPool.length)];
+            nextUnlocked.push(prize.id);
+            unlockedMsg = `¡+${pts} pts y desbloqueaste: ${prize.icon} ${prize.label}! 🎁`;
+          }
+        }
+
+        persistCloud(events, {
+          ...settings,
+          lumiPoints: (settings.lumiPoints || 0) + pts,
+          unlockedRoom: nextUnlocked
+        });
+        setRewardToast(unlockedMsg);
+        setTimeout(() => setRewardToast(''), 3500);
       };
 
       const sendPushNotification = async ({ title, message, targetRole }) => {
@@ -1261,43 +1743,24 @@
             body: JSON.stringify({ title, message, targetRole })
           });
           return resp.ok;
-        } catch {
-          return false;
-        }
+        } catch { return false; }
       };
 
       const handleTriggerSos = async (opt) => {
         const alertObj = { ...opt, timestamp: Date.now(), date: todayStr };
         persistCloud(events, { ...settings, sosAlert: alertObj });
         setLumiMsg(`${opt.emoji} Avisando a Jorge: "${opt.label}"...`);
-        setLumiBouncing(true);
-        setTimeout(() => setLumiBouncing(false), 450);
-
-        const ok = await sendPushNotification({
-          title: `${opt.emoji} Angie: ${opt.label}`,
-          message: opt.note,
-          targetRole: "jorge"
-        });
-        setLumiMsg(ok
-          ? `${opt.emoji} ¡Notificación enviada al cel de Jorge!`
-          : `${opt.emoji} Guardado en la app para Jorge.`
-        );
+        const ok = await sendPushNotification({ title: `${opt.emoji} Angie: ${opt.label}`, message: opt.note, targetRole: "jorge" });
+        setLumiMsg(ok ? `${opt.emoji} ¡Notificación enviada al cel de Jorge!` : `${opt.emoji} Guardado en la app para Jorge.`);
       };
 
       const handleTriggerJorgePing = async (opt) => {
         setPushStatusMsg(`Enviando aviso a Angie...`);
-        const ok = await sendPushNotification({
-          title: `${opt.emoji} Jorge: ${opt.label}`,
-          message: opt.note,
-          targetRole: "angie"
-        });
-        setPushStatusMsg(ok
-          ? `${opt.emoji} ¡Notificación enviada al cel de Angie!`
-          : `No se pudo enviar push (verifica que Angie tenga la campanita activa).`
-        );
+        const ok = await sendPushNotification({ title: `${opt.emoji} Jorge: ${opt.label}`, message: opt.note, targetRole: "angie" });
+        setPushStatusMsg(ok ? `${opt.emoji} ¡Notificación enviada al cel de Angie!` : `Verifica que Angie tenga la campanita activa.`);
       };
 
-      // ACCIONES DEL CUARTO DE LUMI ESTILO POU
+      // ACCIONES LUMI SIN FARMEO INFINITO DE PUNTOS
       const handleFeedLumi = (food) => {
         const pet = settings.lumiPet || { hunger: 80, energy: 85, happiness: 90, sleeping: false };
         const pts = settings.lumiPoints || 0;
@@ -1309,36 +1772,19 @@
           energy: Math.min(100, (pet.energy || 80) + (food.energy || 4)),
           lastUpdated: Date.now()
         };
-        persistCloud(events, {
-          ...settings,
-          lumiPoints: pts - food.cost + 2,
-          lumiPet: nextPet
-        });
+        persistCloud(events, { ...settings, lumiPoints: pts - food.cost, lumiPet: nextPet });
       };
 
       const handlePetCareLumi = () => {
         const pet = settings.lumiPet || { hunger: 80, energy: 85, happiness: 90, sleeping: false };
-        const nextPet = {
-          ...pet,
-          happiness: Math.min(100, (pet.happiness || 80) + 12),
-          lastUpdated: Date.now()
-        };
-        persistCloud(events, {
-          ...settings,
-          lumiPoints: (settings.lumiPoints || 0) + 3,
-          lumiPet: nextPet
-        });
+        const nextPet = { ...pet, happiness: Math.min(100, (pet.happiness || 80) + 10), lastUpdated: Date.now() };
+        persistCloud(events, { ...settings, lumiPet: nextPet });
       };
 
       const handleToggleSleepLumi = () => {
         const pet = settings.lumiPet || { hunger: 80, energy: 85, happiness: 90, sleeping: false };
         const wakingUp = Boolean(pet.sleeping);
-        const nextPet = {
-          ...pet,
-          sleeping: !wakingUp,
-          energy: wakingUp ? Math.min(100, (pet.energy || 70) + 25) : pet.energy,
-          lastUpdated: Date.now()
-        };
+        const nextPet = { ...pet, sleeping: !wakingUp, energy: wakingUp ? Math.min(100, (pet.energy || 70) + 25) : pet.energy, lastUpdated: Date.now() };
         persistCloud(events, { ...settings, lumiPet: nextPet });
       };
 
@@ -1361,11 +1807,29 @@
         });
       };
 
+      const handleEquipRoomItem = (item) => {
+        const unlockedRoom = Array.isArray(settings.unlockedRoom) ? settings.unlockedRoom : ['w_01', 'r_01', 'win_01', 'sh_01', 'd_01'];
+        const roomEquipped = settings.roomEquipped || { wall: 'w_01', rug: 'r_01', window: 'win_01', shelf: 'sh_01', decor: 'd_01' };
+        const pts = settings.lumiPoints || 0;
+
+        if (unlockedRoom.includes(item.id)) {
+          persistCloud(events, { ...settings, roomEquipped: { ...roomEquipped, [item.cat]: item.id } });
+          return;
+        }
+        if (pts < item.cost) return;
+        persistCloud(events, {
+          ...settings,
+          lumiPoints: pts - item.cost,
+          unlockedRoom: [...unlockedRoom, item.id],
+          roomEquipped: { ...roomEquipped, [item.cat]: item.id }
+        });
+      };
+
       const toggleBleedingDay = (dateStr, flowLevel = 'medium') => {
         const existing = events.find(e => e.date === dateStr && (e.type === 'period_day' || e.type === 'period_start'));
         if (existing) {
           if (existing.flow === flowLevel) persistCloud(events.filter(e => e.id !== existing.id));
-          else persistCloud(events.map(e => e.id === existing.id ? { ...e, flow: flowLevel, details: `Flujo ${FLOW_LEVELS.find(f => f.id === flowLevel)?.label.toLowerCase()}.` } : e));
+          else persistCloud(events.map(e => e.id === existing.id ? { ...e, flow: flowLevel } : e));
         } else {
           const hadPrev = events.some(e => e.date === addDays(dateStr, -1) && (e.type === 'period_day' || e.type === 'period_start'));
           const created = {
@@ -1374,7 +1838,7 @@
             details: `Flujo ${FLOW_LEVELS.find(f => f.id === flowLevel)?.label.toLowerCase()}.`,
             tags: [], flow: flowLevel, alteredCycle: false
           };
-          persistCloud([...events, created].sort((a, b) => b.date.localeCompare(a.date)), { ...settings, lumiPoints: (settings.lumiPoints || 0) + 10 });
+          persistCloud([...events, created].sort((a, b) => b.date.localeCompare(a.date)), { ...settings, lumiPoints: (settings.lumiPoints || 0) + 5 });
         }
       };
 
@@ -1384,169 +1848,71 @@
         const starts = periodStarts.length ? periodStarts.map(e => e.date) : [todayStr];
         const historyRows = [];
         const rawNaturalLengths = [];
-        const observedLutealLengths = [];
 
         for (let i = 0; i < periodStarts.length; i++) {
           const curr = periodStarts[i];
           const next = periodStarts[i + 1];
           const length = next ? diffDays(curr.date, next.date) : null;
-          const hasPillBetween = next ? events.some(ev => ev.type === 'pill' && ev.date >= curr.date && ev.date < next.date) : false;
-
-          let bleedDays = 1;
-          while (periodDaySet.has(addDays(curr.date, bleedDays)) && bleedDays < 12) bleedDays++;
-          const estimatedBleedDays = bleedDays > 1 ? bleedDays : 5;
-
-          const isAltered = Boolean(hasPillBetween || next?.alteredCycle || (length !== null && (length < 21 || length > 45)));
+          const isAltered = Boolean(next?.alteredCycle || (length !== null && (length < 21 || length > 45)));
           if (length !== null && !isAltered) rawNaturalLengths.push(length);
-
-          if (next) {
-            const lhEvent = events.find(ev => (ev.tags || []).includes('test_ov_pos') && ev.date >= curr.date && ev.date < next.date);
-            if (lhEvent) {
-              const luteal = diffDays(addDays(lhEvent.date, 1), next.date);
-              if (luteal >= 10 && luteal <= 17) observedLutealLengths.push(luteal);
-            }
-          }
-
-          historyRows.push({
-            id: curr.id, start: curr.date, end: addDays(curr.date, estimatedBleedDays - 1),
-            bleedDays: estimatedBleedDays, length, isAltered
-          });
-        }
-
-        let cleanLengths = [...rawNaturalLengths];
-        if (cleanLengths.length >= 4) {
-          const mean0 = cleanLengths.reduce((a, b) => a + b, 0) / cleanLengths.length;
-          const sd0 = Math.sqrt(cleanLengths.reduce((a, b) => a + Math.pow(b - mean0, 2), 0) / cleanLengths.length) || 1;
-          const filtered = cleanLengths.filter(x => Math.abs(x - mean0) <= 2 * sd0);
-          if (filtered.length >= 2) cleanLengths = filtered;
+          historyRows.push({ id: curr.id, start: curr.date, end: addDays(curr.date, 4), bleedDays: 5, length, isAltered });
         }
 
         let ewmaCycle = 28;
-        if (cleanLengths.length > 0) {
-          ewmaCycle = cleanLengths[0];
-          const alpha = 0.35;
-          for (let i = 1; i < cleanLengths.length; i++) {
-            ewmaCycle = alpha * cleanLengths[i] + (1 - alpha) * ewmaCycle;
-          }
+        if (rawNaturalLengths.length > 0) {
+          ewmaCycle = rawNaturalLengths[0];
+          for (let i = 1; i < rawNaturalLengths.length; i++) ewmaCycle = 0.35 * rawNaturalLengths[i] + 0.65 * ewmaCycle;
         }
         const predictedCycleLength = Math.round(ewmaCycle);
-        const stdDev = cleanLengths.length >= 2
-          ? Number(Math.sqrt(cleanLengths.reduce((a, b) => a + Math.pow(b - ewmaCycle, 2), 0) / cleanLengths.length).toFixed(1))
+        const stdDev = rawNaturalLengths.length >= 2
+          ? Number(Math.sqrt(rawNaturalLengths.reduce((a, b) => a + Math.pow(b - ewmaCycle, 2), 0) / rawNaturalLengths.length).toFixed(1))
           : 2.0;
         const marginDays = Math.max(1, Math.min(5, Math.round(stdDev)));
-        const lutealLength = observedLutealLengths.length > 0
-          ? Math.round(observedLutealLengths.reduce((a, b) => a + b, 0) / observedLutealLengths.length)
-          : 14;
-
+        const lutealLength = 14;
         const peakOvulationOffset = Math.max(10, predictedCycleLength - lutealLength);
-        const peakStartOffset = Math.max(7, peakOvulationOffset - 2);
-        const peakEndOffset = peakOvulationOffset + 1;
-        const safeFertileStartOffset = Math.max(5, peakOvulationOffset - (4 + Math.min(3, marginDays)));
-        const safeFertileEndOffset = Math.min(predictedCycleLength - 3, peakOvulationOffset + (2 + Math.min(3, marginDays)));
 
         const tempLogs = events
           .filter(ev => typeof ev.bbt === 'number' && !Number.isNaN(ev.bbt))
           .map(ev => ({ date: ev.date, temp: ev.bbt, noisy: (ev.tags || []).includes('poor_sleep') }))
           .sort((a, b) => a.date.localeCompare(b.date));
 
-        const cleanTemps = tempLogs.filter(x => !x.noisy);
-        let coverline = null;
-        let thermalConfirmedDate = null;
-
-        if (cleanTemps.length >= 9) {
-          for (let i = 6; i <= cleanTemps.length - 3; i++) {
-            const prev6 = cleanTemps.slice(i - 6, i).map(x => x.temp);
-            const highest6 = Math.max(...prev6);
-            if (cleanTemps[i].temp > highest6 && cleanTemps[i + 1].temp > highest6 && cleanTemps[i + 2].temp >= highest6 + 0.2) {
-              coverline = Number(highest6.toFixed(2));
-              thermalConfirmedDate = cleanTemps[i + 2].date;
-            }
-          }
-        }
-        if (coverline === null && cleanTemps.length > 0) {
-          coverline = Number((cleanTemps.reduce((a, c) => a + c.temp, 0) / cleanTemps.length).toFixed(2));
-        }
-
-        const symptomStats = {};
-        if (periodStarts.length >= 2) {
-          periodStarts.forEach(ps => {
-            const seenInCycle = new Set();
-            events.filter(ev => { const d = diffDays(ev.date, ps.date); return d >= 1 && d <= 3; })
-              .forEach(ev => (ev.tags || []).forEach(tid => seenInCycle.add(tid)));
-            seenInCycle.forEach(tid => { symptomStats[tid] = (symptomStats[tid] || 0) + 1; });
-          });
-        }
-        const prePeriodSignals = Object.entries(symptomStats)
-          .filter(([, count]) => count >= 2)
-          .map(([tid, count]) => {
-            const tag = SYMPTOM_TAGS.find(t => t.id === tid);
-            const prob = Math.min(95, Math.round((count / periodStarts.length) * 100));
-            return tag ? { ...tag, prob } : null;
-          })
-          .filter(Boolean)
-          .sort((a, b) => b.prob - a.prob);
-
         return {
           starts, periodDaySet, historyRows: historyRows.reverse(),
           baseCycleLength: predictedCycleLength, stdDev, marginDays, lutealLength,
-          safeFertileStartOffset, peakStartOffset, peakOvulationOffset, peakEndOffset, safeFertileEndOffset,
-          tempLogs, coverline, thermalConfirmedDate, prePeriodSignals
+          safeFertileStartOffset: Math.max(5, peakOvulationOffset - 5),
+          peakStartOffset: Math.max(7, peakOvulationOffset - 2),
+          peakOvulationOffset, peakEndOffset: peakOvulationOffset + 1,
+          safeFertileEndOffset: Math.min(predictedCycleLength - 3, peakOvulationOffset + 3),
+          tempLogs, coverline: null
         };
       }, [events, todayStr]);
 
-      const activeMethod = useMemo(() => BIRTH_CONTROL_METHODS.find(m => m.id === settings.birthControlMethod) || BIRTH_CONTROL_METHODS[0], [settings.birthControlMethod]);
       const activePeriodStart = useMemo(() => {
         const valid = cycleAnalytics.starts.filter(d => d <= referenceDate);
         return valid.length ? valid[valid.length - 1] : cycleAnalytics.starts[0];
       }, [cycleAnalytics.starts, referenceDate]);
 
-      const activePillInCycle = useMemo(() => events.find(ev => ev.type === 'pill' && ev.date >= activePeriodStart && ev.date <= referenceDate), [events, activePeriodStart, referenceDate]);
-      const daysSincePill = activePillInCycle ? diffDays(activePillInCycle.date, referenceDate) : null;
-      const activeLhInCycle = useMemo(() => events.find(ev => (ev.tags || []).includes('test_ov_pos') && ev.date >= activePeriodStart && ev.date <= referenceDate), [events, activePeriodStart, referenceDate]);
-
       const cycleDay = Math.max(1, diffDays(activePeriodStart, referenceDate) + 1);
-      const nextPeriodEst = activeLhInCycle
-        ? addDays(activeLhInCycle.date, cycleAnalytics.lutealLength + 1)
-        : addDays(activePeriodStart, cycleAnalytics.baseCycleLength);
+      const nextPeriodEst = addDays(activePeriodStart, cycleAnalytics.baseCycleLength);
       const daysUntilNext = diffDays(referenceDate, nextPeriodEst);
       const nextPeriodMin = addDays(nextPeriodEst, -cycleAnalytics.marginDays);
       const nextPeriodMax = addDays(nextPeriodEst, cycleAnalytics.marginDays);
 
       const fertilityScore = useMemo(() => {
         if (cycleDay <= 4) return { pct: 3, label: 'Mínima', reason: 'Fase menstrual' };
-        if (activePillInCycle) return { pct: 65, label: 'Impredecible (Ajuste)', reason: 'Anticoncepción de emergencia activa' };
-
         const ovDay = cycleAnalytics.peakOvulationOffset + 1;
-        const sigma = Math.max(2.2, cycleAnalytics.stdDev);
         const dist = cycleDay - ovDay;
-        let prob = Math.exp(-(dist * dist) / (2 * sigma * sigma)) * 82;
-
-        const dayEvs = events.filter(e => e.date === referenceDate);
-        const hasEggwhite = dayEvs.some(e => (e.tags || []).includes('discharge_eggwhite'));
-        const hasLhPos = dayEvs.some(e => (e.tags || []).includes('test_ov_pos')) || (activeLhInCycle && diffDays(activeLhInCycle.date, referenceDate) <= 1);
-
-        let reason = 'Cálculo estadístico EWMA';
-        if (hasEggwhite) { prob = Math.max(prob, 86); reason = 'Flujo fértil (clara de huevo)'; }
-        if (hasLhPos) { prob = 96; reason = 'Test de ovulación LH (+)'; }
-
-        if (cycleAnalytics.thermalConfirmedDate && referenceDate >= cycleAnalytics.thermalConfirmedDate && cycleAnalytics.thermalConfirmedDate >= activePeriodStart) {
-          prob = 4;
-          reason = 'Ovulación confirmada por BBT (3 sobre 6)';
-        }
-
+        const prob = Math.exp(-(dist * dist) / (2 * 2.5 * 2.5)) * 82;
         const pct = Math.max(2, Math.min(99, Math.round(prob)));
-        const label = pct >= 70 ? 'Muy Alta' : pct >= 35 ? 'Moderada / Alta' : pct >= 15 ? 'Baja' : 'Mínima';
-        return { pct, label, reason };
-      }, [cycleDay, cycleAnalytics, events, referenceDate, activePillInCycle, activeLhInCycle, activePeriodStart]);
+        return { pct, label: pct >= 70 ? 'Muy Alta' : pct >= 35 ? 'Moderada' : 'Baja', reason: 'Cálculo EWMA' };
+      }, [cycleDay, cycleAnalytics]);
 
       const projectedPeriodStarts = useMemo(() => {
         const lastReal = cycleAnalytics.starts[cycleAnalytics.starts.length - 1];
         return Array.from({ length: 6 }).map((_, i) => addDays(lastReal, cycleAnalytics.baseCycleLength * (i + 1)));
       }, [cycleAnalytics.starts, cycleAnalytics.baseCycleLength]);
 
-      const currentPhaseKey = cycleDay <= 5 ? 'menstrual'
-        : fertilityScore.pct >= 35 ? 'ovulatory'
-        : cycleDay < cycleAnalytics.peakOvulationOffset + 1 ? 'folicular' : 'luteal';
+      const currentPhaseKey = cycleDay <= 5 ? 'menstrual' : fertilityScore.pct >= 35 ? 'ovulatory' : cycleDay < cycleAnalytics.peakOvulationOffset + 1 ? 'folicular' : 'luteal';
 
       useEffect(() => {
         const pool = MESSAGE_LIBRARY[currentPhaseKey] || MESSAGE_LIBRARY.folicular;
@@ -1554,15 +1920,15 @@
       }, [currentPhaseKey]);
 
       const handleTapLumi = () => {
-        setLumiBouncing(true);
+        setLumiAnim('bounce');
         const pool = MESSAGE_LIBRARY[currentPhaseKey] || MESSAGE_LIBRARY.folicular;
         setLumiMsg(pool[Math.floor(Math.random() * pool.length)]);
         if (!greetedLumiToday) {
           setGreetedLumiToday(true);
           try { localStorage.setItem('ciclo_lumi_greeted', todayStr); } catch {}
-          addLumiPoints(5);
+          persistCloud(events, { ...settings, lumiPoints: (settings.lumiPoints || 0) + 5 });
         }
-        setTimeout(() => setLumiBouncing(false), 450);
+        setTimeout(() => setLumiAnim('idle'), 450);
       };
 
       const handleSpinRoulette = () => {
@@ -1572,46 +1938,25 @@
         setTimeout(() => {
           setRouletteResult(options[Math.floor(Math.random() * options.length)]);
           setRouletteSpinning(false);
-          addLumiPoints(5);
         }, 700);
       };
 
       const phase = useMemo(() => {
-        if (activePillInCycle && cycleDay > 5) {
-          return { name: 'Ciclo en ajuste', dotColor: 'bg-amber-500', glow: 'hero-glow-amber', partnerTip: 'Puede haber sensibilidad o cambios de fecha por la pastilla de emergencia. Mucha calma y protección obligatoria.' };
-        }
-        if (cycleDay <= 5) {
-          return { name: 'Fase Menstrual', dotColor: 'bg-[#E94B77]', glow: 'hero-glow', partnerTip: 'Energía baja y posible sensibilidad física. Ideal consentirla, algo calientito y cero presiones.' };
-        }
-        if (fertilityScore.pct >= 70) {
-          return { name: 'Pico Fértil', dotColor: 'bg-red-500', glow: 'hero-glow', partnerTip: 'Máxima fertilidad biológica y energía alta. Precaución absoluta en cada encuentro.' };
-        }
-        if (fertilityScore.pct >= 35) {
-          return { name: 'Ventana Fértil', dotColor: 'bg-amber-500', glow: 'hero-glow-amber', partnerTip: 'Zona de precaución activa. Mantener protección de barrera desde el inicio.' };
-        }
-        if (cycleDay < cycleAnalytics.peakOvulationOffset + 1) {
-          return { name: 'Fase Folicular', dotColor: 'bg-emerald-500', glow: 'hero-glow-green', partnerTip: 'Claridad mental y energía en subida. Gran momento para planes activos juntos.' };
-        }
-        return { name: 'Fase Lútea', dotColor: 'bg-emerald-500', glow: 'hero-glow-green', partnerTip: 'Etapa premenstrual: puede haber cansancio o antojos. Ideal planes relajados y apapacho.' };
-      }, [cycleDay, fertilityScore.pct, cycleAnalytics.peakOvulationOffset, activePillInCycle]);
+        if (cycleDay <= 5) return { name: 'Fase Menstrual', dotColor: 'bg-[#E94B77]', glow: 'hero-glow', partnerTip: 'Energía baja y posible sensibilidad física. Ideal consentirla.' };
+        if (fertilityScore.pct >= 70) return { name: 'Pico Fértil', dotColor: 'bg-red-500', glow: 'hero-glow', partnerTip: 'Máxima fertilidad biológica. Precaución absoluta.' };
+        if (fertilityScore.pct >= 35) return { name: 'Ventana Fértil', dotColor: 'bg-amber-500', glow: 'hero-glow-amber', partnerTip: 'Zona de precaución activa.' };
+        if (cycleDay < cycleAnalytics.peakOvulationOffset + 1) return { name: 'Fase Folicular', dotColor: 'bg-emerald-500', glow: 'hero-glow-green', partnerTip: 'Energía en subida. Gran momento para planes activos.' };
+        return { name: 'Fase Lútea', dotColor: 'bg-emerald-500', glow: 'hero-glow-green', partnerTip: 'Etapa premenstrual: planes relajados y apapacho.' };
+      }, [cycleDay, fertilityScore.pct, cycleAnalytics.peakOvulationOffset]);
 
       const getDayStatus = (dateStr) => {
         const allStarts = [...cycleAnalytics.starts, ...projectedPeriodStarts];
         const explicitBleed = cycleAnalytics.periodDaySet.has(dateStr);
-        const periodMatch = allStarts.find(s => {
-          const hist = cycleAnalytics.historyRows.find(r => r.start === s);
-          const dur = hist ? hist.bleedDays - 1 : 4;
-          return dateStr >= s && dateStr <= addDays(s, dur);
-        });
+        const periodMatch = allStarts.find(s => dateStr >= s && dateStr <= addDays(s, 4));
         const isProjected = !explicitBleed && Boolean(periodMatch && projectedPeriodStarts.includes(periodMatch));
-        const isAlteredActive = Boolean(activePillInCycle && dateStr >= activePillInCycle.date && dateStr < projectedPeriodStarts[0]);
         const isPeak = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.peakStartOffset) && dateStr <= addDays(s, cycleAnalytics.peakEndOffset));
-        const isFertile = isAlteredActive || allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.safeFertileStartOffset) && dateStr <= addDays(s, cycleAnalytics.safeFertileEndOffset));
-        return {
-          isPeriod: explicitBleed || Boolean(periodMatch),
-          isProjectedPeriod: isProjected, isPeak, isFertile, isAlteredActive,
-          dayEvents: events.filter(e => e.date === dateStr)
-        };
+        const isFertile = allStarts.some(s => dateStr >= addDays(s, cycleAnalytics.safeFertileStartOffset) && dateStr <= addDays(s, cycleAnalytics.safeFertileEndOffset));
+        return { isPeriod: explicitBleed || Boolean(periodMatch), isProjectedPeriod: isProjected, isPeak, isFertile, dayEvents: events.filter(e => e.date === dateStr) };
       };
 
       const weekStrip = useMemo(() => {
@@ -1621,43 +1966,23 @@
           const dt = parseLocalDate(dStr);
           return { dateStr: dStr, label: dayNames[dt.getDay()], dayNum: dt.getDate(), isSelected: dStr === referenceDate, status: getDayStatus(dStr) };
         });
-      }, [referenceDate, events, cycleAnalytics, projectedPeriodStarts, activePillInCycle]);
+      }, [referenceDate, events, cycleAnalytics, projectedPeriodStarts]);
 
-      const todayEvents = useMemo(() => events.filter(e => e.date === todayStr), [events, todayStr]);
       const todayBleedEvent = useMemo(() => events.find(e => e.date === referenceDate && (e.type === 'period_day' || e.type === 'period_start')), [events, referenceDate]);
-
-      const missions = [
-        { id: 'lumi', label: 'Saludar a Lumi (+5 pts)', done: greetedLumiToday, action: handleTapLumi },
-        { id: 'mood', label: 'Registrar cómo te sientes hoy (+10 pts)', done: todayEvents.some(e => (e.tags || []).length > 0), action: () => openAddModal('medical', todayStr) },
-        { id: 'room', label: 'Visitar el cuarto de Lumi', done: activeTab === 'lumi', action: () => handleSwitchTab('lumi') }
-      ];
-      const missionsDone = missions.filter(m => m.done).length;
-      const missionPct = Math.round((missionsDone / missions.length) * 100);
 
       const allCoupons = useMemo(() => {
         const list = [...DEFAULT_COUPONS];
-        if (settings.customCouponTitle) {
-          list.unshift({
-            id: 'custom_jorge',
-            title: settings.customCouponTitle,
-            subtitle: settings.customCouponSub || 'Sorpresa de Jorge'
-          });
-        }
+        if (settings.customCouponTitle) list.unshift({ id: 'custom_jorge', title: settings.customCouponTitle, subtitle: settings.customCouponSub || 'Sorpresa de Jorge' });
         return list;
       }, [settings.customCouponTitle, settings.customCouponSub]);
 
-      const openAddModal = (type, dateOverride, presetTag = null) => {
-        const target = dateOverride || referenceDate;
+      const openAddModal = (type, dateOverride) => {
         setNewEventType(type);
-        setNewEventDate(target);
-        const titles = { period_start: 'Inicio de Periodo', intimacy_protected: 'Relación con Condón', intimacy_unprotected: 'Relación sin Protección', pill: 'Pastilla de Emergencia', medical: 'Registro Diario' };
-        setNewEventTitle(titles[type] || 'Registro');
+        setNewEventDate(dateOverride || referenceDate);
+        setNewEventTitle(type === 'period_start' ? 'Inicio de Periodo' : 'Registro Diario');
         setNewEventDetails('');
-        setNewEventTags(presetTag ? [presetTag] : type === 'pill' ? ['altered_cycle'] : []);
-        setNewEventAltered(false);
-        setNewEventFlow('medium');
+        setNewEventTags([]);
         setNewEventTemp('');
-        setNewEventPillKind('ulipristal');
         setModalOpen(true);
       };
 
@@ -1666,55 +1991,14 @@
         if (!newEventTitle.trim()) return;
         const parsedTemp = newEventTemp !== '' ? parseFloat(String(newEventTemp).replace(',', '.')) : undefined;
         const validTemp = parsedTemp !== undefined && !Number.isNaN(parsedTemp) && parsedTemp >= 34 && parsedTemp <= 41 ? parsedTemp : undefined;
-        const pillNote = newEventType === 'pill'
-          ? (newEventPillKind === 'ulipristal' ? 'Acetato de Ulipristal (Femelle One - 120h).' : 'Levonorgestrel (72h).')
-          : '';
         const created = {
           id: String(Date.now()), date: newEventDate, type: newEventType,
-          pillKind: newEventType === 'pill' ? newEventPillKind : undefined,
-          title: newEventTitle.trim(),
-          details: newEventDetails.trim() || pillNote || (validTemp ? `Temperatura basal: ${validTemp}°C.` : 'Registrado en bitácora.'),
-          tags: newEventTags, alteredCycle: newEventType === 'period_start' ? newEventAltered : false,
-          flow: newEventType === 'period_start' ? newEventFlow : undefined, bbt: validTemp
+          title: newEventTitle.trim(), details: newEventDetails.trim() || 'Registrado en bitácora.',
+          tags: newEventTags, flow: newEventType === 'period_start' ? newEventFlow : undefined, bbt: validTemp
         };
-        persistCloud(
-          [...events, created].sort((a, b) => b.date.localeCompare(a.date)),
-          { ...settings, lumiPoints: (settings.lumiPoints || 0) + 10 }
-        );
+        persistCloud([...events, created].sort((a, b) => b.date.localeCompare(a.date)), { ...settings, lumiPoints: (settings.lumiPoints || 0) + 5 });
         setSelectedDay(newEventDate);
         setModalOpen(false);
-      };
-
-      const handleExportJsonBackup = () => {
-        const blob = new Blob([JSON.stringify({ app: 'Ciclo & Bienestar', version: APP_VERSION, exportedAt: todayStr, settings, events }, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = `ciclo-respaldo-${todayStr}.json`; a.click();
-        URL.revokeObjectURL(url);
-      };
-
-      const handleImportJsonBackup = (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          try {
-            const parsed = JSON.parse(ev.target.result);
-            if (parsed && Array.isArray(parsed.events)) {
-              persistCloud(parsed.events, parsed.settings ? { ...settings, ...parsed.settings } : settings);
-              alert('Respaldo restaurado.');
-            }
-          } catch { alert('Archivo JSON no válido.'); }
-        };
-        reader.readAsText(file);
-      };
-
-      const handleExportMedicalReport = () => {
-        const w = window.open('', '_blank', 'width=850,height=900');
-        if (!w) { window.print(); return; }
-        const rows = cycleAnalytics.historyRows.map(c => `<tr><td style="padding:8px;border-bottom:1px solid #eee">${formatDateES(c.start)} – ${formatDateES(c.end)}</td><td style="padding:8px;border-bottom:1px solid #eee">${c.length ? c.length + ' días' : 'En curso'}</td><td style="padding:8px;border-bottom:1px solid #eee">${c.isAltered ? 'Alterado' : 'Natural'}</td></tr>`).join('');
-        w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Clínico</title><style>body{font-family:sans-serif;padding:28px;color:#222}h1{color:#E94B77}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;padding:8px;border-bottom:2px solid #ddd}</style></head><body><h1>Resumen Clínico de Ciclo</h1><p>Generado: ${formatDateES(todayStr)} • EWMA: ${cycleAnalytics.baseCycleLength}d (±${cycleAnalytics.marginDays}d) • Fase lútea: ${cycleAnalytics.lutealLength}d • Método: ${activeMethod.label}</p><table><thead><tr><th>Periodo</th><th>Duración</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table><script>window.print()<\/script></body></html>`);
-        w.document.close();
       };
 
       const heroTitle = cycleDay <= 5 ? 'Periodo' : daysUntilNext > 0 ? 'Próximo periodo en' : daysUntilNext === 0 ? 'Periodo esperado' : 'Posible retraso';
@@ -1725,50 +2009,35 @@
       const firstWeekday = new Date(currentMonth.year, currentMonth.month, 1).getDay();
       const selectedDayInfo = getDayStatus(selectedDay);
 
-      // 5 VARIANTES DE PANTALLA DE BIENVENIDA
       if (showSplash) {
         return (
-          <div
-            onClick={() => setShowSplash(false)}
-            className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden cursor-pointer select-none transition-all duration-700"
-            style={{ background: currentSplash.bg }}
-          >
+          <div onClick={() => setShowSplash(false)} className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden cursor-pointer select-none" style={{ background: currentSplash.bg }}>
             <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-35 blur-3xl animate-blob-1" style={{ backgroundColor: currentSplash.orb1 }}></div>
             <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full opacity-30 blur-3xl animate-blob-2" style={{ backgroundColor: currentSplash.orb2 }}></div>
-
-            <span className="absolute top-1/3 left-1/4 text-xl animate-sparkle" style={{ animationDelay: '0.1s' }}>{currentSplash.emojis[0]}</span>
+            <span className="absolute top-1/3 left-1/4 text-xl animate-sparkle">{currentSplash.emojis[0]}</span>
             <span className="absolute top-1/4 right-1/4 text-lg animate-sparkle" style={{ animationDelay: '0.6s' }}>{currentSplash.emojis[1]}</span>
             <span className="absolute bottom-1/3 right-1/3 text-xl animate-sparkle" style={{ animationDelay: '1.1s' }}>{currentSplash.emojis[2]}</span>
 
             <div className="relative flex flex-col items-center text-center px-6">
               <div className="relative flex items-center justify-center mb-5">
                 <div className="absolute w-28 h-28 rounded-full border-2 border-white/60 animate-splash-ring"></div>
-                <div className="absolute w-28 h-28 rounded-full border-2 border-white/40 animate-splash-ring" style={{ animationDelay: '0.7s' }}></div>
                 <div className="animate-splash-lumi relative z-10">
-                  <LumiMascot
-                    phaseKey={currentPhaseKey}
-                    viewMode="angie"
-                    size="w-32 h-32"
-                    equipped={settings.equipped || []}
-                    sleeping={currentSplash.id === 'night'}
-                  />
+                  <LumiMascot phaseKey={currentPhaseKey} viewMode="angie" size="w-32 h-32" equipped={settings.equipped || []} />
                 </div>
               </div>
-
               <div className="animate-splash-text">
-                <span className={`inline-block text-[10px] font-extrabold uppercase tracking-[0.26em] px-4 py-1.5 rounded-full ${currentSplash.dark ? 'bg-white/15 text-pink-200 backdrop-blur-md border border-white/20' : 'liquid-pill text-[#E94B77]'}`}>
+                <span className={`inline-block text-[10px] font-extrabold uppercase tracking-[0.26em] px-4 py-1.5 rounded-full ${currentSplash.dark ? 'bg-white/15 text-pink-100 backdrop-blur-md border border-white/20' : 'liquid-pill text-[#E94B77]'}`}>
                   {currentSplash.badge}
                 </span>
                 <h1 className={`text-4xl font-extrabold mt-3 bg-gradient-to-r ${currentSplash.titleGrad} bg-clip-text text-transparent`}>
                   {currentSplash.greeting}
                 </h1>
-                <p className={`text-xs font-semibold mt-1.5 ${currentSplash.dark ? 'text-white/75' : 'text-[#7A6370]'}`}>
+                <p className={`text-xs font-semibold mt-1.5 ${currentSplash.dark ? 'text-white/80' : 'text-[#7A6370]'}`}>
                   {currentSplash.subtitle}
                 </p>
               </div>
-
-              <div className="w-44 h-1.5 rounded-full bg-white/40 overflow-hidden mt-7 backdrop-blur-xs">
-                <div className="h-full rounded-full bg-gradient-to-r from-[#FF8DA8] via-[#E94B77] to-[#8B5CF6] animate-progress"></div>
+              <div className="w-44 h-1.5 rounded-full bg-white/40 overflow-hidden mt-7">
+                <div className="h-full rounded-full bg-gradient-to-r from-[#FF8DA8] via-[#E94B77] to-[#F59E0B] animate-progress"></div>
               </div>
             </div>
           </div>
@@ -1777,57 +2046,26 @@
 
       if (!isUnlocked) {
         return (
-          <div className="min-h-screen flex flex-col items-center justify-between px-6 py-12 relative overflow-hidden select-none animate-tab-right">
-            <AnimatedPhaseBackground phaseKey={currentPhaseKey} viewMode={viewMode} discreetMode={false} />
-
+          <div className="min-h-screen flex flex-col items-center justify-between px-6 py-12 relative overflow-hidden select-none">
+            <AnimatedPhaseBackground phaseKey={currentPhaseKey} viewMode={viewMode} discreetMode={false} season={season} />
             <div className="relative z-10 flex flex-col items-center text-center mt-2">
               <LumiMascot phaseKey={currentPhaseKey} viewMode="angie" size="w-20 h-20" equipped={settings.equipped || []} />
               <h1 className="text-2xl font-extrabold tracking-tight text-[#2D2229] mt-2">Ciclo & Bienestar</h1>
-              <p className="text-xs font-semibold text-[#8C7380] mt-1">
-                {pinError ? 'Código incorrecto, intenta de nuevo' : 'Ingresa tu código privado'}
-              </p>
-
+              <p className="text-xs font-semibold text-[#8C7380] mt-1">{pinError ? 'Código incorrecto' : 'Ingresa tu código privado'}</p>
               <div className={`flex items-center gap-4 mt-6 ${pinError ? 'animate-shake' : ''}`}>
-                {Array.from({ length: ACCESS_PIN.length }).map((_, idx) => {
-                  const filled = idx < pinInput.length;
-                  return (
-                    <span
-                      key={idx}
-                      className={`w-3.5 h-3.5 rounded-full transition-all duration-200 ${
-                        pinError ? 'bg-red-500 scale-110' : filled ? 'bg-[#E94B77] scale-125 shadow-md shadow-rose-300' : 'bg-white/80 border border-white'
-                      }`}
-                    ></span>
-                  );
-                })}
+                {Array.from({ length: ACCESS_PIN.length }).map((_, idx) => (
+                  <span key={idx} className={`w-3.5 h-3.5 rounded-full transition-all ${pinError ? 'bg-red-500' : idx < pinInput.length ? 'bg-[#E94B77] scale-125' : 'bg-white/80 border border-white'}`}></span>
+                ))}
               </div>
             </div>
-
             <div className="relative z-10 w-full max-w-[280px] grid grid-cols-3 gap-4 my-4">
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
-                <button
-                  key={num} type="button" onClick={() => handlePinDigit(num)}
-                  className="h-16 w-16 mx-auto rounded-full liquid-glass text-2xl font-bold text-[#2D2229] active:scale-90 active:bg-[#E94B77] active:text-white transition flex items-center justify-center"
-                >
-                  {num}
-                </button>
+              {['1','2','3','4','5','6','7','8','9'].map(num => (
+                <button key={num} type="button" onClick={() => handlePinDigit(num)} className="h-16 w-16 mx-auto rounded-full liquid-glass text-2xl font-bold text-[#2D2229] active:scale-90 transition flex items-center justify-center">{num}</button>
               ))}
-              <div className="h-16 w-16 mx-auto"></div>
-              <button
-                type="button" onClick={() => handlePinDigit('0')}
-                className="h-16 w-16 mx-auto rounded-full liquid-glass text-2xl font-bold text-[#2D2229] active:scale-90 active:bg-[#E94B77] active:text-white transition flex items-center justify-center"
-              >
-                0
-              </button>
-              <button
-                type="button" onClick={handlePinDelete} aria-label="Borrar"
-                className="h-16 w-16 mx-auto rounded-full text-[#8C7380] hover:text-[#E94B77] active:scale-90 transition flex items-center justify-center"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 6H9l-6 6 6 6h12a1 1 0 001-1V7a1 1 0 00-1-1zM16 10l-4 4m0-4l4 4" />
-                </svg>
-              </button>
+              <div></div>
+              <button type="button" onClick={() => handlePinDigit('0')} className="h-16 w-16 mx-auto rounded-full liquid-glass text-2xl font-bold text-[#2D2229] active:scale-90 transition flex items-center justify-center">0</button>
+              <button type="button" onClick={handlePinDelete} className="h-16 w-16 mx-auto rounded-full text-[#8C7380] flex items-center justify-center">⌫</button>
             </div>
-
             <p className="relative z-10 text-[11px] font-semibold text-[#9C8290]">Espacio privado de Angie & Jorge</p>
           </div>
         );
@@ -1835,7 +2073,7 @@
 
       return (
         <div className="min-h-screen relative">
-          <AnimatedPhaseBackground phaseKey={currentPhaseKey} viewMode={viewMode} discreetMode={discreetMode} />
+          <AnimatedPhaseBackground phaseKey={currentPhaseKey} viewMode={viewMode} discreetMode={discreetMode} season={season} />
 
           <div className="max-w-md md:max-w-xl mx-auto px-4 pt-5 relative z-10">
             <header className="flex items-center justify-between mb-4 no-print">
@@ -1844,7 +2082,7 @@
                   {discreetMode ? 'Bienestar Diario' : viewMode === 'jorge' ? 'Hola, Jorge' : 'Hola, Angie'}
                 </h1>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${syncStatus === 'synced' ? 'bg-emerald-500' : syncStatus === 'error' ? 'bg-rose-500' : 'bg-amber-400 animate-pulse'}`}></span>
+                  <span className={`w-1.5 h-1.5 rounded-full ${syncStatus === 'synced' ? 'bg-emerald-500' : 'bg-amber-400 animate-pulse'}`}></span>
                   <span className="text-[11px] font-semibold text-[#7A6370]">
                     {formatMonthYear(referenceDate)} • ✨ {settings.lumiPoints || 0} pts
                   </span>
@@ -1853,39 +2091,26 @@
 
               <div className="flex items-center gap-1.5">
                 {!discreetMode && (
-                  <button
-                    onClick={() => toggleViewMode(viewMode === 'angie' ? 'jorge' : 'angie')}
-                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition ${viewMode === 'jorge' ? 'bg-[#5B4BDB] text-white shadow-md' : 'liquid-pill text-[#E94B77]'}`}
-                  >
+                  <button onClick={() => toggleViewMode(viewMode === 'angie' ? 'jorge' : 'angie')} className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition ${viewMode === 'jorge' ? 'bg-[#5B4BDB] text-white' : 'liquid-pill text-[#E94B77]'}`}>
                     {viewMode === 'jorge' ? 'Modo Jorge' : 'Modo Angie'}
                   </button>
                 )}
-                <button
-                  onClick={handleEnablePush}
-                  title="Notificaciones"
-                  className={`w-9 h-9 rounded-full flex items-center justify-center transition ${pushEnabled ? 'bg-emerald-500 text-white shadow-sm' : 'liquid-pill text-[#7A6370]'}`}
-                >
+                <button onClick={handleEnablePush} className={`w-9 h-9 rounded-full flex items-center justify-center ${pushEnabled ? 'bg-emerald-500 text-white' : 'liquid-pill text-[#7A6370]'}`}>
                   <Icon name="bell" className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={() => setDiscreetMode(p => !p)} title="Modo discreto"
-                  className={`w-9 h-9 rounded-full flex items-center justify-center transition ${discreetMode ? 'bg-[#2D2229] text-white' : 'liquid-pill text-[#7A6370]'}`}
-                >
+                <button onClick={() => setDiscreetMode(p => !p)} className={`w-9 h-9 rounded-full flex items-center justify-center ${discreetMode ? 'bg-[#2D2229] text-white' : 'liquid-pill text-[#7A6370]'}`}>
                   <Icon name="eyeOff" className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={() => setSettingsDrawerOpen(true)} title="Ajustes"
-                  className="w-9 h-9 rounded-full liquid-pill text-[#7A6370] flex items-center justify-center"
-                >
+                <button onClick={() => setSettingsDrawerOpen(true)} className="w-9 h-9 rounded-full liquid-pill text-[#7A6370] flex items-center justify-center">
                   <Icon name="settings" className="w-4 h-4" />
                 </button>
               </div>
             </header>
 
-            {pushStatusMsg && (
-              <div className="mb-3 px-3.5 py-2 rounded-2xl liquid-glass text-[11px] font-bold text-[#2D2229] flex items-center justify-between">
-                <span>{pushStatusMsg}</span>
-                <button onClick={() => setPushStatusMsg('')} className="text-[#9C8290]">✕</button>
+            {(pushStatusMsg || rewardToast) && (
+              <div className="mb-3 px-3.5 py-2.5 rounded-2xl liquid-glass text-xs font-extrabold text-[#E94B77] flex items-center justify-between">
+                <span>{rewardToast || pushStatusMsg}</span>
+                <button onClick={() => { setPushStatusMsg(''); setRewardToast(''); }} className="text-[#9C8290]">✕</button>
               </div>
             )}
 
@@ -1893,92 +2118,42 @@
               {activeTab === 'today' && (
                 <div className="space-y-4">
                   {viewMode === 'jorge' && settings.sosAlert && settings.sosAlert.date === todayStr && (
-                    <div className="rounded-[26px] p-4 text-white shadow-lg flex items-center justify-between gap-3 border border-white/40" style={{ background: 'linear-gradient(135deg, #5B4BDB 0%, #7C3AED 100%)' }}>
+                    <div className="rounded-[26px] p-4 text-white shadow-lg flex items-center justify-between gap-3" style={{ background: 'linear-gradient(135deg, #5B4BDB 0%, #7C3AED 100%)' }}>
                       <div>
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">Aviso de Angie hoy</span>
+                        <span className="text-[10px] font-extrabold uppercase bg-white/20 px-2.5 py-0.5 rounded-full">Aviso de Angie hoy</span>
                         <p className="text-sm font-extrabold mt-1.5">{settings.sosAlert.emoji} {settings.sosAlert.label}</p>
                         <p className="text-xs text-white/85 mt-0.5">{settings.sosAlert.note}</p>
                       </div>
-                      <button
-                        onClick={() => persistCloud(events, { ...settings, sosAlert: null })}
-                        className="text-xs font-bold bg-white/20 px-3 py-1.5 rounded-full shrink-0"
-                      >
-                        Listo
-                      </button>
+                      <button onClick={() => persistCloud(events, { ...settings, sosAlert: null })} className="text-xs font-bold bg-white/20 px-3 py-1.5 rounded-full">Listo</button>
                     </div>
                   )}
 
-                  <div>
-                    <div className="flex items-center justify-between px-1 mb-2">
-                      <span className="text-xs font-bold text-[#7A6370] capitalize">{formatDateES(referenceDate)}</span>
-                      {referenceDate !== todayStr ? (
-                        <button onClick={() => setReferenceDate(todayStr)} className="text-xs font-extrabold text-[#E94B77]">Ir a Hoy</button>
-                      ) : (
-                        <span className="text-xs font-extrabold text-[#E94B77]">Hoy</span>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-7 gap-1.5">
-                      {weekStrip.map(d => {
-                        const isPeriodPill = d.status.isPeriod && !d.status.isProjectedPeriod;
-                        return (
-                          <button
-                            key={d.dateStr} onClick={() => setReferenceDate(d.dateStr)}
-                            className={`flex flex-col items-center py-2.5 rounded-full transition ${
-                              isPeriodPill ? 'bg-[#E94B77] text-white shadow-md shadow-rose-200'
-                              : d.isSelected ? 'bg-[#2D2229] text-white shadow-md'
-                              : 'liquid-glass text-[#2D2229]'
-                            } ${d.isSelected ? 'ring-2 ring-offset-2 ring-[#E94B77]' : ''}`}
-                          >
-                            <span className={`text-[10px] font-semibold ${isPeriodPill || d.isSelected ? 'text-white/80' : 'text-[#8C7380]'}`}>{d.label}</span>
-                            <span className="text-sm font-extrabold mt-0.5">{d.dayNum}</span>
-                            <span className={`w-1.5 h-1.5 rounded-full mt-1 ${
-                              d.status.isPeak ? 'bg-amber-300' : d.status.isFertile ? 'bg-amber-400'
-                              : d.status.dayEvents.length > 0 ? (isPeriodPill || d.isSelected ? 'bg-white' : 'bg-[#E94B77]') : 'bg-transparent'
-                            }`}></span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                  <div className="grid grid-cols-7 gap-1.5">
+                    {weekStrip.map(d => {
+                      const isPeriodPill = d.status.isPeriod && !d.status.isProjectedPeriod;
+                      return (
+                        <button
+                          key={d.dateStr} onClick={() => setReferenceDate(d.dateStr)}
+                          className={`flex flex-col items-center py-2.5 rounded-full transition ${
+                            isPeriodPill ? 'bg-[#E94B77] text-white' : d.isSelected ? 'bg-[#2D2229] text-white' : 'liquid-glass text-[#2D2229]'
+                          } ${d.isSelected ? 'ring-2 ring-offset-2 ring-[#E94B77]' : ''}`}
+                        >
+                          <span className={`text-[10px] font-semibold ${isPeriodPill || d.isSelected ? 'text-white/80' : 'text-[#8C7380]'}`}>{d.label}</span>
+                          <span className="text-sm font-extrabold mt-0.5">{d.dayNum}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-
-                  {activePillInCycle && !discreetMode && (
-                    <div className="liquid-glass rounded-[26px] p-4 border-l-4 border-amber-500">
-                      <p className="text-xs font-extrabold text-amber-900">Seguimiento post-emergencia (Día {daysSincePill})</p>
-                      <p className="text-[11px] text-[#6B5460] mt-1 leading-relaxed">
-                        {activePillInCycle.pillKind === 'ulipristal' ? 'Ulipristal (Femelle One)' : 'Levonorgestrel'} el {formatDateES(activePillInCycle.date, false)}.
-                        {daysSincePill < 14
-                          ? ` Prueba confiable en ${14 - daysSincePill} días y definitiva en ${21 - daysSincePill} días.`
-                          : daysSincePill < 21
-                            ? ` Prueba confiable disponible; definitiva en ${21 - daysSincePill} días.`
-                            : ' Prueba de orina definitiva disponible.'}
-                      </p>
-                    </div>
-                  )}
 
                   {!discreetMode && (
                     <div className="liquid-glass rounded-[28px] p-3.5 flex items-center gap-3">
-                      <LumiMascot
-                        phaseKey={currentPhaseKey} viewMode={viewMode}
-                        bouncing={lumiBouncing} onTap={handleTapLumi}
-                        size="w-16 h-16 shrink-0" equipped={settings.equipped || []}
-                        sleeping={settings.lumiPet?.sleeping}
-                      />
+                      <LumiMascot phaseKey={currentPhaseKey} viewMode={viewMode} animState={lumiAnim} onTap={handleTapLumi} size="w-16 h-16 shrink-0" equipped={settings.equipped || []} sleeping={settings.lumiPet?.sleeping} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#E94B77]">
-                            {viewMode === 'jorge' ? 'Tip para Jorge' : 'Lumi dice'}
-                          </span>
-                          <button
-                            onClick={() => handleSwitchTab('lumi')}
-                            className="liquid-pill text-[10px] font-extrabold text-[#E94B77] px-2.5 py-1 rounded-full transition"
-                          >
-                            🍓 Ir a su cuarto
-                          </button>
+                          <span className="text-[10px] font-extrabold uppercase text-[#E94B77]">{viewMode === 'jorge' ? 'Tip para Jorge' : 'Lumi dice'}</span>
+                          <button onClick={() => handleSwitchTab('lumi')} className="liquid-pill text-[10px] font-extrabold text-[#E94B77] px-2.5 py-1 rounded-full">🏠 Su cuarto</button>
                         </div>
-                        <p className="text-xs font-semibold text-[#2D2229] mt-0.5 leading-snug">
-                          {viewMode === 'jorge' ? phase.partnerTip : `"${lumiMsg}"`}
-                        </p>
+                        <p className="text-xs font-semibold text-[#2D2229] mt-0.5 leading-snug">{viewMode === 'jorge' ? phase.partnerTip : `"${lumiMsg}"`}</p>
                       </div>
                     </div>
                   )}
@@ -1987,19 +2162,11 @@
                     <div className="liquid-glass rounded-[26px] p-3.5">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[11px] font-extrabold text-[#2D2229]">SOS / Antojo para Jorge</span>
-                        {settings.sosAlert && settings.sosAlert.date === todayStr && (
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50/90 px-2 py-0.5 rounded-full">
-                            Enviado: {settings.sosAlert.label}
-                          </span>
-                        )}
                       </div>
                       <div className="grid grid-cols-4 gap-1.5">
                         {SOS_OPTIONS.map(opt => (
-                          <button
-                            key={opt.id} type="button" onClick={() => handleTriggerSos(opt)}
-                            className="liquid-pill py-2 px-1 rounded-2xl active:scale-95 transition flex flex-col items-center gap-1 text-center"
-                          >
-                            <span className="text-base leading-none">{opt.emoji}</span>
+                          <button key={opt.id} type="button" onClick={() => handleTriggerSos(opt)} className="liquid-pill py-2 px-1 rounded-2xl active:scale-95 transition flex flex-col items-center gap-1 text-center">
+                            <span className="text-base">{opt.emoji}</span>
                             <span className="text-[10px] font-bold text-[#2D2229] leading-tight">{opt.label}</span>
                           </button>
                         ))}
@@ -2009,16 +2176,11 @@
 
                   {viewMode === 'jorge' && !discreetMode && (
                     <div className="liquid-glass rounded-[26px] p-3.5">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-extrabold text-[#5B4BDB]">Mandar aviso rápido a Angie</span>
-                      </div>
+                      <span className="text-[11px] font-extrabold text-[#5B4BDB] block mb-2">Mandar aviso rápido a Angie</span>
                       <div className="grid grid-cols-3 gap-1.5">
                         {JORGE_PING_OPTIONS.map(opt => (
-                          <button
-                            key={opt.id} type="button" onClick={() => handleTriggerJorgePing(opt)}
-                            className="liquid-pill py-2 px-1.5 rounded-2xl active:scale-95 transition flex flex-col items-center gap-1 text-center"
-                          >
-                            <span className="text-base leading-none">{opt.emoji}</span>
+                          <button key={opt.id} type="button" onClick={() => handleTriggerJorgePing(opt)} className="liquid-pill py-2 px-1.5 rounded-2xl active:scale-95 transition flex flex-col items-center gap-1 text-center">
+                            <span className="text-base">{opt.emoji}</span>
                             <span className="text-[10px] font-bold text-[#2D2229] leading-tight">{opt.label}</span>
                           </button>
                         ))}
@@ -2029,26 +2191,14 @@
                   <div className="relative pt-1 pb-5 flex flex-col items-center">
                     <div className="relative flex items-center justify-center">
                       <div className="w-60 h-60 rounded-full liquid-orb-ring p-3 flex items-center justify-center">
-                        <div className={`w-full h-full rounded-full flex flex-col items-center justify-center text-white text-center px-5 transition-all duration-500 ${
-                          discreetMode ? 'bg-[#2D2229]' : viewMode === 'jorge' ? 'hero-glow-partner' : phase.glow
-                        }`}>
+                        <div className={`w-full h-full rounded-full flex flex-col items-center justify-center text-white text-center px-5 ${discreetMode ? 'bg-[#2D2229]' : viewMode === 'jorge' ? 'hero-glow-partner' : phase.glow}`}>
                           <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/85">{heroTitle}</span>
-                          <span className="text-5xl font-extrabold tracking-tight my-1 leading-none">{heroBig}</span>
-                          <span className="text-[11px] font-semibold text-white/90">
-                            Día {cycleDay} {!discreetMode ? `• ${phase.name}` : ''}
-                          </span>
-                          {!discreetMode && cycleDay > 5 && (
-                            <span className="text-[10px] text-white/80 mt-1">
-                              Rango: {formatDateES(nextPeriodMin, false)} – {formatDateES(nextPeriodMax, false)}
-                            </span>
-                          )}
+                          <span className="text-5xl font-extrabold my-1 leading-none">{heroBig}</span>
+                          <span className="text-[11px] font-semibold text-white/90">Día {cycleDay} {!discreetMode ? `• ${phase.name}` : ''}</span>
+                          {!discreetMode && cycleDay > 5 && <span className="text-[10px] text-white/80 mt-1">Rango: {formatDateES(nextPeriodMin, false)} – {formatDateES(nextPeriodMax, false)}</span>}
                         </div>
                       </div>
-
-                      <button
-                        onClick={() => openAddModal('period_start', referenceDate)}
-                        className="absolute -bottom-3 liquid-pill text-[#E94B77] font-extrabold text-xs px-5 py-2.5 rounded-full hover:scale-105 active:scale-95 transition flex items-center gap-1.5"
-                      >
+                      <button onClick={() => openAddModal('period_start', referenceDate)} className="absolute -bottom-3 liquid-pill text-[#E94B77] font-extrabold text-xs px-5 py-2.5 rounded-full active:scale-95 transition flex items-center gap-1.5">
                         <Icon name="drop" className="w-3.5 h-3.5" />
                         <span>{todayBleedEvent ? 'Editar periodo' : 'Marcar periodo'}</span>
                       </button>
@@ -2056,62 +2206,25 @@
                   </div>
 
                   {!discreetMode && (
-                    <button
-                      onClick={() => setSafeDaysModalOpen(true)}
-                      className="w-full liquid-glass rounded-[26px] p-4 text-left active:scale-[0.99] transition space-y-2"
-                    >
+                    <button onClick={() => setSafeDaysModalOpen(true)} className="w-full liquid-glass rounded-[26px] p-4 text-left space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${phase.dotColor}`}></span>
-                          <span className="text-xs font-extrabold text-[#2D2229]">Índice fértil de hoy: {fertilityScore.label}</span>
-                        </div>
+                        <span className="text-xs font-extrabold text-[#2D2229]">Índice fértil de hoy: {fertilityScore.label}</span>
                         <span className="text-xs font-extrabold text-[#E94B77]">{fertilityScore.pct}%</span>
                       </div>
                       <div className="w-full h-2 rounded-full bg-white/70 overflow-hidden">
-                        <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-[#E94B77] transition-all duration-500" style={{ width: `${fertilityScore.pct}%` }}></div>
+                        <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-[#E94B77]" style={{ width: `${fertilityScore.pct}%` }}></div>
                       </div>
-                      <p className="text-[11px] text-[#7A6370]">Base: {fertilityScore.reason}</p>
                     </button>
-                  )}
-
-                  {!discreetMode && viewMode === 'angie' && (
-                    <div className="liquid-glass rounded-[26px] p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs font-extrabold text-[#2D2229]">Misiones de hoy</p>
-                          <p className="text-[11px] text-[#7A6370]">{missionsDone} de {missions.length} listas</p>
-                        </div>
-                        <span className="liquid-pill text-xs font-extrabold text-[#E94B77] px-2.5 py-1 rounded-full">{missionPct}%</span>
-                      </div>
-                      <div className="space-y-1.5">
-                        {missions.map(m => (
-                          <button key={m.id} onClick={m.action} className="w-full flex items-center justify-between px-3 py-2 rounded-2xl bg-white/55 hover:bg-white/80 border border-white/70 transition text-left">
-                            <span className={`text-xs font-bold ${m.done ? 'line-through text-[#9C8290]' : 'text-[#2D2229]'}`}>{m.label}</span>
-                            <span className={`w-5 h-5 rounded-full flex items-center justify-center ${m.done ? 'bg-emerald-500 text-white' : 'border-2 border-[#E8CFD8]'}`}>
-                              {m.done && <Icon name="check" className="w-3 h-3" />}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
                   )}
 
                   {viewMode === 'angie' && !discreetMode && (
                     <div className="liquid-glass rounded-[26px] p-4">
-                      <div className="flex items-center justify-between mb-2.5">
-                        <span className="text-xs font-extrabold text-[#2D2229]">Flujo de hoy</span>
-                        <span className="text-[11px] font-semibold text-[#8C7380]">1 toque</span>
-                      </div>
+                      <span className="text-xs font-extrabold text-[#2D2229] block mb-2.5">Flujo de hoy</span>
                       <div className="grid grid-cols-4 gap-2">
                         {FLOW_LEVELS.map(fl => {
                           const active = todayBleedEvent && todayBleedEvent.flow === fl.id;
                           return (
-                            <button
-                              key={fl.id} onClick={() => toggleBleedingDay(referenceDate, fl.id)}
-                              className={`py-2.5 rounded-2xl border text-[11px] font-bold flex flex-col items-center gap-1.5 active:scale-95 transition ${
-                                active ? fl.active : 'liquid-pill text-[#6B5460]'
-                              }`}
-                            >
+                            <button key={fl.id} onClick={() => toggleBleedingDay(referenceDate, fl.id)} className={`py-2.5 rounded-2xl border text-[11px] font-bold flex flex-col items-center gap-1.5 ${active ? fl.active : 'liquid-pill text-[#6B5460]'}`}>
                               <span className={`w-2.5 h-2.5 rounded-full ${active ? 'bg-white' : fl.dot}`}></span>
                               <span>{fl.label}</span>
                             </button>
@@ -2127,67 +2240,52 @@
                 <div className="space-y-4">
                   <div className="liquid-glass rounded-[30px] p-5">
                     <div className="flex items-center justify-between mb-4">
-                      <button onClick={() => setCurrentMonth(p => p.month === 0 ? { year: p.year - 1, month: 11 } : { year: p.year, month: p.month - 1 })} className="w-9 h-9 rounded-full liquid-pill text-[#E94B77] flex items-center justify-center">
-                        <Icon name="chevLeft" className="w-4 h-4" />
-                      </button>
-                      <div className="text-center">
-                        <h2 className="text-base font-extrabold text-[#2D2229]">{monthNames[currentMonth.month]} {currentMonth.year}</h2>
-                        <button onClick={() => { setCurrentMonth({ year: todayDateObj.getFullYear(), month: todayDateObj.getMonth() }); setSelectedDay(todayStr); }} className="text-[11px] font-bold text-[#E94B77]">
-                          Volver a hoy
-                        </button>
-                      </div>
-                      <button onClick={() => setCurrentMonth(p => p.month === 11 ? { year: p.year + 1, month: 0 } : { year: p.year, month: p.month + 1 })} className="w-9 h-9 rounded-full liquid-pill text-[#E94B77] flex items-center justify-center">
-                        <Icon name="chevRight" className="w-4 h-4" />
-                      </button>
+                      <button onClick={() => setCurrentMonth(p => p.month === 0 ? { year: p.year - 1, month: 11 } : { year: p.year, month: p.month - 1 })} className="w-9 h-9 rounded-full liquid-pill text-[#E94B77] flex items-center justify-center"><Icon name="chevLeft" className="w-4 h-4" /></button>
+                      <h2 className="text-base font-extrabold text-[#2D2229]">{monthNames[currentMonth.month]} {currentMonth.year}</h2>
+                      <button onClick={() => setCurrentMonth(p => p.month === 11 ? { year: p.year + 1, month: 0 } : { year: p.year, month: p.month + 1 })} className="w-9 h-9 rounded-full liquid-pill text-[#E94B77] flex items-center justify-center"><Icon name="chevRight" className="w-4 h-4" /></button>
                     </div>
-
                     <div className="grid grid-cols-7 text-center text-[11px] font-bold text-[#9C8290] mb-2">
-                      <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
+<div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
                     </div>
-
                     <div className="grid grid-cols-7 gap-1.5">
                       {Array.from({ length: firstWeekday }).map((_, i) => <div key={`e-${i}`} className="h-11"></div>)}
                       {Array.from({ length: daysInMonth }).map((_, idx) => {
                         const dayNum = idx + 1;
                         const dateStr = `${currentMonth.year}-${String(currentMonth.month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
                         const st = getDayStatus(dateStr);
-                        const isSel = selectedDay === dateStr;
-                        const isTod = dateStr === todayStr;
-
                         let cls = 'bg-white/60 border border-white/75 text-[#2D2229]';
-                        if (st.isPeriod && !st.isProjectedPeriod) cls = 'bg-[#E94B77] text-white font-extrabold shadow-xs';
+                        if (st.isPeriod && !st.isProjectedPeriod) cls = 'bg-[#E94B77] text-white font-extrabold';
                         else if (st.isProjectedPeriod) cls = 'bg-[#FFE4EC]/85 text-[#C73660] border border-dashed border-[#E94B77] font-bold';
                         else if (!discreetMode && st.isPeak) cls = 'bg-amber-400 text-[#2D2229] font-extrabold';
                         else if (!discreetMode && st.isFertile) cls = 'bg-amber-100/85 text-amber-900 font-semibold';
-
                         return (
                           <button
-                            key={dateStr} onClick={() => setSelectedDay(dateStr)}
-                            className={`h-11 rounded-2xl flex flex-col items-center justify-center text-xs transition ${cls} ${isSel ? 'ring-2 ring-[#2D2229] ring-offset-1' : isTod ? 'ring-2 ring-[#E94B77]' : ''}`}
+                            key={dateStr}
+                            onClick={() => setSelectedDay(dateStr)}
+                            className={`h-11 rounded-2xl flex items-center justify-center text-xs ${cls} ${selectedDay === dateStr ? 'ring-2 ring-[#2D2229]' : ''}`}
                           >
-                            <span>{dayNum}</span>
-                            {st.dayEvents.length > 0 && <span className={`w-1 h-1 rounded-full mt-0.5 ${st.isPeriod && !st.isProjectedPeriod ? 'bg-white' : 'bg-[#E94B77]'}`}></span>}
+                            {dayNum}
                           </button>
                         );
                       })}
                     </div>
                   </div>
 
-                  <div className="liquid-glass rounded-[26px] p-4 space-y-3">
+                  <div className="liquid-glass rounded-[26px] p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-extrabold text-[#2D2229]">{formatDateES(selectedDay)}</h3>
                       <button onClick={() => openAddModal('medical', selectedDay)} className="text-xs font-extrabold text-[#E94B77]">+ Agregar</button>
                     </div>
                     {selectedDayInfo.dayEvents.length === 0 ? (
-                      <p className="text-xs text-[#8C7380] py-2">Sin registros este día.</p>
+                      <p className="text-xs text-[#8C7380]">Sin registros este día.</p>
                     ) : (
                       selectedDayInfo.dayEvents.map(ev => (
-                        <div key={ev.id} className="p-3 rounded-2xl bg-white/65 border border-white/80 flex items-start justify-between gap-2">
+                        <div key={ev.id} className="p-3 rounded-2xl bg-white/65 flex justify-between">
                           <div>
-                            <p className="text-xs font-extrabold text-[#2D2229]">{ev.title}</p>
-                            <p className="text-[11px] text-[#6B5460] mt-0.5">{ev.details} {typeof ev.bbt === 'number' ? `• ${ev.bbt}°C` : ''}</p>
+                            <p className="text-xs font-extrabold">{ev.title}</p>
+                            <p className="text-[11px] text-[#6B5460]">{ev.details}</p>
                           </div>
-                          <button onClick={() => persistCloud(events.filter(x => x.id !== ev.id))} className="text-xs text-[#9C8290] hover:text-[#E94B77]">✕</button>
+                          <button onClick={() => persistCloud(events.filter(x => x.id !== ev.id))} className="text-xs text-[#9C8290]">✕</button>
                         </div>
                       ))
                     )}
@@ -2204,88 +2302,87 @@
                   onPetCare={handlePetCareLumi}
                   onToggleSleep={handleToggleSleepLumi}
                   onBuyOrToggleAcc={handleBuyOrToggleAccessory}
+                  onEquipRoomItem={handleEquipRoomItem}
                 />
               )}
 
               {activeTab === 'games' && (
-                <div className="space-y-4">
-                  <div className="liquid-glass rounded-[26px] p-5 flex items-center justify-between gap-3">
+                <div className="space-y-3.5">
+                  <div className="liquid-glass rounded-[26px] p-4 flex items-center justify-between gap-3">
                     <div>
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#6366F1]">Relajación • +10 pts</span>
-                      <h3 className="text-sm font-extrabold text-[#2D2229] mt-0.5">Respiración Guiada 4-4-6</h3>
-                      <p className="text-[11px] text-[#7A6370] mt-0.5">Ideal para bajar cólicos, estrés o antes de dormir.</p>
+                      <span className="text-[10px] font-extrabold uppercase text-[#E94B77]">Arcade • Puntos + Decoración 🎁</span>
+                      <h3 className="text-sm font-extrabold text-[#2D2229]">🎁 Atrapa el Regalo</h3>
+                      <p className="text-[11px] text-[#7A6370]">Atrapa 10+ regalos en 18s para desbloquear objetos.</p>
                     </div>
-                    <button
-                      onClick={() => setBreathingOpen(true)}
-                      className="px-4 py-2.5 rounded-full bg-[#5B4BDB] text-white text-xs font-extrabold active:scale-95 transition shrink-0 shadow-md"
-                    >
-                      Jugar
-                    </button>
+                    <button onClick={() => setCatchGameOpen(true)} className="px-4 py-2.5 rounded-full bg-[#E94B77] text-white text-xs font-extrabold shrink-0">Jugar</button>
                   </div>
 
-                  <div className="liquid-glass rounded-[26px] p-5 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-600">Dinámica rápida • +5 pts</span>
-                        <h3 className="text-sm font-extrabold text-[#2D2229] mt-0.5">Ruleta de Autocuidado</h3>
-                      </div>
-                      <button
-                        onClick={handleSpinRoulette}
-                        disabled={rouletteSpinning}
-                        className="px-4 py-2 rounded-full bg-amber-400 text-[#2D2229] text-xs font-extrabold active:scale-95 transition shadow-xs"
-                      >
-                        {rouletteSpinning ? 'Girando...' : 'Girar 🎲'}
-                      </button>
+                  <div className="liquid-glass rounded-[26px] p-4 flex items-center justify-between gap-3">
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase text-[#5B4BDB]">Memoria • Puntos + Decoración 🎁</span>
+                      <h3 className="text-sm font-extrabold text-[#2D2229]">❄️ Memorama Invernal</h3>
+                      <p className="text-[11px] text-[#7A6370]">Encuentra los 6 pares navideños en menos intentos.</p>
                     </div>
-                    {rouletteResult ? (
-                      <div className="p-3.5 rounded-2xl bg-white/75 border border-amber-200 text-xs font-bold text-[#2D2229]">
-                        ✨ {rouletteResult}
-                      </div>
-                    ) : (
-                      <p className="text-[11px] text-[#7A6370]">Gira la ruleta para recibir una idea adaptada a tu fase actual ({phase.name}).</p>
-                    )}
+                    <button onClick={() => setMemoryGameOpen(true)} className="px-4 py-2.5 rounded-full bg-[#5B4BDB] text-white text-xs font-extrabold shrink-0">Jugar</button>
+                  </div>
+
+                  <div className="liquid-glass rounded-[26px] p-4 flex items-center justify-between gap-3">
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase text-emerald-600">Reto • Puntos + Decoración 🎁</span>
+                      <h3 className="text-sm font-extrabold text-[#2D2229]">🎵 Secuencia Lumi</h3>
+                      <p className="text-[11px] text-[#7A6370]">Supera 5 niveles de memoria para ganar un objeto.</p>
+                    </div>
+                    <button onClick={() => setSimonGameOpen(true)} className="px-4 py-2.5 rounded-full bg-emerald-600 text-white text-xs font-extrabold shrink-0">Jugar</button>
+                  </div>
+
+                  <div className="liquid-glass rounded-[26px] p-4 flex items-center justify-between gap-3">
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase text-indigo-500">Relajación</span>
+                      <h3 className="text-sm font-extrabold text-[#2D2229]">Respiración 4-4-6</h3>
+                    </div>
+                    <button onClick={() => setBreathingOpen(true)} className="px-4 py-2 rounded-full liquid-pill text-[#5B4BDB] text-xs font-extrabold">Abrir</button>
+                  </div>
+
+                  <div className="liquid-glass rounded-[26px] p-4 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-extrabold text-[#2D2229]">Ruleta de Autocuidado</h3>
+                      <button onClick={handleSpinRoulette} className="px-4 py-2 rounded-full bg-amber-400 text-[#2D2229] text-xs font-extrabold">Girar 🎲</button>
+                    </div>
+                    {rouletteResult && <div className="p-3 rounded-2xl bg-white/80 text-xs font-bold">✨ {rouletteResult}</div>}
                   </div>
 
                   {viewMode === 'angie' ? (
-                    <div className="liquid-glass rounded-[26px] p-5 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#E94B77]">Sorpresas de Jorge</span>
-                          <h3 className="text-sm font-extrabold text-[#2D2229]">Rasca y Gana</h3>
-                        </div>
-                        <span className="text-[10px] font-bold text-[#8C7380]">Desliza el dedo</span>
-                      </div>
-                      <div className="space-y-2.5">
-                        {allCoupons.map(cp => (
-                          <ScratchCouponCard
-                            key={cp.id}
-                            coupon={cp}
-                            scratched={(settings.scratchedCoupons || []).includes(cp.id)}
-                            onScratch={(id) => {
-                              if (!(settings.scratchedCoupons || []).includes(id)) {
-                                persistCloud(events, { ...settings, scratchedCoupons: [...(settings.scratchedCoupons || []), id] });
-                              }
-                            }}
-                          />
-                        ))}
-                      </div>
+                    <div className="liquid-glass rounded-[26px] p-4 space-y-2.5">
+                      <h3 className="text-sm font-extrabold text-[#2D2229]">Rasca y Gana (Sorpresas de Jorge)</h3>
+                      {allCoupons.map(cp => (
+                        <ScratchCouponCard
+                          key={cp.id}
+                          coupon={cp}
+                          scratched={(settings.scratchedCoupons || []).includes(cp.id)}
+                          onScratch={(id) => {
+                            if (!(settings.scratchedCoupons || []).includes(id)) {
+                              persistCloud(events, { ...settings, scratchedCoupons: [...(settings.scratchedCoupons || []), id] });
+                            }
+                          }}
+                        />
+                      ))}
                     </div>
                   ) : (
-                    <div className="liquid-glass rounded-[26px] p-5 space-y-2.5">
+                    <div className="liquid-glass rounded-[26px] p-4 space-y-2">
                       <p className="text-xs font-extrabold text-[#2D2229]">Dejar cupón sorpresa para Angie</p>
                       <input
                         type="text"
                         value={settings.customCouponTitle || ''}
-                        onChange={(e) => persistCloud(events, { ...settings, customCouponTitle: e.target.value })}
-                        placeholder="Ej. Vale por pizza y peli esta semana"
-                        className="w-full bg-white/75 border border-white rounded-2xl px-3 py-2.5 text-xs font-semibold"
+                        onChange={e => persistCloud(events, { ...settings, customCouponTitle: e.target.value })}
+                        placeholder="Ej. Vale por pizza y peli"
+                        className="w-full bg-white/80 rounded-2xl px-3 py-2 text-xs font-semibold"
                       />
                       <input
                         type="text"
                         value={settings.customCouponSub || ''}
-                        onChange={(e) => persistCloud(events, { ...settings, customCouponSub: e.target.value })}
-                        placeholder="Nota extra (opcional)"
-                        className="w-full bg-white/75 border border-white rounded-2xl px-3 py-2.5 text-xs"
+                        onChange={e => persistCloud(events, { ...settings, customCouponSub: e.target.value })}
+                        placeholder="Nota extra"
+                        className="w-full bg-white/80 rounded-2xl px-3 py-2 text-xs"
                       />
                     </div>
                   )}
@@ -2294,68 +2391,20 @@
 
               {activeTab === 'history' && (
                 <div className="space-y-4">
-                  <div className="liquid-glass rounded-[26px] p-5 flex items-center justify-between">
-                    <div>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#8C7380]">Ciclo EWMA (±{cycleAnalytics.marginDays}d)</p>
-                      <p className="text-2xl font-extrabold text-[#2D2229] mt-0.5">{cycleAnalytics.baseCycleLength} días</p>
-                      <p className="text-[11px] text-[#7A6370] mt-0.5">
-                        Desviación σ: {cycleAnalytics.stdDev}d • Fase lútea: {cycleAnalytics.lutealLength}d
-                      </p>
-                    </div>
-                    <button onClick={handleExportMedicalReport} className="bg-[#2D2229] text-white text-xs font-bold px-4 py-2.5 rounded-full">
-                      Exportar PDF
-                    </button>
+                  <div className="liquid-glass rounded-[26px] p-5">
+                    <p className="text-[11px] font-bold uppercase text-[#8C7380]">Ciclo EWMA (±{cycleAnalytics.marginDays}d)</p>
+                    <p className="text-2xl font-extrabold text-[#2D2229]">{cycleAnalytics.baseCycleLength} días</p>
+                    <p className="text-[11px] text-[#7A6370]">Desviación σ: {cycleAnalytics.stdDev}d • Fase lútea: {cycleAnalytics.lutealLength}d</p>
                   </div>
-
                   <div className="liquid-glass rounded-[26px] p-5 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-extrabold text-[#2D2229]">Curva de Temperatura Basal (BBT)</p>
-                      {cycleAnalytics.thermalConfirmedDate && (
-                        <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full">
-                          3 sobre 6 confirmada
-                        </span>
-                      )}
-                    </div>
+                    <p className="text-xs font-extrabold text-[#2D2229]">Curva de Temperatura Basal (BBT)</p>
                     <BbtChart logs={cycleAnalytics.tempLogs} coverline={cycleAnalytics.coverline} />
-                  </div>
-
-                  {cycleAnalytics.prePeriodSignals.length > 0 && !discreetMode && (
-                    <div className="liquid-glass rounded-[26px] p-4 space-y-2">
-                      <p className="text-xs font-extrabold text-[#2D2229]">Señales tempranas antes de tu periodo</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {cycleAnalytics.prePeriodSignals.map(s => (
-                          <span key={s.id} className="liquid-pill text-xs text-[#C73660] px-3 py-1 rounded-full font-bold">
-                            {s.icon} {s.label} ({s.prob}%)
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="liquid-glass rounded-[26px] p-5 space-y-3.5">
-                    <p className="text-xs font-extrabold text-[#2D2229]">Historial de ciclos</p>
-                    {cycleAnalytics.historyRows.map(row => {
-                      const days = row.length || cycleDay;
-                      const pct = Math.min(100, Math.round((days / 45) * 100));
-                      return (
-                        <div key={row.id} className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="font-bold text-[#2D2229]">{formatDateES(row.start)}</span>
-                            <span className="font-extrabold text-[#E94B77]">{row.length ? `${row.length} días` : `Día ${cycleDay}`}</span>
-                          </div>
-                          <div className="w-full h-2 rounded-full bg-white/75 overflow-hidden">
-                            <div className={`h-full rounded-full ${row.isAltered ? 'bg-amber-400' : 'bg-[#E94B77]'}`} style={{ width: `${pct}%` }}></div>
-                          </div>
-                        </div>
-                      );
-                    })}
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* BARRA FLOTANTE LIQUID GLASS */}
           <nav className="fixed bottom-3 left-3 right-3 z-40 no-print">
             <div className="max-w-md md:max-w-xl mx-auto liquid-nav rounded-[32px] grid grid-cols-5 py-2.5 px-2">
               {[
@@ -2366,8 +2415,9 @@
                 { id: 'history', label: 'Análisis', icon: 'chart' }
               ].map(tab => (
                 <button
-                  key={tab.id} onClick={() => handleSwitchTab(tab.id)}
-                  className={`flex flex-col items-center gap-1 py-1 rounded-2xl transition active:scale-90 ${activeTab === tab.id ? 'bg-white/80 text-[#E94B77] shadow-xs' : 'text-[#8C7380]'}`}
+                  key={tab.id}
+                  onClick={() => handleSwitchTab(tab.id)}
+                  className={`flex flex-col items-center gap-1 py-1 rounded-2xl transition ${activeTab === tab.id ? 'bg-white/80 text-[#E94B77]' : 'text-[#8C7380]'}`}
                 >
                   <Icon name={tab.icon} className="w-5 h-5" />
                   <span className="text-[10px] font-extrabold">{tab.label}</span>
@@ -2376,135 +2426,61 @@
             </div>
           </nav>
 
-          {/* PANEL DE PERFIL Y AJUSTES */}
+          {catchGameOpen && <CatchGiftGameModal onClose={() => setCatchGameOpen(false)} onWin={handleGameWin} />}
+          {memoryGameOpen && <MemoryGameModal onClose={() => setMemoryGameOpen(false)} onWin={handleGameWin} />}
+          {simonGameOpen && <SimonGameModal onClose={() => setSimonGameOpen(false)} onWin={handleGameWin} />}
+          {breathingOpen && <BreathingGameModal onClose={() => setBreathingOpen(false)} onCompleteSession={() => handleGameWin(10, false)} />}
+
           {settingsDrawerOpen && (
             <div className="fixed inset-0 bg-black/45 backdrop-blur-md flex items-end sm:items-center justify-center sm:p-4 z-50">
-              <div className="liquid-glass rounded-t-[34px] sm:rounded-[34px] max-w-md w-full p-6 shadow-2xl animate-sheet max-h-[88vh] overflow-y-auto space-y-4">
+              <div className="liquid-glass rounded-t-[34px] sm:rounded-[34px] max-w-md w-full p-6 shadow-2xl animate-sheet max-h-[85vh] overflow-y-auto space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-extrabold text-[#2D2229]">Perfil & Ajustes</h3>
-                  <button onClick={() => setSettingsDrawerOpen(false)} className="w-8 h-8 rounded-full liquid-pill text-[#6B5460] font-bold text-xs">✕</button>
+                  <h3 className="text-base font-extrabold text-[#2D2229]">Perfil & Ajustes (v{APP_VERSION})</h3>
+                  <button onClick={() => setSettingsDrawerOpen(false)} className="w-8 h-8 rounded-full liquid-pill text-xs font-bold">✕</button>
                 </div>
-
-                <div className="bg-white/60 rounded-2xl p-4 border border-white/80 flex items-center justify-between">
+                <div className="bg-white/60 rounded-2xl p-4 flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-extrabold text-[#2D2229]">Notificaciones Push</p>
-                    <p className="text-[11px] text-[#7A6370]">{pushEnabled ? `Suscrito como ${viewMode === 'jorge' ? 'Jorge' : 'Angie'}` : 'Toca para activar avisos'}</p>
+                    <p className="text-xs font-extrabold">Notificaciones Push</p>
+                    <p className="text-[11px] text-[#7A6370]">{pushEnabled ? `Activo (${viewMode})` : 'Pendiente'}</p>
                   </div>
-                  <button onClick={handleEnablePush} className="px-4 py-2 rounded-full bg-[#E94B77] text-white text-xs font-bold">
-                    {pushEnabled ? 'Activo' : 'Activar'}
-                  </button>
+                  <button onClick={handleEnablePush} className="px-4 py-2 rounded-full bg-[#E94B77] text-white text-xs font-bold">Activar</button>
                 </div>
-
-                <div className="bg-white/60 rounded-2xl p-4 border border-white/80 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-extrabold text-[#2D2229]">Versión {APP_VERSION}</p>
-                    <p className="text-[11px] text-[#7A6370]">Novedades y bloquear sesión</p>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <button onClick={() => { setSettingsDrawerOpen(false); setUpdateModalOpen(true); }} className="px-3 py-2 rounded-full liquid-pill text-[#E94B77] text-xs font-bold">
-                      Novedades
-                    </button>
-                    <button onClick={() => { setSettingsDrawerOpen(false); setIsUnlocked(false); setPinInput(''); try { sessionStorage.removeItem('ciclo_unlocked_v7'); } catch {} }} className="px-3 py-2 rounded-full bg-[#2D2229] text-white text-xs font-bold">
-                      Bloquear
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8C7380]">Objetivo</p>
-                  {APP_GOALS.map(g => (
-                    <button
-                      key={g.id} onClick={() => persistCloud(events, { ...settings, goal: g.id })}
-                      className={`w-full text-left p-3 rounded-2xl border transition ${settings.goal === g.id ? 'bg-white/90 border-[#E94B77]' : 'bg-white/50 border-white/70'}`}
-                    >
-                      <p className="text-xs font-extrabold text-[#2D2229]">{g.label}</p>
-                      <p className="text-[11px] text-[#7A6370] mt-0.5">{g.desc}</p>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8C7380]">Método anticonceptivo</p>
-                  {BIRTH_CONTROL_METHODS.map(m => (
-                    <button
-                      key={m.id} onClick={() => persistCloud(events, { ...settings, birthControlMethod: m.id })}
-                      className={`w-full text-left p-3 rounded-2xl border transition ${settings.birthControlMethod === m.id ? 'bg-white/90 border-[#E94B77]' : 'bg-white/50 border-white/70'}`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-extrabold text-[#2D2229]">{m.label}</span>
-                        {settings.birthControlMethod === m.id && <span className="text-[10px] font-bold text-[#E94B77]">Activo</span>}
-                      </div>
-                      <p className="text-[11px] text-[#7A6370] mt-0.5">{m.note}</p>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex gap-2 pt-1">
-                  <button onClick={handleExportJsonBackup} className="flex-1 py-3 rounded-full bg-[#2D2229] text-white text-xs font-bold">Descargar JSON</button>
-                  <label className="flex-1 py-3 rounded-full liquid-pill text-[#E94B77] text-xs font-bold text-center cursor-pointer">
-                    Restaurar JSON
-                    <input type="file" accept="application/json" onChange={handleImportJsonBackup} className="hidden" />
-                  </label>
-                </div>
+                <button
+                  onClick={() => { setSettingsDrawerOpen(false); setIsUnlocked(false); setPinInput(''); try { sessionStorage.removeItem('ciclo_unlocked_v7'); } catch {} }}
+                  className="w-full py-3 rounded-full bg-[#2D2229] text-white text-xs font-bold"
+                >
+                  Bloquear sesión
+                </button>
               </div>
             </div>
           )}
 
-          {breathingOpen && (
-            <BreathingGameModal
-              onClose={() => setBreathingOpen(false)}
-              onCompleteSession={() => {
-                addLumiPoints(10);
-                setLumiMsg('¡Gran respiración! Sumaste +10 pts para accesorios.');
-              }}
-            />
-          )}
-
           {updateModalOpen && (
             <div className="fixed inset-0 bg-black/45 backdrop-blur-md flex items-center justify-center p-5 z-50">
-              <div className="liquid-glass rounded-[32px] max-w-sm w-full p-6 shadow-2xl animate-sheet relative overflow-hidden">
-                <button
-                  onClick={dismissUpdateModal} aria-label="Cerrar novedades"
-                  className="absolute top-4 right-4 w-8 h-8 rounded-full liquid-pill text-[#E94B77] font-bold text-xs flex items-center justify-center"
-                >
-                  ✕
-                </button>
-
-                <span className="inline-block text-[10px] font-extrabold uppercase tracking-widest liquid-pill text-[#E94B77] px-3 py-1 rounded-full">
-                  Actualización v{CHANGELOG.version}
-                </span>
+              <div className="liquid-glass rounded-[32px] max-w-sm w-full p-6 shadow-2xl animate-sheet relative">
+                <span className="inline-block text-[10px] font-extrabold uppercase liquid-pill text-[#E94B77] px-3 py-1 rounded-full">v{CHANGELOG.version}</span>
                 <h3 className="text-lg font-extrabold text-[#2D2229] mt-2">{CHANGELOG.title}</h3>
-                <p className="text-[11px] text-[#8C7380] mb-4">{CHANGELOG.date}</p>
-
-                <div className="space-y-3 mb-5">
+                <div className="space-y-2.5 my-4">
                   {CHANGELOG.items.map((it, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 bg-white/65 border border-white/80 p-3 rounded-2xl">
-                      <span className="text-lg leading-none mt-0.5">{it.icon}</span>
+                    <div key={idx} className="flex items-start gap-2.5 bg-white/70 p-3 rounded-2xl">
+                      <span className="text-lg">{it.icon}</span>
                       <div>
-                        <p className="text-xs font-extrabold text-[#2D2229]">{it.title}</p>
-                        <p className="text-[11px] text-[#6B5460] mt-0.5 leading-snug">{it.desc}</p>
+                        <p className="text-xs font-extrabold">{it.title}</p>
+                        <p className="text-[11px] text-[#6B5460]">{it.desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-
-                <button
-                  onClick={dismissUpdateModal}
-                  className="w-full py-3 rounded-full bg-[#E94B77] hover:bg-[#D63B67] text-white text-xs font-extrabold shadow-lg shadow-rose-200 transition"
-                >
-                  ¡Entendido, vamos!
-                </button>
+                <button onClick={dismissUpdateModal} className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-extrabold">¡A probarlo!</button>
               </div>
             </div>
           )}
 
           {safeDaysModalOpen && (
             <div className="fixed inset-0 bg-black/45 backdrop-blur-md flex items-center justify-center p-5 z-50">
-              <div className="liquid-glass rounded-[30px] max-w-sm w-full p-6 shadow-2xl animate-sheet space-y-3">
-                <h3 className="text-base font-extrabold text-[#2D2229]">Índice fértil ({fertilityScore.pct}%)</h3>
-                <p className="text-xs text-[#6B5460] leading-relaxed">
-                  Calculado combinando tu curva EWMA, desviación estándar (±{cycleAnalytics.marginDays}d) y biomarcadores registrados. <strong>No sustituye un método anticonceptivo</strong> ni protege contra ITS.
-                </p>
+              <div className="liquid-glass rounded-[30px] max-w-sm w-full p-6 shadow-2xl space-y-3">
+                <h3 className="text-base font-extrabold">Índice fértil ({fertilityScore.pct}%)</h3>
+                <p className="text-xs text-[#6B5460]">Cálculo estadístico EWMA. No sustituye un método anticonceptivo.</p>
                 <button onClick={() => setSafeDaysModalOpen(false)} className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold">Entendido</button>
               </div>
             </div>
@@ -2512,82 +2488,18 @@
 
           {modalOpen && (
             <div className="fixed inset-0 bg-black/45 backdrop-blur-md flex items-end sm:items-center justify-center sm:p-4 z-50">
-              <div className="liquid-glass rounded-t-[34px] sm:rounded-[34px] max-w-md w-full p-6 shadow-2xl animate-sheet max-h-[90vh] overflow-y-auto">
-                <div className="w-10 h-1 bg-white/80 rounded-full mx-auto mb-4 sm:hidden"></div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-extrabold text-[#2D2229]">Nuevo registro</h3>
-                  <button onClick={() => setModalOpen(false)} className="text-[#9C8290] font-bold">✕</button>
+              <div className="liquid-glass rounded-t-[34px] sm:rounded-[34px] max-w-md w-full p-6 shadow-2xl max-h-[88vh] overflow-y-auto">
+                <div className="flex justify-between mb-4">
+                  <h3 className="text-base font-extrabold">Nuevo registro</h3>
+                  <button onClick={() => setModalOpen(false)}>✕</button>
                 </div>
-
-                <form onSubmit={handleSaveEvent} className="space-y-4">
+                <form onSubmit={handleSaveEvent} className="space-y-3">
                   <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'period_start', label: 'Inicio Periodo' },
-                      { id: 'intimacy_protected', label: 'Con condón' },
-                      { id: 'intimacy_unprotected', label: 'Sin protección' },
-                      { id: 'pill', label: 'Emergencia' },
-                      { id: 'medical', label: 'Síntomas / BBT' }
-                    ].map(opt => (
-                      <button
-                        key={opt.id} type="button"
-                        onClick={() => { setNewEventType(opt.id); setNewEventTitle(opt.label); }}
-                        className={`py-2.5 px-3 rounded-2xl text-xs font-bold transition ${newEventType === opt.id ? 'bg-[#E94B77] text-white' : 'liquid-pill text-[#6B5460]'}`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
+                    <input type="date" value={newEventDate} onChange={e => setNewEventDate(e.target.value)} required className="bg-white/80 rounded-2xl px-3 py-2 text-xs font-bold" />
+                    <input type="number" step="0.01" value={newEventTemp} onChange={e => setNewEventTemp(e.target.value)} placeholder="Temp °C" className="bg-white/80 rounded-2xl px-3 py-2 text-xs font-bold" />
                   </div>
-
-                  {newEventType === 'pill' && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button type="button" onClick={() => setNewEventPillKind('ulipristal')} className={`py-2 px-3 rounded-2xl text-[11px] font-bold border ${newEventPillKind === 'ulipristal' ? 'bg-amber-100 border-amber-400 text-amber-950' : 'bg-white/60 border-white text-slate-600'}`}>
-                        Femelle One (120h)
-                      </button>
-                      <button type="button" onClick={() => setNewEventPillKind('levonorgestrel')} className={`py-2 px-3 rounded-2xl text-[11px] font-bold border ${newEventPillKind === 'levonorgestrel' ? 'bg-amber-100 border-amber-400 text-amber-950' : 'bg-white/60 border-white text-slate-600'}`}>
-                        Levonorgestrel (72h)
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#9C8290] mb-1">Fecha</label>
-                      <input type="date" value={newEventDate} onChange={e => setNewEventDate(e.target.value)} required className="w-full bg-white/75 border border-white rounded-2xl px-3 py-2 text-xs font-bold" />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#9C8290] mb-1">Temp. Basal (°C)</label>
-                      <input type="number" step="0.01" min="34" max="41" value={newEventTemp} onChange={e => setNewEventTemp(e.target.value)} placeholder="36.45" className="w-full bg-white/75 border border-white rounded-2xl px-3 py-2 text-xs font-bold" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    {['Físico', 'Ánimo', 'Flujo', 'Pruebas', 'Hábitos'].map(cat => (
-                      <div key={cat}>
-                        <p className="text-[10px] font-extrabold uppercase text-[#B39AA6] mb-1">{cat}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {SYMPTOM_TAGS.filter(t => t.cat === cat).map(tag => {
-                            const active = newEventTags.includes(tag.id);
-                            return (
-                              <button
-                                type="button" key={tag.id}
-                                onClick={() => setNewEventTags(p => p.includes(tag.id) ? p.filter(x => x !== tag.id) : [...p, tag.id])}
-                                className={`text-[11px] px-2.5 py-1 rounded-full font-semibold transition ${active ? 'bg-[#E94B77] text-white' : 'liquid-pill text-[#6B5460]'}`}
-                              >
-                                {tag.icon} {tag.label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <textarea rows="2" value={newEventDetails} onChange={e => setNewEventDetails(e.target.value)} placeholder="Notas opcionales..." className="w-full bg-white/75 border border-white rounded-2xl px-3 py-2 text-xs"></textarea>
-
-                  <div className="flex gap-2">
-                    <button type="button" onClick={() => setModalOpen(false)} className="flex-1 py-3 rounded-full liquid-pill text-[#E94B77] text-xs font-bold">Cancelar</button>
-                    <button type="submit" className="flex-1 py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold shadow-md shadow-rose-200">Guardar</button>
-                  </div>
+                  <textarea rows="2" value={newEventDetails} onChange={e => setNewEventDetails(e.target.value)} placeholder="Notas..." className="w-full bg-white/80 rounded-2xl px-3 py-2 text-xs"></textarea>
+                  <button type="submit" className="w-full py-3 rounded-full bg-[#E94B77] text-white text-xs font-bold">Guardar</button>
                 </form>
               </div>
             </div>
